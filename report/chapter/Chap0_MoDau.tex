@@ -1,0 +1,58 @@
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Mở đầu}
+\chapter*{Mở đầu}
+
+\section*{1. Bối cảnh và Lý do chọn đề tài}
+
+Trong các hệ thống thông tin y tế hiện đại, dữ liệu hồ sơ bệnh án điện tử (\textit{Electronic Health Records --- EHR}) có đặc trưng vừa bán cấu trúc (mỗi lượt khám bao gồm danh sách chẩn đoán, chỉ số xét nghiệm, đơn thuốc có số lượng biến thiên lớn), vừa tăng trưởng liên tục theo thời gian và số lượng bệnh nhân. Khi quy mô tập dữ liệu làm việc (\textit{working set}, gồm cả tài liệu và chỉ mục) vượt quá dung lượng bộ nhớ đệm RAM của một máy chủ cơ sở dữ liệu đơn lẻ, hiệu năng hệ thống suy giảm mạnh do tần suất đọc/ghi đĩa tăng đột biến và hiện tượng tranh chấp tài nguyên CPU/I/O.
+
+Mở rộng theo chiều dọc (\textit{scale-up}) sớm chạm trần chi phí và giới hạn phần cứng vật lý. Do đó, mở rộng theo chiều ngang thông qua phân mảnh dữ liệu phân tán (\textit{Horizontal Sharding}) trở thành giải pháp kiến trúc cốt lõi trong các hệ quản trị cơ sở dữ liệu hiện đại \cite{Kleppmann2017}. Tuy nhiên, sharding không phải là giải pháp mang lại lợi ích tuyệt đối ở mọi kịch bản: nó luôn tồn tại sự đánh đổi giữa lợi ích chia tải RAM/I/O trên nhiều nút với chi phí điều phối mạng qua lớp định tuyến, độ lệch phân bố dữ liệu (\textit{data skew}) và chi phí gom kết quả cho các truy vấn xuyên phân mảnh (\textit{scatter-gather / cross-shard}).
+
+MongoDB là một trong những hệ quản trị cơ sở dữ liệu hướng tài liệu phổ biến nhất hỗ trợ cơ chế \textit{Native Horizontal Sharding} tích hợp sẵn \cite{MongoDBSharding}. Việc đánh giá định lượng cơ chế này trên một bài toán dữ liệu sát thực tế như EHR (sử dụng bộ sinh dữ liệu chuẩn Synthea \cite{Walonoski2018}) giúp làm rõ: \textit{khi nào sharding thực sự hiệu quả, chiến lược khóa phân mảnh nào phù hợp với từng loại tải đọc/ghi, và chi phí ẩn của các truy vấn phân tích xuyên shard lớn đến mức nào}.
+
+\section*{2. Phạm vi nghiên cứu và Câu hỏi nghiên cứu}
+
+Nhằm đi sâu vào bản chất kỹ thuật thay vì dàn trải trên nhiều hệ quản trị khác nhau, đề tài chốt phạm vi thực nghiệm tập trung vào **một hệ quản trị duy nhất (`MongoDB`)** và **một bài toán dữ liệu chính (`Synthea EHR`)**, khảo sát trên bốn mốc quy mô từ $100{,}000$ đến $3{,}000{,}000$ tài liệu trong collection \texttt{encounters} (tương ứng khoảng $1{,}822$ đến $55{,}448$ bệnh nhân tổng hợp).
+
+Đề tài hướng tới giải đáp ba câu hỏi nghiên cứu (\textit{Research Questions --- RQ}) chuẩn hóa được tóm tắt trong Bảng~\ref{tab:research-questions}.
+
+\begin{table}[!htb]
+\centering
+\caption{Ba câu hỏi nghiên cứu chuẩn hóa của đề tài.}
+\label{tab:research-questions}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{c L{3.2cm} X}
+\toprule
+\textbf{Mã} & \textbf{Trọng tâm} & \textbf{Câu hỏi nghiên cứu chính thức} \\
+\midrule
+\textbf{RQ1} & Scale-out Đọc \& Ngưỡng quy mô & Từ quy mô nào ($100\text{K} \rightarrow 3\text{M}$ \texttt{encounters}) thì cụm MongoDB Sharded (\texttt{SH-hash}) đạt hiệu năng đọc tốt hơn Standalone (\texttt{SA}, 1 VM); chi phí điều phối của \texttt{mongos} ($\texttt{B1} - \texttt{SA}$) và lợi ích chia đôi RAM/Index ($\texttt{B1} - \texttt{SH-hash}$) tách bạch như thế nào dưới tải 1 luồng và đa luồng? \\
+\addlinespace
+\textbf{RQ2} & Phân bố dữ liệu \& Tải ghi khi lệch & Khi dữ liệu bị lệch (\textit{Natural Skew} và \textit{Heavy Skew}) và tải thiên về ghi, mỗi chiến lược sharding (\texttt{SH-hash} so với \texttt{SH-range}) phân bố dữ liệu (số tài liệu, dung lượng MB, số chunk) và lượng \texttt{insert} giữa các shard đều đến mức nào, và thông lượng ghi tăng được bao nhiêu so với Standalone? \\
+\addlinespace
+\textbf{RQ3} & Shard Pruning \& Chi phí Cross-Shard & Trên cụm sharded, cơ chế \textit{Shard Pruning} (\texttt{SINGLE\_SHARD}) khác biệt thế nào với truy vấn xuyên bệnh nhân (\texttt{SHARD\_MERGE}) về kế hoạch thực thi, lưu lượng mạng, chi phí cross-shard theo quy mô $100\text{K} \rightarrow 3\text{M}$ (lấy \texttt{SH-range} làm đối chứng cho truy vấn theo thời gian), và mức độ nhiễu chéo khi trộn tải $P:X$? \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section*{3. Đóng góp chính của báo cáo}
+
+\renewcommand{\labelitemi}{$-$}
+\begin{itemize}
+  \item \textbf{Chuẩn hóa khái niệm kiến trúc:} Tách bạch rõ ràng giữa \textit{Single-node Partitioning} trong RDBMS và \textit{Multi-node Horizontal Sharding} trong MongoDB, đồng thời ánh xạ cơ chế tỉa phân vùng (\textit{Partition Pruning}) sang cơ chế định tuyến mục tiêu (\textit{Shard Pruning / Targeted Routing}) của \texttt{mongos}.
+  \item \textbf{Thiết kế thực nghiệm có kiểm soát biến chặt chẽ:} Xây dựng bốn môi trường đối chứng (\texttt{SA}, \texttt{B1}, \texttt{SH-hash}, \texttt{SH-range}) trên hạ tầng Microsoft Azure for Students với giới hạn bộ nhớ WiredTiger cố định, giúp tách riêng chi phí điều phối của \texttt{mongos} khỏi lợi ích mở rộng bộ nhớ đệm.
+  \item \textbf{Pipeline dữ liệu Synthea và kịch bản đo có thể tái lập:} Chuẩn hóa schema tối giản cho tập \texttt{encounters}, sinh sáu bộ dữ liệu chuẩn ($100\text{K} \rightarrow 3\text{M}$, \texttt{D1M-nat}, \texttt{D1M-heavy}) với hạt giống cố định ($\texttt{SEED} = 42$) và công khai toàn bộ mã nguồn trên GitHub \cite{ProjectRepo}.
+  \item \textbf{Khuyến nghị kiến trúc dựa trên số liệu:} Cung cấp ma trận lựa chọn chiến lược shard key cho các workload EHR thực tế cùng phân tích thẳng thắn các giới hạn thực nghiệm (\textit{Threats to Validity}).
+\end{itemize}
+
+\section*{4. Bố cục của báo cáo}
+
+Nội dung báo cáo được tổ chức thành năm chương, tuân thủ tỷ lệ khoảng $20\%$ cho phần giới thiệu và cài đặt MongoDB và khoảng $80\%$ cho phần phân tích chuyên sâu cùng đánh giá thực nghiệm:
+
+\begin{itemize}
+  \item \textit{Chương 1. Giới thiệu và Cài đặt MongoDB}: Trình bày kiến trúc lõi của MongoDB (WiredTiger, Replica Set, B-Tree Index, Native Sharding) và cấu hình triển khai cụm trên Azure for Students.
+  \item \textit{Chương 2. Cơ chế Hoạt động của MongoDB Sharding}: Phân tích sự khác biệt giữa Partitioning và Sharding, ánh xạ Shard Pruning, cơ chế định tuyến \texttt{mongos}, chiến lược \textit{Hashed} so với \textit{Ranged} Shard Key, chia chunk và Balancer.
+  \item \textit{Chương 3. Phương pháp và Thiết kế Thực nghiệm}: Đặc tả schema tối giản của \texttt{encounters}, sáu bộ dữ liệu Synthea, bốn truy vấn chuẩn hóa (\texttt{Q1}--\texttt{Q4}), hệ thống chỉ mục, quy chuẩn đo đạc telemetry và các công thức đánh giá cho \texttt{RQ1}--\texttt{RQ3}.
+  \item \textit{Chương 4. Kết quả Thực nghiệm và Phân tích Kỹ thuật}: Trình bày và phân tích định lượng kết quả thu được cho từng câu hỏi nghiên cứu \texttt{RQ1}, \texttt{RQ2} và \texttt{RQ3}.
+  \item \textit{Chương 5. Khuyến nghị Thiết kế, Giới hạn và Kết luận}: Đề xuất ma trận lựa chọn chiến lược sharding cho hệ thống EHR, thảo luận các giới hạn thực nghiệm (\textit{Threats to Validity}) và tổng kết hướng phát triển.
+\end{itemize}

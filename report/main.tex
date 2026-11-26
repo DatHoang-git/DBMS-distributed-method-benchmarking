@@ -1,0 +1,242 @@
+\documentclass[a4paper,12pt,oneside]{book}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage{times}
+  \usepackage[utf8]{vietnam}
+\else
+  \usepackage{fontspec}
+  \setmainfont{Liberation Serif}
+  \setmonofont[Scale=0.86]{DejaVu Sans Mono}
+\fi
+\usepackage{appendix}
+\usepackage[shortlabels]{enumitem}
+\usepackage{booktabs}
+\usepackage{rotating}
+\usepackage{hhline}
+\usepackage{colortbl}
+\usepackage{afterpage}
+\usepackage{mathtools}
+\usepackage{setspace}
+\usepackage{amstext, amsmath, latexsym, amsbsy, amssymb, amsthm, amsfonts, multicol, nccmath}
+\usepackage[left=3cm,right=2cm,top=2.5cm,bottom=3cm,footskip=40pt]{geometry}
+\usepackage{pdflscape}
+\usepackage{array}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{longtable}
+\setcounter{secnumdepth}{4}
+\usepackage{placeins}
+\usepackage[square, comma, numbers, sort&compress]{natbib}
+\setlength{\parindent}{1cm}
+\usepackage{xcolor}
+\usepackage{indentfirst}
+\usepackage{exscale, eucal}
+\usepackage{fancyhdr}
+\usepackage{fncychap}
+\usepackage{graphicx}
+\usepackage{etoolbox}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{calc, arrows, decorations.pathmorphing, backgrounds, positioning, fit, shapes, shapes.geometric, decorations.pathreplacing, decorations.text}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+\usepackage{titlesec}
+\usepackage[labelsep=period]{caption}
+\usepackage{subfigure}
+\DeclareCaptionFormat{myformat}{\fontsize{12}{14}\selectfont#1#2#3}
+\captionsetup{format=myformat}
+\usepackage{titletoc}
+\titlelabel{\thetitle.\,\,}
+\titleformat{\chapter}[display]
+  {\fontsize{14}{16}\selectfont\bfseries\centering}
+  {\MakeUppercase{\chaptertitlename}\ \thechapter}{0pt}{\fontsize{14}{16}\selectfont\MakeUppercase}
+\titlespacing{\chapter}{0pt}{0pt}{30pt}
+\titleformat*{\section}{\fontsize{13.5}{15}\selectfont\bfseries}
+\titleformat*{\subsection}{\fontsize{13}{15}\selectfont\bfseries\slshape}
+\titleformat*{\subsubsection}{\fontsize{13}{15}\selectfont\slshape}
+\titleformat*{\paragraph}{\fontsize{12.5}{15}\selectfont\bfseries}
+\titleformat*{\subparagraph}{\fontsize{12.5}{15}\selectfont\bfseries}
+\graphicspath{{figures/}}
+
+\titlespacing\section{0pt}{8pt plus 4pt minus 2pt}{2pt plus 2pt minus 2pt}
+\titlespacing\subsection{0pt}{6pt plus 4pt minus 2pt}{2pt plus 2pt minus 2pt}
+\titlespacing\subsubsection{0pt}{6pt plus 4pt minus 2pt}{0pt plus 2pt minus 2pt}
+
+\usepackage[subfigure]{tocloft}
+\cftsetpnumwidth{20pt}
+\titlecontents{chapter}
+  [0pt]
+  {}
+  {\fontsize{13}{14}\selectfont\MakeUppercase{\chaptername}\ \thecontentslabel.\,\,}
+  {}
+  {\cftdotfill{\cftdotsep}\contentspage}
+\renewcommand{\cftsecaftersnum}{.}
+\renewcommand{\cftsubsecaftersnum}{.}
+
+\newtheorem{definition}{\bf Định nghĩa}[chapter]
+\newtheorem{theorem}{\bf Định lý}[chapter]
+\newtheorem{lemma}{\bf Bổ đề}[chapter]
+
+\renewcommand{\cftfigfont}{Hình~}
+\renewcommand{\cfttabfont}{Bảng~}
+\ifPDFTeX\else
+  \renewcommand{\chaptername}{Chương}
+  \renewcommand{\figurename}{Hình}
+  \renewcommand{\tablename}{Bảng}
+  \renewcommand{\lstlistingname}{Đoạn mã}
+\fi
+\makeatletter
+\renewcommand\@biblabel[1]{[#1]}
+\makeatother
+\renewcommand{\baselinestretch}{1.35}
+\emergencystretch=2em
+\flushbottom
+\renewcommand*{\bibfont}{\fontsize{12}{15}\selectfont}
+
+% Code listing style for MongoDB JS / JSON / Bash
+\definecolor{codebg}{RGB}{247,248,250}
+\definecolor{codeframe}{RGB}{205,212,220}
+\definecolor{codekw}{RGB}{0,82,155}
+\definecolor{codestr}{RGB}{163,21,21}
+\definecolor{codecmt}{RGB}{75,120,75}
+\definecolor{todobg}{RGB}{255,248,225}
+\definecolor{todoborder}{RGB}{210,145,20}
+
+\lstdefinelanguage{MongoJS}{
+  morekeywords={db, find, aggregate, sort, limit, match, unwind, group, project, sum, gte, lt, explain, sh, status, stopBalancer, isBalancerRunning, true, false, null},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  morestring=[b]'
+}
+
+\lstset{
+  backgroundcolor=\color{codebg},
+  frame=single,
+  rulecolor=\color{codeframe},
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{codekw}\bfseries,
+  stringstyle=\color{codestr},
+  commentstyle=\color{codecmt}\itshape,
+  breaklines=true,
+  breakatwhitespace=false,
+  tabsize=2,
+  showstringspaces=false,
+  captionpos=b,
+  xleftmargin=0.4cm,
+  xrightmargin=0.4cm,
+  aboveskip=8pt,
+  belowskip=8pt
+}
+
+% Placeholder box for upcoming experimental results / figures
+\newcommand{\resultplaceholder}[2]{%
+  \vspace{6pt}%
+  \noindent\fcolorbox{todoborder}{todobg}{%
+    \parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
+      \textbf{\textcolor{todoborder}{[CHỜ KẾT QUẢ THỰC NGHIỆM --- #1]}} \\[3pt]
+      \small #2
+    }%
+  }%
+  \vspace{6pt}%
+}
+
+\usepackage[hidelinks, unicode]{hyperref}
+
+\begin{document}
+\fontsize{13}{15.5}\selectfont
+
+% --- Trang bìa ngoài & bìa trong ---
+\pagestyle{empty}
+\input{cover/bia-ngoai}
+\newpage
+\pagestyle{plain}
+\pagenumbering{gobble}
+\input{cover/bia-trong}
+\newpage
+
+% --- Phần đầu (số trang La Mã) ---
+\pagenumbering{roman}
+\setlength{\parindent}{1cm}
+\setlength{\parskip}{0.5ex}
+\fontsize{13}{16}\selectfont
+
+\input{cover/tom-tat}
+\newpage
+
+\renewcommand{\contentsname}{\vspace{-50pt}\centerline{\fontsize{14}{16}\selectfont\MakeUppercase{Mục lục}}}
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Mục lục}
+\tableofcontents
+\clearpage
+
+\input{cover/viet-tat}
+\newpage
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Danh mục hình vẽ}
+\renewcommand{\listfigurename}{\vspace{-50pt}\centerline{\fontsize{14}{16}\selectfont\MakeUppercase{Danh mục hình vẽ}}}
+\listoffigures
+\newpage
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Danh mục bảng biểu}
+\renewcommand{\listtablename}{\vspace{-50pt}\centerline{\fontsize{14}{16}\selectfont\MakeUppercase{Danh mục bảng biểu}}}
+\listoftables
+\newpage
+
+% --- Nội dung chính (số trang Ả Rập) ---
+\pagenumbering{arabic}
+\pagestyle{plain}
+
+\input{chapter/Chap0_MoDau}
+\newpage
+\input{chapter/Chap1_GioiThieuMongoDB}
+\newpage
+\input{chapter/Chap2_CoCheSharding}
+\newpage
+\input{chapter/Chap3_ThietKeThucNghiem}
+\newpage
+\input{chapter/Chap4_KetQuaThucNghiem}
+\newpage
+\input{chapter/Chap5_KhuyenNghiKetLuan}
+\newpage
+
+% --- Tài liệu tham khảo ---
+\renewcommand{\bibname}{Tài liệu tham khảo}
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{TÀI LIỆU THAM KHẢO}
+
+\begin{thebibliography}{99}
+
+\bibitem{MongoDBSharding}
+MongoDB, Inc., ``Sharding --- MongoDB Manual (v7.0 / v8.0),'' [Online]. Available: \url{https://www.mongodb.com/docs/manual/sharding/}
+
+\bibitem{MongoDBWiredTiger}
+MongoDB, Inc., ``WiredTiger Storage Engine --- MongoDB Manual,'' [Online]. Available: \url{https://www.mongodb.com/docs/manual/core/wiredtiger/}
+
+\bibitem{MongoDBExplain}
+MongoDB, Inc., ``Explain Results and Query Plans in Sharded Clusters --- MongoDB Manual,'' [Online]. Available: \url{https://www.mongodb.com/docs/manual/reference/explain-results/}
+
+\bibitem{Walonoski2018}
+J. Walonoski, M. Kramer, J. Nichols, A. Quina, C. Moesel, D. Hall, C. Duffett, K. Dube, T. Gallagher, and S. McLachlan, ``Synthea: An approach, method, and software mechanism for generating synthetic patients and the synthetic electronic health care record,'' {\em Journal of the American Medical Informatics Association (JAMIA)}, vol. 25, no. 3, pp. 230--238, 2018.
+
+\bibitem{Kleppmann2017}
+M. Kleppmann, {\em Designing Data-Intensive Applications: The Big Ideas Behind Reliable, Scalable, and Maintainable Systems}, O'Reilly Media, 2017.
+
+\bibitem{AzureStudents}
+Microsoft Azure, ``Azure for Students --- Virtual Machine Sizes and Quota Limits,'' [Online]. Available: \url{https://learn.microsoft.com/en-us/azure/virtual-machines/sizes}
+
+\bibitem{ProjectRepo}
+Nhóm thực hiện, ``DBMS-distributed-method-benchmarking: Mã nguồn triển khai, pipeline Synthea, script benchmark và dữ liệu thực nghiệm,'' GitHub Repository, 2026. [Online]. Available: \url{https://github.com/DatHoang-git/DBMS-distributed-method-benchmarking}
+
+\end{thebibliography}
+
+\end{document}

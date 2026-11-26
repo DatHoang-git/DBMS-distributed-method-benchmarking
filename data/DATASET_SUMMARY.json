@@ -1,0 +1,89 @@
+{
+  "D100K": {
+    "encounters": 100000,
+    "patients": 1822,
+    "avg_encounters_per_patient": 54.88,
+    "avg_json_bytes": 1248.7,
+    "encounters_gz_mb": 11.44,
+    "patients_gz_mb": 0.1,
+    "diabetes_t2_docs": 123,
+    "lab_obs_docs": 23010,
+    "min_start": "1916-10-27T05:05:11Z",
+    "max_start": "2026-11-25T16:00:07Z",
+    "est_avg_bson_bytes": 1366.3
+  },
+  "D500K": {
+    "encounters": 500000,
+    "patients": 9202,
+    "avg_encounters_per_patient": 54.34,
+    "avg_json_bytes": 1272.6,
+    "encounters_gz_mb": 70.79,
+    "patients_gz_mb": 0.5,
+    "diabetes_t2_docs": 625,
+    "lab_obs_docs": 116647,
+    "min_start": "1916-10-16T07:45:48Z",
+    "max_start": "2026-11-25T16:00:07Z"
+  },
+  "D1M": {
+    "encounters": 1000000,
+    "patients": 18443,
+    "avg_encounters_per_patient": 54.22,
+    "avg_json_bytes": 1271.4,
+    "encounters_gz_mb": 144.65,
+    "patients_gz_mb": 1.01,
+    "diabetes_t2_docs": 1242,
+    "lab_obs_docs": 232437,
+    "min_start": "1916-10-13T09:53:39Z",
+    "max_start": "2026-11-25T16:00:07Z"
+  },
+  "D3M": {
+    "encounters": 3000000,
+    "patients": 55448,
+    "avg_encounters_per_patient": 54.1,
+    "avg_json_bytes": 1273.6,
+    "encounters_gz_mb": 440.78,
+    "patients_gz_mb": 3.04,
+    "diabetes_t2_docs": 3741,
+    "lab_obs_docs": 697408,
+    "min_start": "1916-10-13T09:53:39Z",
+    "max_start": "2026-11-25T16:00:07Z"
+  },
+  "D1M-heavy": {
+    "encounters": 1000000,
+    "patients": 13000,
+    "avg_encounters_per_patient": 76.92,
+    "avg_json_bytes": 1229.3,
+    "encounters_gz_mb": 138.45,
+    "patients_gz_mb": 0.71,
+    "diabetes_t2_docs": 1331,
+    "lab_obs_docs": 218610,
+    "min_start": "1916-10-19T04:01:17Z",
+    "max_start": "2026-11-25T15:59:50Z",
+    "hot_patients": 130,
+    "hot_patient_pct": 1.0,
+    "hot_encounters": 300000,
+    "hot_encounter_pct": 30.0
+  },
+  "D1M-nat": {
+    "symlink_to": "D1M",
+    "encounters": 1000000,
+    "patients": 18443,
+    "avg_encounters_per_patient": 54.22,
+    "avg_json_bytes": 1271.4,
+    "encounters_gz_mb": 144.65,
+    "patients_gz_mb": 1.01,
+    "diabetes_t2_docs": 1242,
+    "lab_obs_docs": 232437,
+    "min_start": "1916-10-13T09:53:39Z",
+    "max_start": "2026-11-25T16:00:07Z"
+  },
+  "_capacity_estimate": {
+    "d100k_est_avg_bson_bytes": 1366.3,
+    "d100k_avg_json_bytes": 1248.7,
+    "d3m_uncompressed_bson_gb": 3.82,
+    "d3m_est_indexes_gb": 1.15,
+    "d3m_est_total_working_set_gb": 4.97,
+    "d3m_est_wiredtiger_disk_gb": 1.91,
+    "exceeds_1_5gb_wt_cache": true
+  }
+}

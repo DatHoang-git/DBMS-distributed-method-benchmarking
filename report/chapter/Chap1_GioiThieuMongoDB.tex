@@ -1,0 +1,96 @@
+\chapter{Giới thiệu và Cài đặt MongoDB}
+\label{chap:intro-mongodb}
+
+Chương này trình bày tóm lược các thành phần kiến trúc cốt lõi của MongoDB có tác động trực tiếp đến hành vi hiệu năng trong bài toán phân mảnh ngang, đồng thời đặc tả mô hình triển khai hạ tầng trên Microsoft Azure for Students cùng các tham số hệ thống cố định làm nền tảng cho toàn bộ thực nghiệm.
+
+\section{Tổng quan kiến trúc MongoDB liên quan đến đề tài}
+
+MongoDB là hệ quản trị cơ sở dữ liệu NoSQL hướng tài liệu (\textit{document-oriented DBMS}), lưu trữ dữ liệu dưới dạng các đối tượng BSON (\textit{Binary JSON}) có cấu trúc linh hoạt và hỗ trợ nhúng mảng/tài liệu con trực tiếp bên trong bản ghi \cite{MongoDBSharding}. Trong phạm vi bài toán đánh giá sharding trên dữ liệu EHR, bốn trụ cột kiến trúc sau quyết định trực tiếp đến độ trễ và thông lượng của cụm:
+
+\subsection{Bộ máy lưu trữ WiredTiger (Cache và Nén dữ liệu)}
+
+Kể từ phiên bản 3.2, \textbf{WiredTiger} là bộ máy lưu trữ mặc định của MongoDB \cite{MongoDBWiredTiger}. WiredTiger hỗ trợ kiểm soát đồng thời ở mức tài liệu (\textit{document-level concurrency control}) kết hợp với cơ chế đa phiên bản (\textit{MVCC}), cho phép nhiều luồng ghi đồng thời trên các tài liệu khác nhau trong cùng một collection mà không khóa toàn bộ collection như cơ chế cũ.
+
+Về quản lý bộ nhớ, WiredTiger duy trì một vùng nhớ đệm nội bộ gọi là \textbf{WiredTiger Internal Cache} (mặc định bằng $50\%$ dung lượng $\text{RAM} - 1\text{ GB}$), đồng thời tận dụng thêm \textbf{Filesystem Cache} của hệ điều hành Linux. Dữ liệu trên đĩa được lưu ở dạng nén khối (mặc định sử dụng thuật toán \textit{Snappy} cho dữ liệu collection và nén tiền tố \textit{prefix compression} cho chỉ mục B-Tree), nhưng khi nạp vào WiredTiger Cache sẽ được giải nén sang định dạng bộ nhớ để phục vụ truy cập nhanh. Do đó, khi kích thước \textit{working set} (tài liệu giải nén + chỉ mục) vượt quá giới hạn WiredTiger Cache, hệ thống phải liên tục đẩy trang nhớ ra (\textit{cache eviction}) và đọc trang từ đĩa (\textit{pages read into cache}), trở thành nút thắt cổ chai quyết định điểm hòa vốn (\textit{break-even point}) trong \textbf{RQ1}.
+
+\subsection{Chỉ mục B-Tree và Tập bản sao (Replica Set)}
+
+MongoDB sử dụng cấu trúc \textbf{B-Tree} (biến thể B+Tree trong WiredTiger) cho các chỉ mục đơn trường, chỉ mục phức hợp (\textit{compound index}), chỉ mục đa khóa (\textit{multikey index} trên mảng như \texttt{conditions.CODE}) và chỉ mục băm (\textit{hashed index}). Một nguyên tắc quan trọng là toàn bộ các chỉ mục đang hoạt động cần nằm gọn trong RAM để tránh truy cập đĩa ngẫu nhiên khi tìm kiếm khóa.
+
+\textbf{Replica Set} là nhóm các tiến trình \texttt{mongod} duy trì cùng một tập dữ liệu nhằm đảm bảo tính sẵn sàng cao (\textit{High Availability}) thông qua một nút chính (\textit{Primary}) nhận thao tác ghi và các nút phụ (\textit{Secondary}) sao chép bất đồng bộ qua nhật ký thao tác (\texttt{oplog}). Từ MongoDB 4.0 trở đi, ngay cả một shard đơn lẻ hay máy chủ cấu hình trong cụm sharded cũng bắt buộc khởi chạy dưới dạng một Replica Set (tối thiểu 1 thành viên khi triển khai thử nghiệm).
+
+\subsection{Kiến trúc Native Sharding của MongoDB}
+
+Một cụm MongoDB Sharded tiêu chuẩn bao gồm ba thành phần phối hợp chặt chẽ \cite{MongoDBSharding}:
+
+\begin{itemize}
+  \item \textbf{Shard (\texttt{mongod --shardsvr}):} Mỗi shard là một Replica Set độc lập lưu giữ một tập con dữ liệu của toàn cụm. Toàn bộ truy vấn đọc/ghi sau khi được định tuyến sẽ thực thi trực tiếp trên bộ máy WiredTiger của các shard liên quan.
+  \item \textbf{Config Server (\texttt{mongod --configsvr}):} Một Replica Set chuyên biệt (\texttt{cfgRS}) lưu trữ siêu dữ liệu (\textit{metadata}) của cụm trong cơ sở dữ liệu \texttt{config}, bao gồm bảng ánh xạ dải khóa sang shard (\texttt{config.chunks}), danh sách collection đã bật sharding (\texttt{config.collections}), cấu hình hệ thống (\texttt{config.settings}) và nhật ký di chuyển chunk (\texttt{config.changelog}).
+  \item \textbf{Query Router (\texttt{mongos}):} Tiến trình trung gian không lưu trữ dữ liệu (\textit{stateless router}) tiếp nhận mọi kết nối từ ứng dụng khách. \texttt{mongos} đọc siêu dữ liệu từ Config Server vào bộ nhớ đệm cục bộ, phân tích điều kiện truy vấn để quyết định định tuyến tới một shard duy nhất hay phát tán tới nhiều shard, rồi gom kết quả trả về cho client.
+\end{itemize}
+
+Đơn vị phân chia và di chuyển dữ liệu logic trong MongoDB là \textbf{Chunk} --- một khoảng liên tục các giá trị của khóa phân mảnh (\textit{Shard Key}) có dung lượng mục tiêu cấu hình được (trong đề tài cố định ở mức $32\text{ MB}$). Tiến trình nền \textbf{Balancer} chạy trên nút Primary của Config Server giám sát sự chênh lệch số lượng/dung lượng dữ liệu giữa các shard và tự động kích hoạt di chuyển chunk (\textit{chunk migration}) khi vượt ngưỡng cân bằng.
+
+\section{Kiến trúc triển khai trên Microsoft Azure for Students}
+
+\subsection{Ràng buộc hạn mức và Hai cấu hình triển khai (Profile A và Profile B)}
+
+Gói tài khoản giáo dục \textbf{Microsoft Azure for Students} ($100\text{ USD}$ credit) áp đặt giới hạn cứng từ $4$ đến $6\text{ vCPU}$ trên mỗi vùng địa lý (\textit{region}) và tối đa $4\text{ vCPU}$ cho mỗi dòng máy ảo (\textit{VM family}), đồng thời không hỗ trợ gửi yêu cầu nâng hạn mức \cite{AzureStudents}. Để đảm bảo thực nghiệm vận hành ổn định, công bằng giữa các nút dữ liệu và nằm trong ngân sách dự toán ($< 5\text{--}8\text{ USD}$ cho $3\text{--}4$ giờ đo), đặc tả kỹ thuật chuẩn hóa hai cấu hình hạ tầng (\textbf{Profile A} và \textbf{Profile B}) được đối chiếu trong Bảng~\ref{tab:azure-profiles}.
+
+\begin{table}[!htb]
+\centering
+\caption{Đối chiếu hai cấu hình hạ tầng chuẩn trên Microsoft Azure for Students.}
+\label{tab:azure-profiles}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{L{3.2cm} X X}
+\toprule
+\textbf{Tiêu chí} & \textbf{Profile A (4 vCPU tổng)} & \textbf{Profile B (6 vCPU tổng)} \\
+\midrule
+Phạm vi áp dụng & An toàn $100\%$ trên mọi tài khoản Azure Student. & Ưu tiên nếu region cấp 6 vCPU hoặc ghép 2 tài khoản. \\
+Nút dữ liệu (\texttt{vm-w1}, \texttt{vm-w2}) & $2 \times \texttt{Standard\_B1ms}$ (1 vCPU, 2 GB RAM/VM). & $2 \times \texttt{Standard\_D2s\_v5}$ hoặc \texttt{D2s\_v3} (2 vCPU, 8 GB RAM/VM, không giới hạn CPU credit). \\
+Nút điều phối \& Client & Biến thể 3 VM: \texttt{vm-coord} dùng \texttt{Standard\_B2s} (2 vCPU, 4 GB RAM, chạy chung \texttt{mongos}, Config Server và \texttt{bench.py}); hoặc 4 VM dùng $4 \times \texttt{B1ms}$. & Tách riêng \texttt{vm-coord} (\texttt{B1ms}) và \texttt{vm-client} (\texttt{B1ms}). \\
+Giới hạn WiredTiger Cache & \texttt{cacheSizeGB = 0.75} (768 MB) & \texttt{cacheSizeGB = 1.5} (1536 MB) \\
+Giới hạn RAM systemd & \texttt{MemoryMax = 1.4G} & \texttt{MemoryMax = 3G} \\
+Kiểm soát B-series & Bắt buộc CPU credit $\ge 50\%$ trước mỗi pha đo; tạm nghỉ 10--15 phút nếu $< 40\%$. & Không bị bóp CPU credit trên hai nút dữ liệu dòng D. \\
+Ổ đĩa lưu trữ & Standard SSD (\texttt{E4} 32 GB hoặc \texttt{E6} 64 GB), tắt Availability Zones. & Standard SSD (\texttt{E4} 32 GB hoặc \texttt{E6} 64 GB), tắt Availability Zones. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Trong cả hai cấu hình, mọi máy ảo được đặt trong cùng một mạng ảo (\textit{Virtual Network --- VNet}) thuộc cùng một region nhằm đảm bảo độ trễ mạng nội bộ thấp và ổn định. Để đảm bảo bộ sinh tải không trở thành nút thắt cổ chai, mức sử dụng CPU của nút chạy \texttt{bench.py} luôn được giám sát chặt chẽ ($< 80\%$ khi tách riêng \texttt{vm-client}, hoặc $< 75\%$ khi ghép trên \texttt{vm-coord}); mọi lượt đo vượt ngưỡng đều được gắn cờ \texttt{client\_bound: true} và loại khỏi phân tích thông lượng.
+
+\subsection{Vai trò của từng nút và Tham số MongoDB cố định}
+
+Vai trò của từng máy ảo trong cụm sharded so với cấu hình đơn nút (\texttt{SA}) được tổng hợp tại Bảng~\ref{tab:node-roles}. Khi chuyển sang đo môi trường \texttt{SA}, tiến trình \texttt{vm-coord} và \texttt{vm-w2} được tắt/deallocate hoàn toàn, và client kết nối trực tiếp tới \texttt{vm-w1:27017} chạy như một Replica Set 1 thành viên (\texttt{rs0}).
+
+\begin{table}[!htb]
+\centering
+\caption{Phân công vai trò các máy ảo trong cụm Sharded và môi trường Standalone (\texttt{SA}).}
+\label{tab:node-roles}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{l X L{4.2cm}}
+\toprule
+\textbf{Hostname} & \textbf{Vai trò trong cụm Sharded (\texttt{B1}, \texttt{SH-hash}, \texttt{SH-range})} & \textbf{Vai trò trong \texttt{SA}} \\
+\midrule
+\texttt{vm-client} & Chạy \texttt{bench.py} (\texttt{pymongo} + \texttt{multiprocessing}), thu CSV độ trễ và metadata. & Kết nối trực tiếp tới \texttt{vm-w1:27017}. \\
+\texttt{vm-coord} & Chạy \texttt{mongos} (cổng \texttt{27017}) và Config Server (\texttt{--configsvr --replSet cfgRS}, cổng \texttt{27019}). & Tắt / Deallocate. \\
+\texttt{vm-w1} & Chạy Shard 1 (\texttt{--shardsvr --replSet shard1RS}, cổng \texttt{27018}). & Chạy \texttt{mongod} đơn nút (\texttt{rs0}, cổng \texttt{27017}). \\
+\texttt{vm-w2} & Chạy Shard 2 (\texttt{--shardsvr --replSet shard2RS}, cổng \texttt{27018}); chỉ bật ở \texttt{SH-hash} và \texttt{SH-range}. & Tắt / Deallocate. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Nhằm bảo đảm tính công bằng tuyệt đối khi so sánh giữa các cấu hình, toàn bộ cụm tuân thủ bộ tham số MongoDB cố định sau:
+\begin{itemize}
+  \item \textbf{Phiên bản DBMS:} Thống nhất một phiên bản MongoDB Community ($7.0$ hoặc $8.0$) trên toàn bộ nút; mã phiên bản chính xác được tự động ghi nhận vào file metadata JSON của từng lượt chạy.
+  \item \textbf{Giới hạn bộ nhớ đệm và hệ điều hành:} Áp dụng cố định cặp tham số (\texttt{wiredTigerCacheSizeGB = 0.75}, \texttt{MemoryMax = 1.4G}) cho Profile A hoặc (\texttt{1.5}, \texttt{3G}) cho Profile B nhằm bảo đảm tập dữ liệu lớn nhất (\texttt{D3M}, working set $\approx 4.97\text{ GB}$) vượt hẳn dung lượng cache trên một nút đơn lẻ.
+  \item \textbf{Kích thước Chunk:} Cố định ở mức $32\text{ MB}$ thông qua bản ghi \texttt{\{\_id: "chunksize", value: 32\}} trong \texttt{config.settings}, đủ nhỏ để quan sát rõ hoạt động tách và di chuyển chunk trong phạm vi dữ liệu $1\text{M}$--$3\text{M}$ tài liệu.
+  \item \textbf{Chính sách nhất quán (Consistency Concern):} Cố định \texttt{writeConcern: \{w: "majority"\}} và \texttt{readConcern: \{level: "local"\}}. Do mỗi shard (và \texttt{SA}) được cấu hình là một Replica Set 1 thành viên, \texttt{w: "majority"} tương đương \texttt{w: 1} về mặt xác nhận ghi và không phát sinh độ trễ đồng bộ bản sao giữa các nút.
+  \item \textbf{Collection phụ \texttt{patients}:} Luôn được phân mảnh theo \texttt{\{\_id: "hashed"\}} ở mọi cụm sharded (\texttt{B1}, \texttt{SH-hash}, \texttt{SH-range}) và giữ nguyên không sharding ở \texttt{SA}.
+\end{itemize}
+
+\section{Quy trình triển khai, dry-run và xác minh cụm vận hành}
+
+Trước khi đưa lên hạ tầng Azure, toàn bộ quy trình nạp dữ liệu, thiết lập chỉ mục, phân mảnh và thu thập telemetry được kiểm thử khô (\textit{Pha 0 --- Docker Dry-run}) trên máy cá nhân bằng Docker Compose gồm 4 container tương ứng (\texttt{cfgsvr}, \texttt{shard1}, \texttt{shard2}, \texttt{mongos}), giới hạn nghiêm ngặt \texttt{mem\_limit: 512m} và \texttt{--wiredTigerCacheSizeGB 0.25} cho mỗi container nhằm tránh tràn bộ nhớ hệ thống.
+
+Sau khi triển khai trên Azure, trạng thái sẵn sàng của cụm được xác minh bắt buộc qua bốn tiêu chí: (1) kiểm tra kết nối mạng nội bộ giữa các VM qua \texttt{ping} và cổng \texttt{27017/27018/27019}; (2) xác nhận cấu trúc cụm, danh sách shard và tình trạng phân bổ chunk qua lệnh \texttt{sh.status()}; (3) xác nhận công cụ giám sát hệ điều hành \texttt{sar} hoạt động trên mọi VM; và (4) xác minh \texttt{sh.isBalancerRunning() == false} trước khi bắt đầu mọi pha đo đọc hoặc ghi OLTP. Toàn bộ kịch bản cài đặt chi tiết, file cấu hình \texttt{mongod.conf}, Docker Compose và script chuyển đổi giữa bốn môi trường được lưu trữ và quản lý phiên bản đầy đủ tại kho lưu trữ GitHub của nhóm \cite{ProjectRepo}.

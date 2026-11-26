@@ -1,0 +1,15 @@
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Tóm tắt}
+\chapter*{Tóm tắt}
+
+\noindent
+Sự tăng trưởng nhanh chóng của dữ liệu hồ sơ bệnh án điện tử (Electronic Health Records --- EHR) đặt ra bài toán mở rộng hiệu năng đọc/ghi vượt giới hạn phần cứng của một máy chủ cơ sở dữ liệu đơn lẻ. Đề tài tập trung phân tích cơ chế hoạt động bên trong và đánh giá thực nghiệm chiến lược phân mảnh ngang gốc (\textit{Native Horizontal Sharding}) của MongoDB trên tập dữ liệu tổng hợp Synthea EHR ở bốn mốc quy mô từ $100{,}000$ đến $3{,}000{,}000$ lượt khám (\texttt{encounters}).
+
+Báo cáo làm rõ ranh giới kỹ thuật giữa phân vùng đơn nút (\textit{Single-node Partitioning}) trong các hệ quản trị quan hệ và phân mảnh đa nút (\textit{Multi-node Horizontal Sharding}) trong MongoDB, đồng thời ánh xạ cơ chế tỉa phân vùng sang định tuyến mục tiêu (\textit{Shard Pruning / Targeted Routing}) của bộ định tuyến \texttt{mongos}. Trên hạ tầng điện toán đám mây Microsoft Azure for Students với bộ nhớ cache WiredTiger được kiểm soát chặt chẽ, hệ thống thực nghiệm đối chiếu bốn cấu hình (\texttt{SA}, \texttt{B1}, \texttt{SH-hash}, \texttt{SH-range}) nhằm trả lời ba câu hỏi nghiên cứu: (1) ngưỡng quy mô để cụm sharded vượt qua standalone về độ trễ đọc và tách bạch chi phí điều phối \texttt{mongos} với lợi ích chia đôi cache; (2) mức độ đồng đều phân bố dữ liệu và tải ghi giữa chiến lược \textit{Hashed} và \textit{Ranged} khi dữ liệu bị lệch tự nhiên và lệch nặng ($1\%$ bệnh nhân chiếm $30\%$ lượt khám); và (3) chi phí định lượng của truy vấn xuyên shard (\texttt{SHARD\_MERGE}) cũng như mức độ nhiễu chéo trong tải hỗn hợp.
+
+\vspace{0.3cm}
+\noindent\textit{\textbf{Ghi chú bản nháp:}} \textit{Phần tóm tắt kết quả định lượng (ngưỡng break-even, hệ số write speedup, hệ số cross-shard) sẽ được bổ sung sau khi hoàn tất chạy thực nghiệm trên cụm Azure.}
+
+\vspace{0.5cm}
+\noindent\textit{\textbf{Từ khóa:}} \textit{MongoDB, Native Sharding, Shard Pruning, WiredTiger, Synthea EHR, Distributed DBMS, Benchmarking.}

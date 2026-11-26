@@ -1,0 +1,32 @@
+# Large generated Synthea datasets (exceed GitHub 100 MB limit)
+data/*/*.jsonl
+data/*/*.jsonl.gz
+data/*/*.csv
+data/raw/
+
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# LaTeX build artifacts
+report/*.aux
+report/*.bbl
+report/*.blg
+report/*.fdb_latexmk
+report/*.fls
+report/*.lof
+report/*.log
+report/*.lot
+report/*.out
+report/*.synctex.gz
+report/*.toc
+report/chapter/*.aux
+report/cover/*.aux
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+*.swp
