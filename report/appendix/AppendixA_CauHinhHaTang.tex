@@ -5,7 +5,7 @@ Phụ lục này tổng hợp toàn bộ thông số phần cứng chi tiết tr
 
 \section{Đối chiếu Hai Cấu hình Máy ảo trên Azure for Students}
 
-Gói tài khoản giáo dục \textbf{Microsoft Azure for Students} (\$100 credit) giới hạn cứng tổng $4$--$6\text{ vCPU}$ mỗi vùng địa lý (\textit{region}) và tối đa $4\text{ vCPU}$ cho mỗi dòng máy ảo (\textit{VM family}) \cite{AzureStudents}. Bảng~\ref{tab:app-azure-profiles} tổng hợp thông số của hai cấu hình triển khai chuẩn (\textbf{Profile A} và \textbf{Profile B}) với tổng chi phí dự toán dưới $5$--$8\text{ USD}$ cho $3$--$4$ giờ đo.
+Gói tài khoản giáo dục \textbf{Microsoft Azure for Students} (\$100 credit) giới hạn cứng tổng $4$\textendash $6\text{ vCPU}$ mỗi vùng địa lý (\textit{region}) và tối đa $4\text{ vCPU}$ cho mỗi dòng máy ảo (\textit{VM family}) \cite{AzureStudents}. Bảng~\ref{tab:app-azure-profiles} tổng hợp thông số của hai cấu hình triển khai chuẩn (\textbf{Profile A} và \textbf{Profile B}) với tổng chi phí dự toán dưới $5$\textendash $8\text{ USD}$ cho $3$\textendash $4$ giờ đo.
 
 \begin{table}[!htb]
 \centering
@@ -21,7 +21,7 @@ Nút dữ liệu (\texttt{vm-w1}, \texttt{vm-w2}) & $2 \times \texttt{Standard\_
 Nút điều phối \& Client & Biến thể 3 VM: \texttt{vm-coord} dùng \texttt{Standard\_B2s} (2 vCPU, 4 GB RAM, chạy chung \texttt{mongos}, Config Server và \texttt{bench.py}); hoặc 4 VM dùng $4 \times \texttt{B1ms}$. & Tách riêng \texttt{vm-coord} (\texttt{Standard\_B1ms}) và \texttt{vm-client} (\texttt{Standard\_B1ms}). \\
 WiredTiger Cache & \texttt{cacheSizeGB = 0.75} (768 MB) & \texttt{cacheSizeGB = 1.5} (1536 MB) \\
 Giới hạn RAM systemd & \texttt{MemoryMax = 1.4G} & \texttt{MemoryMax = 3G} \\
-Kiểm soát B-series & Kiểm tra CPU credit $\ge 50\%$ trên mọi VM trước mỗi pha; nghỉ 10--15 phút nếu tụt $< 40\%$. & Không bị bóp CPU credit trên hai nút dữ liệu dòng D. \\
+Kiểm soát B-series & Kiểm tra CPU credit $\ge 50\%$ trên mọi VM trước mỗi pha; nghỉ 10\textendash 15 phút nếu tụt $< 40\%$. & Không bị bóp CPU credit trên hai nút dữ liệu dòng D. \\
 Ổ đĩa lưu trữ & Standard SSD (\texttt{E4} 32 GB hoặc \texttt{E6} 64 GB), tắt Availability Zones. & Standard SSD (\texttt{E4} 32 GB hoặc \texttt{E6} 64 GB), tắt Availability Zones. \\
 \bottomrule
 \end{tabularx}

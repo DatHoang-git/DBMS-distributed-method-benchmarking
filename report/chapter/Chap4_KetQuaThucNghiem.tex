@@ -21,10 +21,10 @@ Bảng~\ref{tab:rq1-cache-ratio} tổng hợp dung lượng dữ liệu, chỉ m
 \toprule
 \textbf{Dataset} & \textbf{Env} & \textbf{Data/Node (MB)} & \textbf{Index/Node (MB)} & \textbf{Tổng/Node (MB)} & \textbf{Tỷ lệ / Cache} \\
 \midrule
-\texttt{D100K} & \texttt{SA} / \texttt{SH-hash} & -- / -- & -- / -- & -- / -- & -- / -- \\
-\texttt{D500K} & \texttt{SA} / \texttt{SH-hash} & -- / -- & -- / -- & -- / -- & -- / -- \\
-\texttt{D1M}   & \texttt{SA} / \texttt{SH-hash} & -- / -- & -- / -- & -- / -- & -- / -- \\
-\texttt{D3M}   & \texttt{SA} / \texttt{SH-hash} & -- / -- & -- / -- & -- / -- & -- / -- \\
+\texttt{D100K} & \texttt{SA} / \texttt{SH-hash} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} \\
+\texttt{D500K} & \texttt{SA} / \texttt{SH-hash} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} \\
+\texttt{D1M}   & \texttt{SA} / \texttt{SH-hash} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} \\
+\texttt{D3M}   & \texttt{SA} / \texttt{SH-hash} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} \\
 \bottomrule
 \end{tabular}%
 }
@@ -32,7 +32,7 @@ Bảng~\ref{tab:rq1-cache-ratio} tổng hợp dung lượng dữ liệu, chỉ m
 
 \subsection{Độ trễ 1 luồng và Tách bạch Chi phí \texttt{mongos} so với Lợi ích Cache (\texttt{R1-2})}
 
-\resultplaceholder{Biểu đồ Hình 4.1 (RQ1 --- R1-2)}{Chèn đồ thị \texttt{p95} Latency (ms) kèm error bar $95\%\text{ CI}$ của \texttt{Q1} và \texttt{Q2} trên 3 môi trường (\texttt{SA}, \texttt{B1}, \texttt{SH-hash}) qua 4 mốc \texttt{D100K}--\texttt{D3M}, kết hợp biểu đồ phân rã \texttt{mongos\_overhead} ($\texttt{B1} - \texttt{SA}$) và \texttt{sharding\_cache\_benefit} ($\texttt{B1} - \texttt{SH-hash}$). Đánh dấu rõ mốc \textit{break-even point}.}
+\resultplaceholder{Biểu đồ Hình 4.1 (RQ1 \textemdash  R1-2)}{Chèn đồ thị \texttt{p95} Latency (ms) kèm error bar $95\%\text{ CI}$ của \texttt{Q1} và \texttt{Q2} trên 3 môi trường (\texttt{SA}, \texttt{B1}, \texttt{SH-hash}) qua 4 mốc \texttt{D100K}\textendash \texttt{D3M}, kết hợp biểu đồ phân rã \texttt{mongos\_overhead} ($\texttt{B1} - \texttt{SA}$) và \texttt{sharding\_cache\_benefit} ($\texttt{B1} - \texttt{SH-hash}$). Đánh dấu rõ mốc \textit{break-even point}.}
 
 \begin{table}[!htb]
 \centering
@@ -44,10 +44,10 @@ Bảng~\ref{tab:rq1-cache-ratio} tổng hợp dung lượng dữ liệu, chỉ m
 \toprule
 \textbf{Dataset} & \textbf{Query} & \textbf{\texttt{SA} p95} & \textbf{\texttt{B1} p95} & \textbf{\texttt{SH-hash} p95} & \textbf{\texttt{mongos} overhead} & \textbf{Cache benefit} \\
 \midrule
-\texttt{D100K} & \texttt{Q1} / \texttt{Q2} & -- / -- & -- / -- & -- / -- & -- / -- & -- / -- \\
-\texttt{D500K} & \texttt{Q1} / \texttt{Q2} & -- / -- & -- / -- & -- / -- & -- / -- & -- / -- \\
-\texttt{D1M}   & \texttt{Q1} / \texttt{Q2} & -- / -- & -- / -- & -- / -- & -- / -- & -- / -- \\
-\texttt{D3M}   & \texttt{Q1} / \texttt{Q2} & -- / -- & -- / -- & -- / -- & -- / -- & -- / -- \\
+\texttt{D100K} & \texttt{Q1} / \texttt{Q2} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} \\
+\texttt{D500K} & \texttt{Q1} / \texttt{Q2} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} \\
+\texttt{D1M}   & \texttt{Q1} / \texttt{Q2} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} \\
+\texttt{D3M}   & \texttt{Q1} / \texttt{Q2} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} \\
 \bottomrule
 \end{tabular}%
 }
@@ -55,7 +55,7 @@ Bảng~\ref{tab:rq1-cache-ratio} tổng hợp dung lượng dữ liệu, chỉ m
 
 \subsection{Thông lượng và Độ trễ dưới tải Đa luồng (\texttt{R1-3})}
 
-\resultplaceholder{Biểu đồ Hình 4.2 (RQ1 --- R1-3)}{Chèn đồ thị Throughput (\texttt{QPS}) -- Latency (\texttt{p95}) ở các mức luồng $1 / 4 / 8$ (Profile A) hoặc $1 / 4 / 16$ (Profile B) trên \texttt{D100K}, \texttt{D1M}, \texttt{D3M}. Phân tích điểm bão hòa của \texttt{SA} so với \texttt{SH-hash} và đối chiếu với WiredTiger cache hit ratio cùng số trang đọc từ đĩa.}
+\resultplaceholder{Biểu đồ Hình 4.2 (RQ1 \textemdash  R1-3)}{Chèn đồ thị Throughput (\texttt{QPS}) \textendash{} Latency (\texttt{p95}) ở các mức luồng $1 / 4 / 8$ (Profile A) hoặc $1 / 4 / 16$ (Profile B) trên \texttt{D100K}, \texttt{D1M}, \texttt{D3M}. Phân tích điểm bão hòa của \texttt{SA} so với \texttt{SH-hash} và đối chiếu với WiredTiger cache hit ratio cùng số trang đọc từ đĩa.}
 
 \section{Kết quả RQ2: Phân bố Dữ liệu và Tải Ghi khi Dữ liệu Lệch}
 
@@ -73,10 +73,10 @@ Bảng~\ref{tab:rq2-distribution} đối chiếu độ đồng đều phân bố
 \toprule
 \textbf{Dataset} & \textbf{Env} & \textbf{Docs S1 / S2} & \textbf{MB S1 / S2} & \textbf{Chunks S1 / S2} & \textbf{max/avg} & \textbf{Imbalance (\%)} & \textbf{Jumbo} \\
 \midrule
-\texttt{D1M-nat}   & \texttt{SH-hash}  & -- / -- & -- / -- & -- / -- & -- & -- & -- \\
-\texttt{D1M-nat}   & \texttt{SH-range} & -- / -- & -- / -- & -- / -- & -- & -- & -- \\
-\texttt{D1M-heavy} & \texttt{SH-hash}  & -- / -- & -- / -- & -- / -- & -- & -- & -- \\
-\texttt{D1M-heavy} & \texttt{SH-range} & -- / -- & -- / -- & -- / -- & -- & -- & -- \\
+\texttt{D1M-nat}   & \texttt{SH-hash}  & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
+\texttt{D1M-nat}   & \texttt{SH-range} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
+\texttt{D1M-heavy} & \texttt{SH-hash}  & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
+\texttt{D1M-heavy} & \texttt{SH-range} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} / \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
 \bottomrule
 \end{tabular}%
 }
@@ -84,7 +84,7 @@ Bảng~\ref{tab:rq2-distribution} đối chiếu độ đồng đều phân bố
 
 \subsection{Độ đều tải ghi OLTP theo thời gian và Hệ số tăng tốc ghi (\texttt{R2-2}, \texttt{R2-3})}
 
-\resultplaceholder{Biểu đồ Hình 4.3 (RQ2 --- R2-2, R2-3)}{Chèn biểu đồ chuỗi thời gian \texttt{\% insert} vào Shard 1 so với Shard 2 theo từng cửa sổ 10 giây (60 giây đo) cho cả \texttt{R2-2} (Uniform \texttt{PATIENT}) và \texttt{R2-3} (Zipf $\theta = 1.2$). Làm nổi bật hiện tượng $100\%$ tải ghi dồn vào 1 shard trên \texttt{SH-range} do \texttt{START = now()}.}
+\resultplaceholder{Biểu đồ Hình 4.3 (RQ2 \textemdash  R2-2, R2-3)}{Chèn biểu đồ chuỗi thời gian \texttt{\% insert} vào Shard 1 so với Shard 2 theo từng cửa sổ 10 giây (60 giây đo) cho cả \texttt{R2-2} (Uniform \texttt{PATIENT}) và \texttt{R2-3} (Zipf $\theta = 1.2$). Làm nổi bật hiện tượng $100\%$ tải ghi dồn vào 1 shard trên \texttt{SH-range} do \texttt{START = now()}.}
 
 \begin{table}[!htb]
 \centering
@@ -97,14 +97,14 @@ Bảng~\ref{tab:rq2-distribution} đối chiếu độ đồng đều phân bố
 \textbf{Kịch bản} & \textbf{Env} & \textbf{\texttt{inserts/s}} & \textbf{\texttt{p95} (ms)} & \textbf{\texttt{write\_speedup}} & \textbf{\texttt{inserts/s/vCPU}} \\
 \midrule
 \multirow{3}{*}{\texttt{R2-2} (Uniform)}
-  & \texttt{SA}       & -- & -- & $1.00\times$ & -- \\
-  & \texttt{SH-hash}  & -- & -- & -- & -- \\
-  & \texttt{SH-range} & -- & -- & -- & -- \\
+  & \texttt{SA}       & \textendash{} & \textendash{} & $1.00\times$ & \textendash{} \\
+  & \texttt{SH-hash}  & \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
+  & \texttt{SH-range} & \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
 \midrule
 \multirow{3}{*}{\texttt{R2-3} (Zipf $\theta=1.2$)}
-  & \texttt{SA}       & -- & -- & $1.00\times$ & -- \\
-  & \texttt{SH-hash}  & -- & -- & -- & -- \\
-  & \texttt{SH-range} & -- & -- & -- & -- \\
+  & \texttt{SA}       & \textendash{} & \textendash{} & $1.00\times$ & \textendash{} \\
+  & \texttt{SH-hash}  & \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
+  & \texttt{SH-range} & \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
 \bottomrule
 \end{tabular}%
 }
@@ -114,11 +114,11 @@ Bảng~\ref{tab:rq2-distribution} đối chiếu độ đồng đều phân bố
 
 \subsection{Giải phẫu kế hoạch thực thi \texttt{explain("executionStats")} (\texttt{R3-1})}
 
-Bảng~\ref{tab:rq3-explain} tổng hợp kế hoạch thắng cuộc (\texttt{winningPlan}), số shard tham gia, tỷ lệ Shard Pruning và chi phí duyệt khóa/tài liệu của bốn truy vấn \texttt{Q1}--\texttt{Q4}.
+Bảng~\ref{tab:rq3-explain} tổng hợp kế hoạch thắng cuộc (\texttt{winningPlan}), số shard tham gia, tỷ lệ Shard Pruning và chi phí duyệt khóa/tài liệu của bốn truy vấn \texttt{Q1}\textendash \texttt{Q4}.
 
 \begin{table}[!htb]
 \centering
-\caption{Giải phẫu kế hoạch thực thi và tỷ lệ Shard Pruning của \texttt{Q1}--\texttt{Q4} (\texttt{R3-1}).}
+\caption{Giải phẫu kế hoạch thực thi và tỷ lệ Shard Pruning của \texttt{Q1}\textendash \texttt{Q4} (\texttt{R3-1}).}
 \label{tab:rq3-explain}
 \renewcommand{\arraystretch}{1.2}
 \resizebox{\linewidth}{!}{%
@@ -126,12 +126,12 @@ Bảng~\ref{tab:rq3-explain} tổng hợp kế hoạch thắng cuộc (\texttt{w
 \toprule
 \textbf{Query} & \textbf{Env} & \textbf{\texttt{winningPlan}} & \textbf{Shards tham gia} & \textbf{KeysExamined} & \textbf{DocsExamined} & \textbf{Exec time (ms)} \\
 \midrule
-\texttt{Q1} & \texttt{SH-hash}  & \texttt{SINGLE\_SHARD} & 1 / 2 & -- & -- & -- \\
-\texttt{Q2} & \texttt{SH-hash}  & \texttt{SINGLE\_SHARD} & 1 / 2 & -- & -- & -- \\
-\texttt{Q3} & \texttt{SH-hash}  & \texttt{SHARD\_MERGE}  & 2 / 2 & -- & -- & -- \\
-\texttt{Q3} & \texttt{SH-range} & \texttt{SINGLE\_SHARD}* & 1 / 2 & -- & -- & -- \\
-\texttt{Q4} & \texttt{SH-hash}  & \texttt{SHARD\_MERGE}  & 2 / 2 & -- & -- & -- \\
-\texttt{Q4} & \texttt{SH-range} & \texttt{SINGLE\_SHARD}* & 1 / 2 & -- & -- & -- \\
+\texttt{Q1} & \texttt{SH-hash}  & \texttt{SINGLE\_SHARD} & 1 / 2 & \textendash{} & \textendash{} & \textendash{} \\
+\texttt{Q2} & \texttt{SH-hash}  & \texttt{SINGLE\_SHARD} & 1 / 2 & \textendash{} & \textendash{} & \textendash{} \\
+\texttt{Q3} & \texttt{SH-hash}  & \texttt{SHARD\_MERGE}  & 2 / 2 & \textendash{} & \textendash{} & \textendash{} \\
+\texttt{Q3} & \texttt{SH-range} & \texttt{SINGLE\_SHARD}* & 1 / 2 & \textendash{} & \textendash{} & \textendash{} \\
+\texttt{Q4} & \texttt{SH-hash}  & \texttt{SHARD\_MERGE}  & 2 / 2 & \textendash{} & \textendash{} & \textendash{} \\
+\texttt{Q4} & \texttt{SH-range} & \texttt{SINGLE\_SHARD}* & 1 / 2 & \textendash{} & \textendash{} & \textendash{} \\
 \bottomrule
 \end{tabular}%
 }
@@ -141,13 +141,13 @@ Bảng~\ref{tab:rq3-explain} tổng hợp kế hoạch thắng cuộc (\texttt{w
 
 \subsection{Chi phí Cross-Shard theo quy mô và Lưu lượng mạng (\texttt{R3-2}, \texttt{R3-3})}
 
-\resultplaceholder{Biểu đồ Hình 4.4 \& Hình 4.5 (RQ3 --- R3-2, R3-3)}{
+\resultplaceholder{Biểu đồ Hình 4.4 \& Hình 4.5 (RQ3 \textemdash  R3-2, R3-3)}{
   \begin{enumerate}
-    \item \textbf{Hình 4.4 (Cột chồng phân rã chi phí):} Phân rã $\max(T_{\text{shard1}}, T_{\text{shard2}})$ so với $T_{\text{network + merge}}$ và lưu lượng mạng trung bình (KB/truy vấn) qua \texttt{mongos} cho \texttt{Q1}--\texttt{Q4}.
-    \item \textbf{Hình 4.5 (Đồ thị log--log $100\text{K} \rightarrow 3\text{M}$):} Đối chiếu độ dốc tăng trưởng độ trễ \texttt{p95} của nhóm \texttt{Q1, Q2} (gần phẳng) so với \texttt{Q3, Q4} trên \texttt{SH-hash}, \texttt{SH-range} và \texttt{SA}, kèm hệ số \texttt{cross\_shard\_factor}.
+    \item \textbf{Hình 4.4 (Cột chồng phân rã chi phí):} Phân rã $\max(T_{\text{shard1}}, T_{\text{shard2}})$ so với $T_{\text{network + merge}}$ và lưu lượng mạng trung bình (KB/truy vấn) qua \texttt{mongos} cho \texttt{Q1}\textendash \texttt{Q4}.
+    \item \textbf{Hình 4.5 (Đồ thị log\textendash log $100\text{K} \rightarrow 3\text{M}$):} Đối chiếu độ dốc tăng trưởng độ trễ \texttt{p95} của nhóm \texttt{Q1, Q2} (gần phẳng) so với \texttt{Q3, Q4} trên \texttt{SH-hash}, \texttt{SH-range} và \texttt{SA}, kèm hệ số \texttt{cross\_shard\_factor}.
   \end{enumerate}
 }
 
 \subsection{Nhiễu chéo khi trộn tải hỗn hợp $P:X$ (\texttt{R3-4})}
 
-\resultplaceholder{Biểu đồ Hình 4.6 (RQ3 --- R3-4)}{Chèn đồ thị thể hiện tác động của tỷ lệ truy vấn xuyên shard ($P:X = 100:0$, $90:10$, $70:30$) lên thông lượng tổng (\texttt{QPS}), độ trễ \texttt{p95} riêng của nhóm truy vấn bệnh nhân $P$ (\texttt{Q1+Q2}), và mức sử dụng CPU\% của \texttt{vm-coord (mongos)}, \texttt{vm-w1}, \texttt{vm-w2} tại mốc \texttt{D1M} và \texttt{D3M}.}
+\resultplaceholder{Biểu đồ Hình 4.6 (RQ3 \textemdash  R3-4)}{Chèn đồ thị thể hiện tác động của tỷ lệ truy vấn xuyên shard ($P:X = 100:0$, $90:10$, $70:30$) lên thông lượng tổng (\texttt{QPS}), độ trễ \texttt{p95} riêng của nhóm truy vấn bệnh nhân $P$ (\texttt{Q1+Q2}), và mức sử dụng CPU\% của \texttt{vm-coord (mongos)}, \texttt{vm-w1}, \texttt{vm-w2} tại mốc \texttt{D1M} và \texttt{D3M}.}

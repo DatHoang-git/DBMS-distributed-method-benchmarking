@@ -5,9 +5,9 @@
 
 \section*{1. Bối cảnh và Lý do chọn đề tài}
 
-Trong các hệ thống thông tin y tế hiện đại, dữ liệu hồ sơ bệnh án điện tử (\textit{Electronic Health Records --- EHR}) mang hai đặc trưng nổi bật: tính \textbf{bán cấu trúc} (\textit{semi-structured}) và tốc độ tăng trưởng liên tục theo thời gian. Khác với dữ liệu có cấu trúc chặt chẽ trong các bảng quan hệ truyền thống --- nơi mọi bản ghi đều phải tuân theo một tập cột cố định --- dữ liệu bán cấu trúc cho phép mỗi bản ghi chứa các thuộc tính tùy chọn và các thành phần lồng nhau có số lượng biến thiên lớn. Cụ thể, trong một lượt khám bệnh, bệnh nhân này có thể chỉ có một mã chẩn đoán cơ bản, trong khi bệnh nhân khác lại phát sinh hàng chục kết quả xét nghiệm và chẩn đoán đi kèm. Khi quy mô dữ liệu tích lũy qua nhiều năm vượt quá dung lượng bộ nhớ đệm RAM của một máy chủ cơ sở dữ liệu đơn lẻ, hiệu năng hệ thống suy giảm mạnh do tần suất đọc/ghi ổ đĩa tăng đột biến và hiện tượng tranh chấp tài nguyên xử lý.
+Trong các hệ thống thông tin y tế hiện đại, dữ liệu hồ sơ bệnh án điện tử (\textit{Electronic Health Records \textemdash  EHR}) mang hai đặc trưng nổi bật: tính \textbf{bán cấu trúc} (\textit{semi-structured}) và tốc độ tăng trưởng liên tục theo thời gian. Khác với dữ liệu có cấu trúc chặt chẽ trong các bảng quan hệ truyền thống \textemdash  nơi mọi bản ghi đều phải tuân theo một tập cột cố định \textemdash  dữ liệu bán cấu trúc cho phép mỗi bản ghi chứa các thuộc tính tùy chọn và các thành phần lồng nhau có số lượng biến thiên lớn. Cụ thể, trong một lượt khám bệnh, bệnh nhân này có thể chỉ có một mã chẩn đoán cơ bản, trong khi bệnh nhân khác lại phát sinh hàng chục kết quả xét nghiệm và chẩn đoán đi kèm. Khi quy mô dữ liệu tích lũy qua nhiều năm vượt quá dung lượng bộ nhớ đệm RAM của một máy chủ cơ sở dữ liệu đơn lẻ, hiệu năng hệ thống suy giảm mạnh do tần suất đọc/ghi ổ đĩa tăng đột biến và hiện tượng tranh chấp tài nguyên xử lý.
 
-Giải pháp mở rộng theo chiều dọc (\textit{scale-up} --- nâng cấp phần cứng trên cùng một máy chủ) sớm chạm trần chi phí và giới hạn vật lý. Do đó, mở rộng theo chiều ngang thông qua phân mảnh dữ liệu phân tán (\textit{Horizontal Sharding}) trở thành giải pháp kiến trúc quan trọng trong các hệ quản trị cơ sở dữ liệu hiện đại \cite{Kleppmann2017}. Tuy nhiên, phân mảnh ngang không mang lại cải thiện hiệu năng tuyệt đối trong mọi tình huống: hệ thống luôn phải đánh đổi giữa lợi ích chia tải bộ nhớ đệm và I/O trên nhiều máy chủ với chi phí điều phối mạng qua tầng định tuyến, rủi ro phân bố dữ liệu không đều (\textit{data skew}) và chi phí thu gom kết quả của các truy vấn phải quét qua nhiều mảnh dữ liệu (\textit{cross-shard queries}).
+Giải pháp mở rộng theo chiều dọc (\textit{scale-up} \textemdash  nâng cấp phần cứng trên cùng một máy chủ) sớm chạm trần chi phí và giới hạn vật lý. Do đó, mở rộng theo chiều ngang thông qua phân mảnh dữ liệu phân tán (\textit{Horizontal Sharding}) trở thành giải pháp kiến trúc quan trọng trong các hệ quản trị cơ sở dữ liệu hiện đại \cite{Kleppmann2017}. Tuy nhiên, phân mảnh ngang không mang lại cải thiện hiệu năng tuyệt đối trong mọi tình huống: hệ thống luôn phải đánh đổi giữa lợi ích chia tải bộ nhớ đệm và I/O trên nhiều máy chủ với chi phí điều phối mạng qua tầng định tuyến, rủi ro phân bố dữ liệu không đều (\textit{data skew}) và chi phí thu gom kết quả của các truy vấn phải quét qua nhiều mảnh dữ liệu (\textit{cross-shard queries}).
 
 MongoDB là một trong những hệ quản trị cơ sở dữ liệu hướng tài liệu phổ biến nhất hỗ trợ sẵn cơ chế phân mảnh ngang phân tán \cite{MongoDBSharding}. Việc nghiên cứu cơ chế bên trong và đánh giá định lượng hiệu năng sharding của MongoDB trên tập dữ liệu y tế mô phỏng sát thực tế Synthea EHR \cite{Walonoski2018} giúp trả lời những câu hỏi thiết thực về mặt kỹ thuật: \textit{từ quy mô dữ liệu nào sharding bắt đầu phát huy hiệu quả, chiến lược chọn khóa phân mảnh nào chịu được dữ liệu lệch tốt hơn, và chi phí thực tế của các truy vấn phân tích xuyên mảnh lớn tới mức nào}.
 
@@ -15,7 +15,7 @@ MongoDB là một trong những hệ quản trị cơ sở dữ liệu hướng 
 
 Nhằm đi sâu vào bản chất kỹ thuật thay vì khảo sát dàn trải trên nhiều hệ quản trị khác nhau, đề tài giới hạn phạm vi thực nghiệm tập trung vào \textbf{một hệ quản trị duy nhất (\texttt{MongoDB})} và \textbf{một bài toán dữ liệu chính (\texttt{Synthea EHR})}, khảo sát qua bốn mốc quy mô từ $100{,}000$ đến $3{,}000{,}000$ bản ghi lượt khám (\texttt{encounters}, tương ứng khoảng $1{,}822$ đến $55{,}448$ bệnh nhân tổng hợp).
 
-Đề tài tập trung giải quyết ba câu hỏi nghiên cứu (\textit{Research Questions --- RQ}) được trình bày tại Bảng~\ref{tab:research-questions}.
+Đề tài tập trung giải quyết ba câu hỏi nghiên cứu (\textit{Research Questions \textemdash  RQ}) được trình bày tại Bảng~\ref{tab:research-questions}.
 
 \begin{table}[!htb]
 \centering
@@ -48,13 +48,13 @@ Nhằm đi sâu vào bản chất kỹ thuật thay vì khảo sát dàn trải 
 
 \section*{4. Bố cục của báo cáo}
 
-Nội dung báo cáo được tổ chức thành năm chương và một phụ lục kỹ thuật như sau:
+Nội dung báo cáo được tổ chức thành năm chương và hai phụ lục kỹ thuật như sau:
 
 \begin{itemize}
   \item \textit{Chương 1. Giới thiệu và Triển khai MongoDB}: Trình bày các thành phần kiến trúc nền tảng của MongoDB (mô hình tài liệu, bộ máy lưu trữ WiredTiger, chỉ mục B-Tree và tập bản sao Replica Set) cùng tổng quan mô hình triển khai cụm thử nghiệm trên hạ tầng đám mây Microsoft Azure.
   \item \textit{Chương 2. Cơ chế Hoạt động của MongoDB Sharding}: Phân biệt bản chất giữa phân vùng đơn nút và phân mảnh ngang đa nút, trình bày kiến trúc cụm sharded, cơ chế định tuyến và tỉa mảnh (\textit{Shard Pruning}), so sánh chiến lược \textit{Hashed} với \textit{Ranged}, cơ chế chia chunk và tiến trình Balancer.
-  \item \textit{Chương 3. Phương pháp và Thiết kế Thực nghiệm}: Đặc tả cấu trúc dữ liệu lượt khám tối giản, sáu bộ dữ liệu Synthea, bộ bốn truy vấn đại diện (\texttt{Q1}--\texttt{Q4}), hệ thống chỉ mục đồng nhất, quy chuẩn đo đạc tài nguyên và các công thức đánh giá cho \texttt{RQ1}--\texttt{RQ3}.
+  \item \textit{Chương 3. Phương pháp và Thiết kế Thực nghiệm}: Đặc tả cấu trúc dữ liệu lượt khám tối giản, sáu bộ dữ liệu Synthea, bộ bốn truy vấn đại diện (\texttt{Q1}\textendash \texttt{Q4}), hệ thống chỉ mục đồng nhất, quy chuẩn đo đạc tài nguyên và các công thức đánh giá cho \texttt{RQ1}\textendash \texttt{RQ3}.
   \item \textit{Chương 4. Kết quả Thực nghiệm và Phân tích Kỹ thuật}: Trình bày và phân tích định lượng kết quả thu thập được cho từng câu hỏi nghiên cứu \texttt{RQ1}, \texttt{RQ2} và \texttt{RQ3}.
   \item \textit{Chương 5. Khuyến nghị Thiết kế, Giới hạn và Kết luận}: Đề xuất ma trận lựa chọn chiến lược phân mảnh cho hệ thống EHR, thảo luận các giới hạn thực nghiệm (\textit{Threats to Validity}) và tổng kết hướng phát triển.
-  \item \textit{Phụ lục A. Chi tiết Cấu hình Hạ tầng và Tham số Triển khai}: Tổng hợp bảng thông số phần cứng chi tiết của các cấu hình máy ảo Azure, vai trò cổng dịch vụ, tham số cấu hình MongoDB cố định và quy trình xác minh cụm vận hành.
+  \item \textit{Phụ lục A và Phụ lục B}: Tổng hợp chi tiết thông số phần cứng máy ảo Azure, cổng dịch vụ, tham số cấu hình MongoDB cố định, mẫu cấu trúc tài liệu JSON và mã truy vấn MongoDB chính xác của bộ \texttt{Q1}\textendash \texttt{Q4}.
 \end{itemize}

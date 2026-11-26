@@ -1,0 +1,56 @@
+\chapter{Đặc tả Schema Dữ liệu và Mã Truy vấn Thực nghiệm}
+\label{app:schema-queries}
+
+Phụ lục này cung cấp cấu trúc JSON mẫu chính xác của tài liệu trong collection \texttt{encounters} và mã truy vấn MongoDB hoàn chỉnh của bốn truy vấn đại diện \texttt{Q1}\textendash \texttt{Q4} đã được mô tả tổng quan tại Chương~\ref{chap:methodology}.
+
+\section{Cấu trúc JSON Tối giản của Tài liệu \texttt{encounters}}
+
+Kịch bản tiền xử lý dữ liệu (\texttt{scripts/build\_datasets.py}) đọc dữ liệu gốc từ Synthea CSV, lược bỏ các trường văn bản mô tả không tham gia truy vấn (\texttt{DESCRIPTION}, \texttt{UNITS}, \texttt{STOP}, \texttt{TOTAL\_CLAIM\_COST}) và đóng gói theo cấu trúc minh họa tại Đoạn mã~\ref{lst:encounter-schema}. Toàn bộ tập dữ liệu sau khi sinh được kiểm chứng tự động bằng \texttt{scripts/verify\_datasets.py} cùng các tệp tham số cố định (\texttt{patient\_ids.txt}, \texttt{query\_params.json}) sinh từ $\texttt{SEED} = 42$.
+
+\begin{lstlisting}[language=MongoJS, caption={Schema JSON tối giản của mỗi tài liệu trong collection \texttt{encounters}.}, label={lst:encounter-schema}]
+{
+  "_id": "enc_uuid_string",
+  "PATIENT": "pat_uuid_string",
+  "ORGANIZATION": "org_uuid_string",
+  "ENCOUNTERCLASS": "ambulatory",
+  "START": "2023-05-12T08:30:00Z", // luu duoi dang ISODate (BSON datetime)
+  "conditions": [
+    { "CODE": "44054006" }
+  ],
+  "observations": [
+    { "CATEGORY": "laboratory", "CODE": "4548-4", "VALUE": 6.8 }
+  ]
+}
+\end{lstlisting}
+
+\section{Mã Truy vấn MongoDB cho Bộ \texttt{Q1}\textendash \texttt{Q4}}
+
+Đoạn mã~\ref{lst:queries-q1-q4} trình bày cú pháp MongoDB chính xác của bốn truy vấn được thực thi đồng nhất trên mọi môi trường (\texttt{SA}, \texttt{B1}, \texttt{SH-hash}, \texttt{SH-range}).
+
+\begin{lstlisting}[language=MongoJS, caption={Định nghĩa mã MongoDB của bốn truy vấn đại diện \texttt{Q1}--\texttt{Q4}.}, label={lst:queries-q1-q4}]
+// Q1: 10 luot kham gan nhat cua 1 benh nhan (OLTP diem -> SINGLE_SHARD tren SH-hash)
+db.encounters.find({ PATIENT: pid }).sort({ START: -1 }).limit(10)
+
+// Q2: Ket qua xet nghiem 12 thang cua 1 benh nhan (Aggregation -> SINGLE_SHARD tren SH-hash)
+db.encounters.aggregate([
+  { $match: { PATIENT: pid, START: { $gte: d12mAgo } } },
+  { $unwind: "$observations" },
+  { $match: { "observations.CATEGORY": "laboratory" } },
+  { $project: { START: 1, "observations.CODE": 1, "observations.VALUE": 1 } }
+])
+
+// Q3: Top 10 ma benh trong 1 quy (Xuyen benh nhan, ket qua nho -> SHARD_MERGE tren SH-hash)
+db.encounters.aggregate([
+  { $match: { START: { $gte: qStart, $lt: qEnd } } },
+  { $unwind: "$conditions" },
+  { $group: { _id: "$conditions.CODE", n: { $sum: 1 } } },
+  { $sort: { n: -1 } },
+  { $limit: 10 }
+])
+
+// Q4: Luot kham chan doan tieu duong type 2 trong 1 thang (Xuyen benh nhan, ket qua dai)
+db.encounters.find(
+  { "conditions.CODE": "44054006", START: { $gte: mStart, $lt: mEnd } },
+  { PATIENT: 1, START: 1, ORGANIZATION: 1 }
+)
+\end{lstlisting}

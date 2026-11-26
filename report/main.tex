@@ -5,7 +5,7 @@
   \usepackage[utf8]{vietnam}
 \else
   \usepackage{fontspec}
-  \setmainfont{Liberation Serif}
+  \setmainfont[Ligatures=TeX]{Liberation Serif}
   \setmonofont[Scale=0.86]{DejaVu Sans Mono}
 \fi
 \usepackage{appendix}
@@ -137,7 +137,7 @@
   \vspace{6pt}%
   \noindent\fcolorbox{todoborder}{todobg}{%
     \parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
-      \textbf{\textcolor{todoborder}{[CHỜ KẾT QUẢ THỰC NGHIỆM --- #1]}} \\[3pt]
+      \textbf{\textcolor{todoborder}{[CHỜ KẾT QUẢ THỰC NGHIỆM \textemdash  #1]}} \\[3pt]
       \small #2
     }%
   }%
@@ -213,6 +213,8 @@
 \renewcommand{\chaptername}{Phụ lục}
 \input{appendix/AppendixA_CauHinhHaTang}
 \newpage
+\input{appendix/AppendixB_SchemaVaTruyVan}
+\newpage
 
 % --- Tài liệu tham khảo ---
 \renewcommand{\bibname}{Tài liệu tham khảo}
@@ -223,25 +225,25 @@
 \begin{thebibliography}{99}
 
 \bibitem{MongoDBSharding}
-MongoDB, Inc., ``Sharding --- MongoDB Manual (v7.0 / v8.0),'' [Online]. Available: \url{https://www.mongodb.com/docs/manual/sharding/}
+MongoDB, Inc., \textquotedblleft Sharding \textemdash  MongoDB Manual (v7.0 / v8.0),\textquotedblright  [Online]. Available: \url{https://www.mongodb.com/docs/manual/sharding/}
 
 \bibitem{MongoDBWiredTiger}
-MongoDB, Inc., ``WiredTiger Storage Engine --- MongoDB Manual,'' [Online]. Available: \url{https://www.mongodb.com/docs/manual/core/wiredtiger/}
+MongoDB, Inc., \textquotedblleft WiredTiger Storage Engine \textemdash  MongoDB Manual,\textquotedblright  [Online]. Available: \url{https://www.mongodb.com/docs/manual/core/wiredtiger/}
 
 \bibitem{MongoDBExplain}
-MongoDB, Inc., ``Explain Results and Query Plans in Sharded Clusters --- MongoDB Manual,'' [Online]. Available: \url{https://www.mongodb.com/docs/manual/reference/explain-results/}
+MongoDB, Inc., \textquotedblleft Explain Results and Query Plans in Sharded Clusters \textemdash  MongoDB Manual,\textquotedblright  [Online]. Available: \url{https://www.mongodb.com/docs/manual/reference/explain-results/}
 
 \bibitem{Walonoski2018}
-J. Walonoski, M. Kramer, J. Nichols, A. Quina, C. Moesel, D. Hall, C. Duffett, K. Dube, T. Gallagher, and S. McLachlan, ``Synthea: An approach, method, and software mechanism for generating synthetic patients and the synthetic electronic health care record,'' {\em Journal of the American Medical Informatics Association (JAMIA)}, vol. 25, no. 3, pp. 230--238, 2018.
+J. Walonoski, M. Kramer, J. Nichols, A. Quina, C. Moesel, D. Hall, C. Duffett, K. Dube, T. Gallagher, and S. McLachlan, \textquotedblleft Synthea: An approach, method, and software mechanism for generating synthetic patients and the synthetic electronic health care record,\textquotedblright  {\em Journal of the American Medical Informatics Association (JAMIA)}, vol. 25, no. 3, pp. 230\textendash 238, 2018.
 
 \bibitem{Kleppmann2017}
 M. Kleppmann, {\em Designing Data-Intensive Applications: The Big Ideas Behind Reliable, Scalable, and Maintainable Systems}, O'Reilly Media, 2017.
 
 \bibitem{AzureStudents}
-Microsoft Azure, ``Azure for Students --- Virtual Machine Sizes and Quota Limits,'' [Online]. Available: \url{https://learn.microsoft.com/en-us/azure/virtual-machines/sizes}
+Microsoft Azure, \textquotedblleft Azure for Students \textemdash  Virtual Machine Sizes and Quota Limits,\textquotedblright  [Online]. Available: \url{https://learn.microsoft.com/en-us/azure/virtual-machines/sizes}
 
 \bibitem{ProjectRepo}
-Nhóm thực hiện, ``DBMS-distributed-method-benchmarking: Mã nguồn triển khai, pipeline Synthea, script benchmark và dữ liệu thực nghiệm,'' GitHub Repository, 2026. [Online]. Available: \url{https://github.com/DatHoang-git/DBMS-distributed-method-benchmarking}
+Nhóm thực hiện, \textquotedblleft DBMS-distributed-method-benchmarking: Mã nguồn triển khai, pipeline Synthea, script benchmark và dữ liệu thực nghiệm,\textquotedblright  GitHub Repository, 2026. [Online]. Available: \url{https://github.com/DatHoang-git/DBMS-distributed-method-benchmarking}
 
 \end{thebibliography}
 

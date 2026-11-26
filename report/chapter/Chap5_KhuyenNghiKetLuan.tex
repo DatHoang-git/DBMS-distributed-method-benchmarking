@@ -5,7 +5,7 @@ Chương này tổng hợp các khuyến nghị thực tiễn về lựa chọn 
 
 \section{Khuyến nghị Thiết kế Sharding cho Hệ thống EHR}
 
-Từ phân tích cơ chế hoạt động ở Chương~\ref{chap:sharding-mechanism} kết hợp với thiết kế thực nghiệm ở Chương~\ref{chap:methodology}--\ref{chap:results}, Bảng~\ref{tab:design-recommendations} đề xuất ma trận lựa chọn kiến trúc lưu trữ và chiến lược khóa phân mảnh phù hợp cho từng đặc trưng tải công việc y tế.
+Từ phân tích cơ chế hoạt động ở Chương~\ref{chap:sharding-mechanism} kết hợp với thiết kế thực nghiệm ở Chương~\ref{chap:methodology}\textendash \ref{chap:results}, Bảng~\ref{tab:design-recommendations} đề xuất ma trận lựa chọn kiến trúc lưu trữ và chiến lược khóa phân mảnh phù hợp cho từng đặc trưng tải công việc y tế.
 
 \begin{table}[!htb]
 \centering
@@ -22,7 +22,7 @@ Thiên về OLTP theo bệnh nhân (\texttt{Q1, Q2}) và ghi mới liên tục (
 \addlinespace
 Thiên về báo cáo định kỳ theo khung thời gian (\texttt{Q3, Q4}), tải ghi theo lô & \textbf{Ranged Sharding} (\texttt{\{START: 1, PATIENT: 1\}}) & Tận dụng cơ chế \textit{Shard Pruning} theo khoảng thời gian; cần tách riêng hoặc chấp nhận nút thắt ghi tại biên \texttt{MaxKey}. \\
 \addlinespace
-Hỗn hợp OLTP nặng + phân tích xuyên bệnh nhân (tỷ lệ $X \ge 10$--$30\%$) & \textbf{Hashed Sharding + Cô lập tải} & Tránh để truy vấn \texttt{SHARD\_MERGE} gây nhiễu chéo lên độ trễ \texttt{p95} của nhóm $P$; trong sản xuất nên hướng truy vấn phân tích sang nút Secondary chuyên biệt (\texttt{readPreference: secondary}) hoặc kho phân tích tách rời. \\
+Hỗn hợp OLTP nặng + phân tích xuyên bệnh nhân (tỷ lệ $X \ge 10$\textendash $30\%$) & \textbf{Hashed Sharding + Cô lập tải} & Tránh để truy vấn \texttt{SHARD\_MERGE} gây nhiễu chéo lên độ trễ \texttt{p95} của nhóm $P$; trong sản xuất nên hướng truy vấn phân tích sang nút Secondary chuyên biệt (\texttt{readPreference: secondary}) hoặc kho phân tích tách rời. \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -34,7 +34,7 @@ Hỗn hợp OLTP nặng + phân tích xuyên bệnh nhân (tỷ lệ $X \ge 10$-
 Để bảo đảm tính khách quan khoa học và chủ động làm rõ ranh giới diễn giải kết quả, báo cáo chỉ ra bốn giới hạn chính của thiết lập thực nghiệm:
 
 \begin{enumerate}
-  \item \textbf{Mô hình Replica Set 1 thành viên trên mỗi shard (\textit{Internal/Construct Validity}):} Do hạn mức vCPU của gói Azure for Students ($4$--$6\text{ vCPU}$ tổng), mỗi shard được triển khai với 1 thành viên duy nhất. Hệ quả là chính sách xác nhận ghi đa số (\texttt{writeConcern: \{w: "majority"\}}) tương đương với ghi xác nhận trên 1 nút (\texttt{w: 1}) và không phản ánh độ trễ đồng bộ nhật ký thao tác \texttt{oplog} qua mạng sang các nút Secondary như trong môi trường sản xuất (thường dùng 3 thành viên mỗi shard). Tuy nhiên, thiết lập này vẫn giữ nguyên vẹn bản chất định tuyến của \texttt{mongos}, cơ chế chia chunk và sự khác biệt giữa \textit{Hashed} và \textit{Ranged} sharding.
+  \item \textbf{Mô hình Replica Set 1 thành viên trên mỗi shard (\textit{Internal/Construct Validity}):} Do hạn mức vCPU của gói Azure for Students ($4$\textendash $6\text{ vCPU}$ tổng), mỗi shard được triển khai với 1 thành viên duy nhất. Hệ quả là chính sách xác nhận ghi đa số (\texttt{writeConcern: \{w: "majority"\}}) tương đương với ghi xác nhận trên 1 nút (\texttt{w: 1}) và không phản ánh độ trễ đồng bộ nhật ký thao tác \texttt{oplog} qua mạng sang các nút Secondary như trong môi trường sản xuất (thường dùng 3 thành viên mỗi shard). Tuy nhiên, thiết lập này vẫn giữ nguyên vẹn bản chất định tuyến của \texttt{mongos}, cơ chế chia chunk và sự khác biệt giữa \textit{Hashed} và \textit{Ranged} sharding.
 
   \item \textbf{Giới hạn bộ nhớ đệm nhân tạo và cụm 2 shard (\textit{External Validity}):} Tham số dung lượng WiredTiger Internal Cache ($0.75\text{ GB}$ ở Profile A hoặc $1.5\text{ GB}$ ở Profile B) và kích thước chunk ($32\text{ MB}$) được thu nhỏ có chủ đích nhằm kích hoạt hiện tượng tràn bộ nhớ đệm ở mốc $3\text{ triệu}$ tài liệu thay vì hàng trăm triệu tài liệu. Xu hướng định tính của điểm hòa vốn và sự đánh đổi giữa \textit{Shard Pruning} với \textit{Parallel Scan} hoàn toàn có thể khái quát hóa lên cụm lớn hơn, song các giá trị độ trễ tuyệt đối (ms) chỉ gắn với cấu hình phần cứng thử nghiệm cụ thể.
 
@@ -49,6 +49,6 @@ Hỗn hợp OLTP nặng + phân tích xuyên bệnh nhân (tỷ lệ $X \ge 10$-
 
 \noindent\textbf{Hướng phát triển:}
 \begin{itemize}
-  \item Mở rộng cụm thử nghiệm lên 3--4 shard với Replica Set 3 thành viên mỗi shard (1 Primary, 2 Secondary) để đo thêm tác động của độ trễ đồng bộ \texttt{w: "majority"} và cơ chế cô lập tải phân tích bằng tùy chọn đọc từ nút phụ (\texttt{readPreference: "secondary"}).
-  \item Khảo sát khóa phân mảnh băm phức hợp (\textit{Compound Hashed Shard Key}, kết hợp một trường băm với một trường theo khoảng như \texttt{\{PATIENT: "hashed", START: 1\}}) và phân mảnh theo vùng (\textit{Zone Sharding} --- gắn dải dữ liệu vào từng nhóm shard cố định theo năm khám hoặc khu vực địa lý) nhằm cân bằng tốt hơn giữa phân tải ghi và khoanh vùng truy vấn thời gian.
+  \item Mở rộng cụm thử nghiệm lên 3\textendash 4 shard với Replica Set 3 thành viên mỗi shard (1 Primary, 2 Secondary) để đo thêm tác động của độ trễ đồng bộ \texttt{w: "majority"} và cơ chế cô lập tải phân tích bằng tùy chọn đọc từ nút phụ (\texttt{readPreference: "secondary"}).
+  \item Khảo sát khóa phân mảnh băm phức hợp (\textit{Compound Hashed Shard Key}, kết hợp một trường băm với một trường theo khoảng như \texttt{\{PATIENT: "hashed", START: 1\}}) và phân mảnh theo vùng (\textit{Zone Sharding} \textemdash  gắn dải dữ liệu vào từng nhóm shard cố định theo năm khám hoặc khu vực địa lý) nhằm cân bằng tốt hơn giữa phân tải ghi và khoanh vùng truy vấn thời gian.
 \end{itemize}

@@ -87,7 +87,7 @@ Nhằm đi sâu vào bản chất kỹ thuật thay vì khảo sát dàn trải 
 - *Chương 3. Phương pháp và Thiết kế Thực nghiệm:* Đặc tả cấu trúc dữ liệu lượt khám tối giản, sáu bộ dữ liệu Synthea, bộ bốn truy vấn đại diện (`Q1–Q4`), hệ thống chỉ mục đồng nhất, quy chuẩn đo đạc tài nguyên và các công thức đánh giá cho `RQ1–RQ3`.
 - *Chương 4. Kết quả Thực nghiệm và Phân tích Kỹ thuật:* Trình bày và phân tích định lượng kết quả thu thập được cho từng câu hỏi nghiên cứu `RQ1`, `RQ2` và `RQ3`.
 - *Chương 5. Khuyến nghị Thiết kế, Giới hạn và Kết luận:* Đề xuất ma trận lựa chọn chiến lược phân mảnh cho hệ thống EHR, thảo luận các giới hạn thực nghiệm (*Threats to Validity*) và tổng kết hướng phát triển.
-- *Phụ lục A. Chi tiết Cấu hình Hạ tầng và Tham số Triển khai:* Tổng hợp bảng thông số phần cứng chi tiết của các cấu hình máy ảo Azure, vai trò cổng dịch vụ, tham số cấu hình MongoDB cố định và quy trình xác minh cụm vận hành.
+- *Phụ lục A và Phụ lục B:* Tổng hợp chi tiết thông số phần cứng máy ảo Azure, cổng dịch vụ, tham số cấu hình MongoDB cố định, mẫu cấu trúc tài liệu JSON và mã truy vấn MongoDB chính xác của bộ `Q1–Q4`.
 
 ---
 
@@ -105,7 +105,7 @@ Các tài liệu có cùng mục đích nghiệp vụ được tổ chức thàn
 
 Để tổ chức lưu trữ các tài liệu BSON xuống ổ đĩa và xử lý đồng thời nhiều yêu cầu truy cập, MongoDB sử dụng tầng bộ máy lưu trữ (*storage engine*). Kể từ phiên bản 3.2, **WiredTiger** trở thành bộ máy lưu trữ mặc định của MongoDB [MongoDBWiredTiger], thay thế cho bộ máy tiền nhiệm là **MMAPv1**.
 
-**Kiểm soát tương tranh ở mức tài liệu:** Trong môi trường cơ sở dữ liệu nhiều người dùng, khi nhiều luồng xử lý cùng đọc và ghi dữ liệu tại một thời điểm sẽ phát sinh hiện tượng *tương tranh* (xung đột tài nguyên và nguy cơ sai lệch dữ liệu). Ở bộ máy lưu trữ tiền nhiệm **MMAPv1**, MongoDB áp dụng cơ chế khóa ở phạm vi rộng (khóa mức toàn bộ cơ sở dữ liệu hoặc mức toàn bộ collection), khiến nhiều thao tác ghi vào các tài liệu hoàn toàn khác nhau trong cùng một collection vẫn bị xung đột khóa và phải xếp hàng chờ đợi nhau. WiredTiger khắc phục nút thắt này bằng cơ chế **kiểm soát tương tranh ở mức tài liệu** (*document-level concurrency control*) kết hợp với **kiểm soát tương tranh đa phiên bản** (*Multi-Version Concurrency Control — MVCC*). Nhờ lưu giữ các ảnh chụp dữ liệu nhất quán theo phiên bản, các luồng đọc không bị chặn bởi luồng ghi và nhiều luồng ghi trên các tài liệu khác nhau trong cùng một collection có thể thực thi song song mà không xảy ra xung đột khóa.
+**Kiểm soát tương tranh ở mức tài liệu:** Trong môi trường cơ sở dữ liệu nhiều người dùng, khi nhiều luồng xử lý cùng đọc và ghi dữ liệu tại một thời điểm sẽ phát sinh hiện tượng *tương tranh* (xung đột tài nguyên và nguy cơ sai lệch dữ liệu). Ở bộ máy lưu trữ tiền nhiệm **MMAPv1**, MongoDB áp dụng cơ chế khóa ở phạm vi rộng (khóa mức toàn bộ cơ sở dữ liệu hoặc mức toàn bộ collection), khiến nhiều thao tác ghi vào các tài liệu hoàn toàn khác nhau trong cùng một collection vẫn bị xung đột khóa và phải xếp hàng chờ đợi nhau. WiredTiger khắc phục nút thắt này bằng cơ chế **kiểm soát tương tranh ở mức tài liệu** (*document-level concurrency control*) kết hợp với **kiểm soát tương tranh đa phiên bản** (*Multi-Version Concurrency Control — MVCC*). Nhờ lưu giữ các ảnh chụp dữ liệu (*snapshot*) nhất quán theo phiên bản, các luồng đọc không bị chặn bởi luồng ghi và nhiều luồng ghi trên các tài liệu khác nhau trong cùng một collection có thể thực thi song song mà không xảy ra xung đột khóa.
 
 **Cơ chế bộ nhớ đệm hai tầng và mối liên hệ với RQ1:** Hiệu năng đọc của MongoDB phụ thuộc chặt chẽ vào cách WiredTiger phối hợp hai tầng bộ nhớ đệm trên máy chủ:
 - **WiredTiger Internal Cache:** Là vùng bộ nhớ đệm nội bộ do chính tiến trình MongoDB cấp phát và quản lý (mặc định chiếm khoảng $50\%$ dung lượng $\text{RAM} - 1\text{ GB}$). Trên ổ đĩa, dữ liệu được lưu ở dạng nén để tiết kiệm dung lượng lưu trữ và giảm băng thông I/O; khi được nạp vào WiredTiger Internal Cache, các tài liệu và nút chỉ mục sẽ được giải nén sang định dạng bộ nhớ làm việc để bộ xử lý truy vấn thao tác trực tiếp với độ trễ thấp nhất.
@@ -135,9 +135,11 @@ Toàn bộ bảng đối chiếu cấu hình phần cứng chi tiết giữa Pro
 
 # Chương 2. Cơ chế Hoạt động của MongoDB Sharding (`chapter/Chap2_CoCheSharding.tex`)
 
-## 2.1. Đặt vấn đề và Phân biệt Partitioning với Sharding
+## 2.1. Bài toán Mở rộng Dữ liệu: Phân vùng Đơn nút và Phân mảnh Đa nút
 
-### 2.1.1. Single-node Partitioning (RDBMS) và Multi-node Horizontal Sharding
+### 2.1.1. Phân biệt Single-node Partitioning và Multi-node Horizontal Sharding
+
+Khi dung lượng dữ liệu và lưu lượng truy vấn vượt quá khả năng xử lý hiệu quả của một bảng hoặc một máy chủ đơn lẻ (như nút thắt bộ nhớ đệm ở Chương 1), các hệ quản trị cơ sở dữ liệu thường áp dụng chiến lược chia nhỏ dữ liệu. Tuy nhiên, hai kỹ thuật *Partitioning* (phân vùng trên một máy chủ) và *Sharding* (phân mảnh phân tán trên nhiều máy chủ) thường bị sử dụng lẫn lộn dù giải quyết hai lớp bài toán kiến trúc khác nhau [Kleppmann2017]. Làm rõ ranh giới này giúp xác định chính xác mục tiêu mở rộng vượt trần phần cứng mà đề tài theo đuổi.
 
 | Khía cạnh | Single-node Partitioning (RDBMS) | Multi-node Horizontal Sharding (MongoDB) |
 | :--- | :--- | :--- |
@@ -146,7 +148,9 @@ Toàn bộ bảng đối chiếu cấu hình phần cứng chi tiết giữa Pro
 | **Cơ chế định tuyến** | Bộ tối ưu hóa truy vấn cục bộ (*Query Planner*) loại bỏ phân vùng không khớp ngay trong cùng tiến trình DB. | Tiến trình định tuyến trung gian đọc siêu dữ liệu cụm để chuyển tiếp yêu cầu qua mạng tới đúng shard đích. |
 | **Chi phí phát sinh** | Chi phí lập kế hoạch thấp; không phát sinh độ trễ mạng giữa các phân vùng. | Phát sinh chi phí mạng qua tầng định tuyến, đồng bộ siêu dữ liệu và gom kết quả xuyên nút khi truy vấn không khớp khóa phân mảnh. |
 
-### 2.1.2. Ánh xạ khái niệm "Partition Pruning" sang Shard Pruning trong MongoDB
+### 2.1.2. Tối ưu phạm vi truy vấn phân tán: Cơ chế Shard Pruning
+
+Một lợi ích quan trọng khi chia nhỏ dữ liệu là tránh phải quét những phần dữ liệu không liên quan đến điều kiện truy vấn. Trong các hệ quản trị quan hệ có phân vùng bảng, cơ chế này được gọi là tỉa phân vùng (*Partition Pruning*). Khi chuyển sang kiến trúc phân mảnh ngang đa nút của MongoDB, nguyên lý tối ưu tương ứng được thể hiện qua cơ chế **Shard Pruning** (định tuyến mục tiêu — *Targeted Routing*) [MongoDBExplain], chia truy vấn đọc thành hai chế độ thực thi đối lập:
 
 - **Truy vấn định tuyến mục tiêu (`SINGLE_SHARD`):** Điều kiện lọc chứa đầy đủ khóa phân mảnh (hoặc tiền tố phù hợp của khóa phân mảnh theo khoảng) → bộ định tuyến chỉ gửi yêu cầu đến đúng một shard duy nhất chứa dữ liệu cần tìm.
 - **Truy vấn phát tán–thu gom (`SHARD_MERGE` / `SHARD_MERGE_SORT`):** Truy vấn không chứa khóa phân mảnh → bộ định tuyến buộc phải phát tán đến *tất cả* các shard, thu thập kết quả trung gian qua mạng, trộn hoặc sắp xếp lại trước khi trả về.
@@ -187,23 +191,7 @@ $$T_{\text{total}} \approx \max\big(T_{\text{shard1}},\, T_{\text{shard2}}\big) 
 
 ## 3.1. Mô hình hóa Dữ liệu và Schema Synthea Tối giản
 
-Mỗi tài liệu trong collection `encounters` biểu diễn **1 lượt khám bệnh**, nhúng mảng `conditions` và `observations` đã lược bỏ các trường văn bản dài không phục vụ truy vấn (`DESCRIPTION`, `UNITS`, `STOP`, `TOTAL_CLAIM_COST`):
-
-```json
-{
-  "_id": "enc_uuid_string",
-  "PATIENT": "pat_uuid_string",
-  "ORGANIZATION": "org_uuid_string",
-  "ENCOUNTERCLASS": "ambulatory",
-  "START": "2023-05-12T08:30:00Z",
-  "conditions": [
-    { "CODE": "44054006" }
-  ],
-  "observations": [
-    { "CATEGORY": "laboratory", "CODE": "4548-4", "VALUE": 6.8 }
-  ]
-}
-```
+Mỗi tài liệu trong collection `encounters` biểu diễn **1 lượt khám bệnh**, chỉ giữ lại các thuộc tính cốt lõi (`_id`, `PATIENT`, `ORGANIZATION`, `ENCOUNTERCLASS`, `START` ở kiểu ngày giờ nhị phân) cùng hai mảng nhúng tối giản là danh sách mã chẩn đoán (`conditions`) và kết quả xét nghiệm (`observations`). Cấu trúc JSON mẫu đầy đủ được trình bày tại **Phụ lục B**.
 
 - Kích thước trung bình thực tế (`D100K`): **$1{,}248.7\text{ B}$ JSON** ($\approx 1{,}366.3\text{ B}$ BSON).
 - Ngoại suy cho **`D3M`**: $\approx 3.82\text{ GB}$ BSON giải nén + $1.15\text{ GB}$ chỉ mục $\approx \mathbf{4.97\text{ GB}}$ *working set* ($\approx 1.91\text{ GB}$ nén trên đĩa) → vượt xa trần WiredTiger Internal Cache trên một máy chủ đơn lẻ ở cả Profile A ($0.75\text{ GB}$) và Profile B ($1.5\text{ GB}$).
@@ -223,33 +211,14 @@ Các tập lồng nhau theo nguyên nhóm `PATIENT` (`D100K ⊂ D500K ⊂ D1M �
 
 ## 3.3. Bộ Truy vấn Đại diện (`Q1`–`Q4`) và Hệ thống Chỉ mục
 
-```javascript
-// Q1: 10 lượt khám gần nhất của 1 bệnh nhân (OLTP điểm -> SINGLE_SHARD trên SH-hash)
-db.encounters.find({ PATIENT: pid }).sort({ START: -1 }).limit(10)
+Bảng tóm tắt mục đích nghiệp vụ và định tuyến kỳ vọng của bốn truy vấn đại diện (mã MongoDB chính xác xem tại **Phụ lục B**):
 
-// Q2: Kết quả xét nghiệm 12 tháng của 1 bệnh nhân (Aggregation -> SINGLE_SHARD trên SH-hash)
-db.encounters.aggregate([
-  { $match: { PATIENT: pid, START: { $gte: d12mAgo } } },
-  { $unwind: "$observations" },
-  { $match: { "observations.CATEGORY": "laboratory" } },
-  { $project: { START: 1, "observations.CODE": 1, "observations.VALUE": 1 } }
-])
-
-// Q3: Top 10 mã bệnh trong 1 quý (Xuyên bệnh nhân, kết quả nhỏ -> SHARD_MERGE trên SH-hash)
-db.encounters.aggregate([
-  { $match: { START: { $gte: qStart, $lt: qEnd } } },
-  { $unwind: "$conditions" },
-  { $group: { _id: "$conditions.CODE", n: { $sum: 1 } } },
-  { $sort: { n: -1 } },
-  { $limit: 10 }
-])
-
-// Q4: Lượt khám chẩn đoán tiểu đường type 2 trong 1 tháng (Xuyên bệnh nhân, kết quả dài)
-db.encounters.find(
-  { "conditions.CODE": "44054006", START: { $gte: mStart, $lt: mEnd } },
-  { PATIENT: 1, START: 1, ORGANIZATION: 1 }
-)
-```
+| Mã | Nhóm | Mục đích nghiệp vụ & Điều kiện lọc chính | Định tuyến kỳ vọng |
+| :--- | :---: | :--- | :--- |
+| `Q1` | $P$ | Truy xuất 10 lượt khám gần nhất của một bệnh nhân (lọc `PATIENT`, sắp xếp giảm dần theo `START`). | `SINGLE_SHARD` trên `SH-hash` |
+| `Q2` | $P$ | Tổng hợp kết quả xét nghiệm (`laboratory`) trong 12 tháng gần nhất của một bệnh nhân (lọc `PATIENT` + `START`, bung mảng `observations`). | `SINGLE_SHARD` trên `SH-hash` |
+| `Q3` | $X$ | Thống kê Top 10 mã bệnh phổ biến nhất trong một quý (lọc khoảng `START`, gom nhóm theo mã chẩn đoán, kết quả nhỏ). | `SHARD_MERGE` trên `SH-hash`; `SINGLE_SHARD` trên `SH-range` |
+| `Q4` | $X$ | Liệt kê các lượt khám chẩn đoán tiểu đường type 2 (mã `44054006`) trong một tháng (lọc mã bệnh + khoảng `START`, kết quả dài). | `SHARD_MERGE` trên `SH-hash`; `SINGLE_SHARD` trên `SH-range` |
 
 - **Quy tắc chọn cửa sổ `Q3/Q4`:** Kiểm tra biên chunk qua `sh.status()` trên `SH-range` để bảo đảm `qStart..qEnd` và `mStart..mEnd` nằm trọn trong **1 chunk duy nhất**.
 - **Bộ 4 chỉ mục đồng nhất** (loại bỏ sai lệch giữa quét toàn bộ collection `COLLSCAN` và quét chỉ mục B-Tree `IXSCAN`):
@@ -387,6 +356,60 @@ db.encounters.find(
 - **Kiểm soát nghẽn máy khách:** Mọi lượt đo vượt ngưỡng CPU client ($80\%$ / $75\%$) gắn cờ `client_bound: true` và loại khỏi phân tích thông lượng.
 - **Docker Dry-run (Pha 0 trên máy cá nhân):** 4 container (`cfgsvr`, `shard1`, `shard2`, `mongos`), áp dụng `mem_limit: 512m` và `--wiredTigerCacheSizeGB 0.25`.
 - **Danh mục 4 bước xác minh cụm trên Azure:** (1) `ping` & kiểm tra cổng `27017/27018/27019`; (2) `sh.status()`; (3) xác nhận `sar` ghi log trên mọi VM; (4) xác nhận `sh.isBalancerRunning() == false` trước mọi pha đo Read và OLTP Write.
+
+---
+
+# Phụ lục B. Đặc tả Schema Dữ liệu và Mã Truy vấn Thực nghiệm (`appendix/AppendixB_SchemaVaTruyVan.tex`)
+
+## B.1. Cấu trúc JSON Tối giản của Tài liệu `encounters`
+
+Kịch bản tiền xử lý (`scripts/build_datasets.py`) đọc Synthea CSV, lược bỏ `DESCRIPTION`, `UNITS`, `STOP`, `TOTAL_CLAIM_COST` và kiểm chứng bằng `scripts/verify_datasets.py` (`SEED = 42`):
+
+```json
+{
+  "_id": "enc_uuid_string",
+  "PATIENT": "pat_uuid_string",
+  "ORGANIZATION": "org_uuid_string",
+  "ENCOUNTERCLASS": "ambulatory",
+  "START": "2023-05-12T08:30:00Z",
+  "conditions": [
+    { "CODE": "44054006" }
+  ],
+  "observations": [
+    { "CATEGORY": "laboratory", "CODE": "4548-4", "VALUE": 6.8 }
+  ]
+}
+```
+
+## B.2. Mã Truy vấn MongoDB cho Bộ `Q1`–`Q4`
+
+```javascript
+// Q1: 10 lượt khám gần nhất của 1 bệnh nhân (OLTP điểm -> SINGLE_SHARD trên SH-hash)
+db.encounters.find({ PATIENT: pid }).sort({ START: -1 }).limit(10)
+
+// Q2: Kết quả xét nghiệm 12 tháng của 1 bệnh nhân (Aggregation -> SINGLE_SHARD trên SH-hash)
+db.encounters.aggregate([
+  { $match: { PATIENT: pid, START: { $gte: d12mAgo } } },
+  { $unwind: "$observations" },
+  { $match: { "observations.CATEGORY": "laboratory" } },
+  { $project: { START: 1, "observations.CODE": 1, "observations.VALUE": 1 } }
+])
+
+// Q3: Top 10 mã bệnh trong 1 quý (Xuyên bệnh nhân, kết quả nhỏ -> SHARD_MERGE trên SH-hash)
+db.encounters.aggregate([
+  { $match: { START: { $gte: qStart, $lt: qEnd } } },
+  { $unwind: "$conditions" },
+  { $group: { _id: "$conditions.CODE", n: { $sum: 1 } } },
+  { $sort: { n: -1 } },
+  { $limit: 10 }
+])
+
+// Q4: Lượt khám chẩn đoán tiểu đường type 2 trong 1 tháng (Xuyên bệnh nhân, kết quả dài)
+db.encounters.find(
+  { "conditions.CODE": "44054006", START: { $gte: mStart, $lt: mEnd } },
+  { PATIENT: 1, START: 1, ORGANIZATION: 1 }
+)
+```
 
 ---
 

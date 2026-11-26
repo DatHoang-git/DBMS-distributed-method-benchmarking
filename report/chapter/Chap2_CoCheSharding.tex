@@ -3,12 +3,12 @@
 
 Chương này trình bày một cách có hệ thống nền tảng lý thuyết và cơ chế vận hành bên trong của phân mảnh ngang trong MongoDB. Trước hết, Mục~\ref{sec:partition-vs-sharding} làm rõ ranh giới khái niệm giữa phân vùng trên một nút trong các hệ quản trị quan hệ và phân mảnh ngang đa nút. Tiếp theo, Mục~\ref{sec:sharded-arch} giới thiệu kiến trúc tổng thể cùng các thành phần cấu thành một cụm MongoDB Sharded. Cuối cùng, Mục~\ref{sec:sharding-internals} giải phẫu sâu cách định tuyến truy vấn, hai chiến lược khóa phân mảnh (\textit{Hashed} và \textit{Ranged}), cơ chế chia mảnh dữ liệu và tiến trình cân bằng tải nền.
 
-\section{Đặt vấn đề và Phân biệt Partitioning với Sharding}
+\section{Bài toán Mở rộng Dữ liệu: Phân vùng Đơn nút và Phân mảnh Đa nút}
 \label{sec:partition-vs-sharding}
 
-\subsection{Single-node Partitioning (RDBMS) và Multi-node Horizontal Sharding}
+\subsection{Phân biệt Single-node Partitioning và Multi-node Horizontal Sharding}
 
-Trong thiết kế cơ sở dữ liệu quy mô lớn, hai khái niệm \textit{Partitioning} (phân vùng) và \textit{Sharding} (phân mảnh phân tán) thường được dùng gần nghĩa nhau, nhưng thực chất chúng giải quyết hai lớp bài toán kiến trúc khác biệt \cite{Kleppmann2017}. Bảng~\ref{tab:partition-vs-sharding} đối chiếu trực diện hai cơ chế này trên các khía cạnh kỹ thuật cốt lõi.
+Khi dung lượng dữ liệu và lưu lượng truy vấn vượt quá khả năng xử lý hiệu quả của một bảng hoặc một máy chủ đơn lẻ (như nút thắt bộ nhớ đệm đã phân tích ở Chương~\ref{chap:intro-mongodb}), các hệ quản trị cơ sở dữ liệu thường áp dụng chiến lược chia nhỏ dữ liệu. Tuy nhiên, trong thực hành thiết kế, hai kỹ thuật \textit{Partitioning} (phân vùng trên một máy chủ) và \textit{Sharding} (phân mảnh phân tán trên nhiều máy chủ) thường bị sử dụng lẫn lộn dù chúng giải quyết hai lớp bài toán kiến trúc khác nhau \cite{Kleppmann2017}. Làm rõ ranh giới này giúp xác định chính xác mục tiêu mở rộng vượt trần phần cứng mà đề tài theo đuổi. Bảng~\ref{tab:partition-vs-sharding} đối chiếu trực diện hai cơ chế trên các khía cạnh kỹ thuật cốt lõi.
 
 \begin{table}[!htb]
 \centering
@@ -29,13 +29,13 @@ Chi phí phát sinh & Chi phí lập kế hoạch thấp; không phát sinh đ�
 
 Như vậy, trong khi phân vùng đơn nút tối ưu hóa việc tổ chức vật lý trên cùng một máy chủ, phân mảnh ngang đa nút mở rộng tổng dung lượng bộ nhớ đệm và năng lực xử lý song song của hệ thống, đổi lại sự phức tạp trong định tuyến phân tán và cân bằng tải.
 
-\subsection{Ánh xạ khái niệm ``Partition Pruning'' sang Shard Pruning trong MongoDB}
+\subsection{Tối ưu phạm vi truy vấn phân tán: Cơ chế Shard Pruning}
 
-Trong các hệ quản trị quan hệ có hỗ trợ phân vùng bảng (như PostgreSQL hoặc MySQL), kỹ thuật \textit{Partition Pruning} (tỉa phân vùng) cho phép bộ tối ưu hóa bỏ qua hoàn toàn những phân vùng không thể chứa dữ liệu thỏa mãn điều kiện lọc. Vì MongoDB không cung cấp cơ chế phân vùng bảng khai báo trên một nút đơn lẻ theo kiểu RDBMS, cơ chế tương ứng về mặt tối ưu hóa thực thi trong MongoDB là \textbf{Shard Pruning} (hay \textit{Targeted Routing} --- định tuyến mục tiêu) tại tầng bộ định tuyến \cite{MongoDBExplain}:
+Một lợi ích quan trọng khi chia nhỏ dữ liệu là tránh phải quét những phần dữ liệu không liên quan đến điều kiện truy vấn. Trong các hệ quản trị quan hệ có phân vùng bảng, cơ chế này được gọi là tỉa phân vùng (\textit{Partition Pruning}). Khi chuyển sang kiến trúc phân mảnh ngang đa nút của MongoDB, nguyên lý tối ưu tương ứng được thể hiện qua cơ chế \textbf{Shard Pruning} (còn gọi là định tuyến mục tiêu \textemdash  \textit{Targeted Routing}) \cite{MongoDBExplain}, chia truy vấn đọc thành hai chế độ thực thi đối lập:
 
 \begin{itemize}
   \item \textbf{Truy vấn định tuyến mục tiêu (\texttt{SINGLE\_SHARD}):} Khi điều kiện lọc của truy vấn chứa đầy đủ khóa phân mảnh (hoặc tiền tố phù hợp của khóa phân mảnh theo khoảng), bộ định tuyến xác định chính xác một shard duy nhất chứa dữ liệu cần tìm và chỉ gửi yêu cầu đến đúng shard đó. Trong kế hoạch thực thi chi tiết của MongoDB (\texttt{explain("executionStats")}), giai đoạn gốc hiển thị là \texttt{SINGLE\_SHARD}.
-  \item \textbf{Truy vấn phát tán--thu gom (\texttt{SHARD\_MERGE} / \texttt{SHARD\_MERGE\_SORT}):} Khi truy vấn không chứa khóa phân mảnh (ví dụ truy vấn thống kê theo thời gian hoặc mã chẩn đoán trên cụm phân mảnh theo mã bệnh nhân), bộ định tuyến buộc phải phát tán truy vấn đến \textit{tất cả} các shard trong cụm, thu thập kết quả trung gian qua mạng rồi trộn hoặc sắp xếp lại trước khi trả về cho ứng dụng.
+  \item \textbf{Truy vấn phát tán\textendash thu gom (\texttt{SHARD\_MERGE} / \texttt{SHARD\_MERGE\_SORT}):} Khi truy vấn không chứa khóa phân mảnh (ví dụ truy vấn thống kê theo thời gian hoặc mã chẩn đoán trên cụm phân mảnh theo mã bệnh nhân), bộ định tuyến buộc phải phát tán truy vấn đến \textit{tất cả} các shard trong cụm, thu thập kết quả trung gian qua mạng rồi trộn hoặc sắp xếp lại trước khi trả về cho ứng dụng.
 \end{itemize}
 
 Tỷ lệ \textit{Shard Pruning} (tỷ lệ shard được loại bỏ khỏi phạm vi thực thi) cùng mức chênh lệch độ trễ và lưu lượng mạng giữa hai chế độ trên là trọng tâm đánh giá của \textbf{RQ3}.
@@ -51,21 +51,21 @@ Như đã đề cập ở cuối Chương~\ref{chap:intro-mongodb}, khi tổng k
   \item \textbf{Query Router (\texttt{mongos}):} Tiến trình trung gian không lưu trữ dữ liệu người dùng (\textit{stateless router}) đóng vai trò cổng tiếp nhận mọi kết nối từ ứng dụng khách. \texttt{mongos} đọc siêu dữ liệu từ Config Server vào bộ nhớ đệm cục bộ, dựa vào điều kiện truy vấn để định tuyến tới đúng shard mục tiêu và tổng hợp kết quả trả về cho máy khách.
 \end{itemize}
 
-Để phân phối dữ liệu của một collection ra nhiều shard, người thiết kế phải chỉ định một \textbf{Khóa phân mảnh} (\textit{Shard Key}) --- gồm một hoặc nhiều trường tồn tại trong mọi tài liệu của collection đó. Dựa trên giá trị của Shard Key, MongoDB chia toàn bộ không gian dữ liệu thành các đơn vị logic gọi là \textbf{Chunk} --- mỗi chunk đại diện cho một khoảng liên tục các giá trị Shard Key với dung lượng mục tiêu cấu hình được (trong thực nghiệm này cố định ở mức $32\text{ MB}$). Một tiến trình nền gọi là \textbf{Balancer} (chạy trên nút Primary của Config Server) liên tục theo dõi sự chênh lệch phân bố dữ liệu giữa các shard và tự động di chuyển chunk (\textit{chunk migration}) khi cụm bị mất cân bằng.
+Để phân phối dữ liệu của một collection ra nhiều shard, người thiết kế phải chỉ định một \textbf{Khóa phân mảnh} (\textit{Shard Key}) \textemdash  gồm một hoặc nhiều trường tồn tại trong mọi tài liệu của collection đó. Dựa trên giá trị của Shard Key, MongoDB chia toàn bộ không gian dữ liệu thành các đơn vị logic gọi là \textbf{Chunk} \textemdash  mỗi chunk đại diện cho một khoảng liên tục các giá trị Shard Key với dung lượng mục tiêu cấu hình được (trong thực nghiệm này cố định ở mức $32\text{ MB}$). Một tiến trình nền gọi là \textbf{Balancer} (chạy trên nút Primary của Config Server) liên tục theo dõi sự chênh lệch phân bố dữ liệu giữa các shard và tự động di chuyển chunk (\textit{chunk migration}) khi cụm bị mất cân bằng.
 
 \section{Cơ chế định tuyến, Chiến lược Shard Key và Cân bằng tải}
 \label{sec:sharding-internals}
 
 \subsection{Quy trình định tuyến của \texttt{mongos} và Phân rã độ trễ}
 
-Khi ứng dụng gửi một truy vấn tới \texttt{mongos}, quá trình xử lý diễn ra qua ba bước: (1) tra cứu bảng định tuyến chunk đang lưu trong bộ nhớ đệm cục bộ của \texttt{mongos} (nếu phát hiện phiên bản siêu dữ liệu đã lỗi thời --- \textit{stale config}, \texttt{mongos} sẽ tự động làm mới từ Config Server); (2) chuyển tiếp truy vấn tới một hoặc nhiều shard mục tiêu qua mạng nội bộ; và (3) nhận luồng kết quả từ các shard, thực hiện gộp hoặc sắp xếp lại (nếu có từ hai shard trở lên) rồi trả về ứng dụng khách.
+Khi ứng dụng gửi một truy vấn tới \texttt{mongos}, quá trình xử lý diễn ra qua ba bước: (1) tra cứu bảng định tuyến chunk đang lưu trong bộ nhớ đệm cục bộ của \texttt{mongos} (nếu phát hiện phiên bản siêu dữ liệu đã lỗi thời \textemdash  \textit{stale config}, \texttt{mongos} sẽ tự động làm mới từ Config Server); (2) chuyển tiếp truy vấn tới một hoặc nhiều shard mục tiêu qua mạng nội bộ; và (3) nhận luồng kết quả từ các shard, thực hiện gộp hoặc sắp xếp lại (nếu có từ hai shard trở lên) rồi trả về ứng dụng khách.
 
-Với truy vấn đơn shard (\texttt{SINGLE\_SHARD}), độ trễ đo được phía client xấp xỉ bằng thời gian thực thi tại shard đích cộng thêm một chặng mạng nội bộ và chi phí xử lý định tuyến của \texttt{mongos} (chi phí này có thể đo tách bạch bằng hiệu số độ trễ giữa cụm 1 shard đi qua \texttt{mongos} và máy chủ đơn lẻ). Ngược lại, với truy vấn xuyên shard (\texttt{SHARD\_MERGE}), tổng độ trễ bị chi phối bởi nút phản hồi chậm nhất (\textit{straggler effect} --- hiệu ứng nút rớt lại phía sau) cộng thêm chi phí truyền tải và trộn kết quả tại \texttt{mongos}:
+Với truy vấn đơn shard (\texttt{SINGLE\_SHARD}), độ trễ đo được phía client xấp xỉ bằng thời gian thực thi tại shard đích cộng thêm một chặng mạng nội bộ và chi phí xử lý định tuyến của \texttt{mongos} (chi phí này có thể đo tách bạch bằng hiệu số độ trễ giữa cụm 1 shard đi qua \texttt{mongos} và máy chủ đơn lẻ). Ngược lại, với truy vấn xuyên shard (\texttt{SHARD\_MERGE}), tổng độ trễ bị chi phối bởi nút phản hồi chậm nhất (\textit{straggler effect} \textemdash  hiệu ứng nút rớt lại phía sau) cộng thêm chi phí truyền tải và trộn kết quả tại \texttt{mongos}:
 \begin{equation}
   T_{\text{total}} \approx \max\big(T_{\text{shard1}},\, T_{\text{shard2}}\big) + T_{\text{network + merge}}.
   \label{eq:cross-shard-decomp}
 \end{equation}
-Tuy nhiên, với các truy vấn phân tích cần quét khối lượng lớn tài liệu nhưng chỉ trả về rất ít bản ghi kết quả (ví dụ thống kê Top-10 mã bệnh phổ biến nhất), việc chia đôi không gian quét và thực thi song song trên hai shard có thể làm giảm đáng kể hạng tử $\max(T_{\text{shard1}}, T_{\text{shard2}})$ so với việc một nút đơn lẻ phải tự quét toàn bộ dữ liệu --- tạo ra sự đánh đổi đáng chú ý giữa \textit{Shard Pruning} (giảm số shard tham gia) và \textit{Parallel Scan} (quét song song).
+Tuy nhiên, với các truy vấn phân tích cần quét khối lượng lớn tài liệu nhưng chỉ trả về rất ít bản ghi kết quả (ví dụ thống kê Top-10 mã bệnh phổ biến nhất), việc chia đôi không gian quét và thực thi song song trên hai shard có thể làm giảm đáng kể hạng tử $\max(T_{\text{shard1}}, T_{\text{shard2}})$ so với việc một nút đơn lẻ phải tự quét toàn bộ dữ liệu \textemdash  tạo ra sự đánh đổi đáng chú ý giữa \textit{Shard Pruning} (giảm số shard tham gia) và \textit{Parallel Scan} (quét song song).
 
 \subsection{So sánh chiến lược Hashed Sharding và Ranged Sharding}
 
@@ -75,7 +75,7 @@ Việc lựa chọn chiến lược \textit{Shard Key} quyết định trực ti
 MongoDB áp dụng hàm băm 64-bit lên giá trị trường khóa phân mảnh trước khi ánh xạ vào các dải chunk. Các giá trị gần nhau về mặt logic hoặc tăng liên tục theo thời gian được phân bổ giả ngẫu nhiên đều khắp không gian băm.
 \begin{itemize}
   \item \textbf{Ưu điểm:} Phân bố đồng đều cả dung lượng lưu trữ lẫn lưu lượng ghi mới (\texttt{insert}) trên tất cả các shard ngay từ thời điểm khởi tạo (đặc biệt khi dùng tham số \texttt{numInitialChunks} để chia sẵn các dải băm đều cho các shard trước khi nạp dữ liệu). Mọi truy vấn theo bệnh nhân có điều kiện lọc \texttt{PATIENT} đều đạt \texttt{SINGLE\_SHARD}.
-  \item \textbf{Nhược điểm:} Phá vỡ tính cục bộ theo khoảng giá trị (\textit{range locality} --- các bản ghi có giá trị gần nhau không còn nằm cạnh nhau). Các truy vấn lọc theo khoảng thời gian (\texttt{START}) hoặc theo thuộc tính khác không thể tỉa shard và buộc phải thực thi \texttt{SHARD\_MERGE} trên toàn cụm.
+  \item \textbf{Nhược điểm:} Phá vỡ tính cục bộ theo khoảng giá trị (\textit{range locality} \textemdash  các bản ghi có giá trị gần nhau không còn nằm cạnh nhau). Các truy vấn lọc theo khoảng thời gian (\texttt{START}) hoặc theo thuộc tính khác không thể tỉa shard và buộc phải thực thi \texttt{SHARD\_MERGE} trên toàn cụm.
 \end{itemize}
 
 \subsubsection{Ranged Sharding (\texttt{\{START: 1, PATIENT: 1\}})}
@@ -87,7 +87,7 @@ Dữ liệu được phân chia vào các chunk theo đúng thứ tự tăng d�
 
 \subsection{Cơ chế chia Chunk, Jumbo Chunk và Tiến trình Balancer}
 
-Khi một chunk nhận thêm tài liệu mới và vượt ngưỡng dung lượng cấu hình ($32\text{ MB}$), MongoDB tự động tìm điểm chia và tách chunk đó thành hai chunk nhỏ hơn --- đây là thao tác thuần siêu dữ liệu, chi phí thấp và không di chuyển dữ liệu vật lý.
+Khi một chunk nhận thêm tài liệu mới và vượt ngưỡng dung lượng cấu hình ($32\text{ MB}$), MongoDB tự động tìm điểm chia và tách chunk đó thành hai chunk nhỏ hơn \textemdash  đây là thao tác thuần siêu dữ liệu, chi phí thấp và không di chuyển dữ liệu vật lý.
 
 Một ngoại lệ quan trọng phát sinh khi dữ liệu bị lệch nặng (\textit{Heavy Skew}): nếu toàn bộ tài liệu trong một chunk vượt quá $32\text{ MB}$ nhưng lại mang cùng một giá trị Shard Key duy nhất (không tồn tại điểm chia hợp lệ), MongoDB không thể tách chunk đó và đánh dấu nó là \textbf{Jumbo Chunk} (cờ \texttt{jumbo: true} trong \texttt{config.chunks}). Do các Jumbo Chunk không được Balancer di chuyển tự động, chúng có thể gây mất cân bằng dung lượng kéo dài giữa các shard.
 

@@ -1,29 +1,13 @@
 \chapter{Phương pháp và Thiết kế Thực nghiệm}
 \label{chap:methodology}
 
-Chương này trình bày toàn bộ phương pháp luận thực nghiệm (\textit{Methodology}) theo nguyên tắc kiểm soát biến chặt chẽ và có thể tái lập hoàn toàn, bao gồm mô hình hóa cấu trúc dữ liệu lượt khám Synthea EHR tối giản, thống kê sáu bộ dữ liệu đã sinh, đặc tả bốn truy vấn đại diện cùng bộ chỉ mục đồng nhất, bốn môi trường đối chứng, quy trình đo đạc tài nguyên và các công thức đánh giá định lượng cho \texttt{RQ1}--\texttt{RQ3}.
+Chương này trình bày toàn bộ phương pháp luận thực nghiệm (\textit{Methodology}) theo nguyên tắc kiểm soát biến chặt chẽ và có thể tái lập hoàn toàn, bao gồm mô hình hóa cấu trúc dữ liệu lượt khám Synthea EHR tối giản, thống kê sáu bộ dữ liệu đã sinh, đặc tả bốn truy vấn đại diện cùng bộ chỉ mục đồng nhất, bốn môi trường đối chứng, quy trình đo đạc tài nguyên và các công thức đánh giá định lượng cho \texttt{RQ1}\textendash \texttt{RQ3}.
 
 \section{Mô hình hóa Dữ liệu và Schema Synthea Tối giản}
 
 Dữ liệu hồ sơ bệnh án điện tử được tạo bằng bộ sinh dữ liệu y khoa chuẩn \textbf{Synthea} \cite{Walonoski2018}. Tận dụng mô hình tài liệu của MongoDB đã phân tích ở Chương~\ref{chap:intro-mongodb}, thay vì tách rời nhiều bảng quan hệ đòi hỏi phép nối tốn kém trong môi trường phân tán, mỗi tài liệu trong collection chính \texttt{encounters} biểu diễn \textbf{một lượt khám bệnh}, nhúng trực tiếp danh sách mã chẩn đoán (\texttt{conditions}) và kết quả xét nghiệm (\texttt{observations}) phát sinh trong đúng lượt khám đó.
 
-Nhằm tương thích với giới hạn tài nguyên của hạ tầng Azure for Students (xem Phụ lục~\ref{app:infra-config}) đồng thời bảo đảm kích thước tập lớn nhất \texttt{D3M} vượt rõ rệt trần bộ nhớ đệm WiredTiger ($0.75\text{ GB}$ ở Profile A và $1.5\text{ GB}$ ở Profile B), kịch bản tiền xử lý (\texttt{scripts/build\_datasets.py}) lược bỏ các trường văn bản mô tả dài không tham gia vào bộ truy vấn (bỏ \texttt{DESCRIPTION}, \texttt{UNITS}, \texttt{STOP}, \texttt{TOTAL\_CLAIM\_COST}). Cấu trúc JSON tối giản của mỗi tài liệu được minh họa tại Listing~\ref{lst:encounter-schema}.
-
-\begin{lstlisting}[language=MongoJS, caption={Schema JSON tối giản của mỗi tài liệu trong collection \texttt{encounters}.}, label={lst:encounter-schema}]
-{
-  "_id": "enc_uuid_string",
-  "PATIENT": "pat_uuid_string",
-  "ORGANIZATION": "org_uuid_string",
-  "ENCOUNTERCLASS": "ambulatory",
-  "START": "2023-05-12T08:30:00Z", // luu duoi dang ISODate (BSON datetime)
-  "conditions": [
-    { "CODE": "44054006" }
-  ],
-  "observations": [
-    { "CATEGORY": "laboratory", "CODE": "4548-4", "VALUE": 6.8 }
-  ]
-}
-\end{lstlisting}
+Nhằm tương thích với giới hạn tài nguyên của hạ tầng Azure for Students (xem Phụ lục~\ref{app:infra-config}) đồng thời bảo đảm kích thước tập lớn nhất \texttt{D3M} vượt rõ rệt trần bộ nhớ đệm WiredTiger ($0.75\text{ GB}$ ở Profile A và $1.5\text{ GB}$ ở Profile B), quy trình tiền xử lý dữ liệu lược bỏ toàn bộ các trường văn bản mô tả dài không tham gia vào bộ truy vấn. Mỗi tài liệu trong collection \texttt{encounters} chỉ giữ lại các thuộc tính cốt lõi: định danh lượt khám (\texttt{\_id}), mã bệnh nhân (\texttt{PATIENT}), cơ sở y tế (\texttt{ORGANIZATION}), loại hình khám (\texttt{ENCOUNTERCLASS}), thời điểm khám lưu ở kiểu ngày giờ nhị phân (\texttt{START}), cùng hai mảng nhúng tối giản là danh sách mã chẩn đoán (\texttt{conditions}) và danh sách chỉ số xét nghiệm/quan trắc (\texttt{observations}). Cấu trúc JSON mẫu đầy đủ của một tài liệu được trình bày chi tiết tại \textbf{Phụ lục~\ref{app:schema-queries}}.
 
 Với cấu trúc tối giản này, kích thước trung bình đo thực tế trên tập \texttt{D100K} đạt $1{,}248.7\text{ byte/tài liệu}$ ở dạng JSON (ước lượng $1{,}366.3\text{ byte}$ ở dạng BSON). Ngoại suy lên quy mô lớn nhất \texttt{D3M} ($3{,}000{,}000$ tài liệu), tổng dung lượng BSON giải nén đạt khoảng $3.82\text{ GB}$ cộng thêm khoảng $1.15\text{ GB}$ chỉ mục, tạo thành \textit{working set} ước tính $\approx \mathbf{4.97\text{ GB}}$ (trong khi dung lượng nén trên đĩa chỉ khoảng $1.91\text{ GB}$). Quy mô này vừa nằm gọn trên ổ đĩa Standard SSD $32\text{ GB}$, vừa vượt xa giới hạn WiredTiger Internal Cache trên một máy chủ đơn lẻ ở cả hai cấu hình hạ tầng, tạo điều kiện quan sát rõ hiện tượng tràn bộ nhớ đệm ở \texttt{RQ1}.
 
@@ -52,41 +36,30 @@ Toàn bộ dữ liệu được sinh theo từng đợt nhỏ ($10{,}000$ bệnh
 }
 \end{table}
 
-Riêng bộ dữ liệu lệch nặng \texttt{D1M-heavy} được xây dựng chính xác sao cho $130$ bệnh nhân ``nóng'' (đúng $1.0\%$ trên tổng $13{,}000$ bệnh nhân) sở hữu $300{,}000$ lượt khám (đúng $30.0\%$ tổng số tài liệu), bằng cách nhân bản lượt khám của nhóm $1\%$ này kèm cấp mới \texttt{\_id} và dịch chuyển mốc \texttt{START} hợp lệ trong khung 3 năm gần nhất. Mỗi bộ dữ liệu đều đi kèm danh sách mã bệnh nhân (\texttt{patient\_ids.txt}) và tệp tham số truy vấn cố định (\texttt{query\_params.json} sinh với $\texttt{SEED} = 42$) nhằm bảo đảm mọi môi trường thực thi \textbf{cùng một chuỗi tham số truy vấn giống hệt nhau}.
+Riêng bộ dữ liệu lệch nặng \texttt{D1M-heavy} được xây dựng chính xác sao cho $130$ bệnh nhân \textquotedblleft nóng\textquotedblright  (đúng $1.0\%$ trên tổng $13{,}000$ bệnh nhân) sở hữu $300{,}000$ lượt khám (đúng $30.0\%$ tổng số tài liệu), bằng cách nhân bản lượt khám của nhóm $1\%$ này kèm cấp mới \texttt{\_id} và dịch chuyển mốc \texttt{START} hợp lệ trong khung 3 năm gần nhất. Mỗi bộ dữ liệu đều đi kèm danh sách mã bệnh nhân (\texttt{patient\_ids.txt}) và tệp tham số truy vấn cố định (\texttt{query\_params.json} sinh với $\texttt{SEED} = 42$) nhằm bảo đảm mọi môi trường thực thi \textbf{cùng một chuỗi tham số truy vấn giống hệt nhau}.
 
-\section{Bộ Truy vấn Đại diện (\texttt{Q1}--\texttt{Q4}) và Hệ thống Chỉ mục}
+\section{Bộ Truy vấn Đại diện (\texttt{Q1}\textendash \texttt{Q4}) và Hệ thống Chỉ mục}
 
 \subsection{Đặc tả bốn truy vấn đại diện}
 
-Tải đọc gồm bốn truy vấn đại diện cho hai lớp nghiệp vụ EHR phổ biến: nhóm \textbf{truy vấn theo bệnh nhân} (ký hiệu $P$: \texttt{Q1}, \texttt{Q2} --- kỳ vọng đạt \texttt{SINGLE\_SHARD} trên cụm phân mảnh băm theo bệnh nhân) và nhóm \textbf{truy vấn phân tích xuyên bệnh nhân} (ký hiệu $X$: \texttt{Q3}, \texttt{Q4} --- phát sinh \texttt{SHARD\_MERGE} trên cụm phân mảnh băm nhưng có thể tỉa shard trên cụm phân mảnh theo thời gian). Định nghĩa cụ thể được trình bày tại Listing~\ref{lst:queries-q1-q4}.
+Tải đọc gồm bốn truy vấn đại diện cho hai lớp nghiệp vụ EHR phổ biến: nhóm \textbf{truy vấn theo bệnh nhân} (ký hiệu $P$: \texttt{Q1}, \texttt{Q2} \textemdash  kỳ vọng đạt \texttt{SINGLE\_SHARD} trên cụm phân mảnh băm theo bệnh nhân) và nhóm \textbf{truy vấn phân tích xuyên bệnh nhân} (ký hiệu $X$: \texttt{Q3}, \texttt{Q4} \textemdash  phát sinh \texttt{SHARD\_MERGE} trên cụm phân mảnh băm nhưng có thể tỉa shard trên cụm phân mảnh theo thời gian). Bảng~\ref{tab:queries-summary} tóm tắt mục đích nghiệp vụ, điều kiện lọc và hành vi định tuyến kỳ vọng của bốn truy vấn này; mã truy vấn MongoDB chi tiết được đặt tại \textbf{Phụ lục~\ref{app:schema-queries}}.
 
-\begin{lstlisting}[language=MongoJS, caption={Định nghĩa bốn truy vấn đại diện \texttt{Q1}--\texttt{Q4} trên collection \texttt{encounters}.}, label={lst:queries-q1-q4}]
-// Q1: 10 luot kham gan nhat cua 1 benh nhan (OLTP diem -> SINGLE_SHARD tren SH-hash)
-db.encounters.find({ PATIENT: pid }).sort({ START: -1 }).limit(10)
-
-// Q2: Ket qua xet nghiem 12 thang cua 1 benh nhan (Aggregation -> SINGLE_SHARD tren SH-hash)
-db.encounters.aggregate([
-  { $match: { PATIENT: pid, START: { $gte: d12mAgo } } },
-  { $unwind: "$observations" },
-  { $match: { "observations.CATEGORY": "laboratory" } },
-  { $project: { START: 1, "observations.CODE": 1, "observations.VALUE": 1 } }
-])
-
-// Q3: Top 10 ma benh trong 1 quy (Xuyen benh nhan, ket qua nho -> SHARD_MERGE tren SH-hash)
-db.encounters.aggregate([
-  { $match: { START: { $gte: qStart, $lt: qEnd } } },
-  { $unwind: "$conditions" },
-  { $group: { _id: "$conditions.CODE", n: { $sum: 1 } } },
-  { $sort: { n: -1 } },
-  { $limit: 10 }
-])
-
-// Q4: Luot kham chan doan tieu duong type 2 trong 1 thang (Xuyen benh nhan, ket qua dai)
-db.encounters.find(
-  { "conditions.CODE": "44054006", START: { $gte: mStart, $lt: mEnd } },
-  { PATIENT: 1, START: 1, ORGANIZATION: 1 }
-)
-\end{lstlisting}
+\begin{table}[!htb]
+\centering
+\caption{Tóm tắt mục đích nghiệp vụ và đặc tính định tuyến của bốn truy vấn đại diện \texttt{Q1}\textendash \texttt{Q4}.}
+\label{tab:queries-summary}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{c c X L{3.3cm}}
+\toprule
+\textbf{Mã} & \textbf{Nhóm} & \textbf{Mục đích nghiệp vụ \& Điều kiện lọc chính} & \textbf{Định tuyến kỳ vọng} \\
+\midrule
+\texttt{Q1} & $P$ & Truy xuất 10 lượt khám gần nhất của một bệnh nhân (lọc theo \texttt{PATIENT}, sắp xếp giảm dần theo \texttt{START}). & \texttt{SINGLE\_SHARD} trên \texttt{SH-hash} \\
+\texttt{Q2} & $P$ & Tổng hợp kết quả xét nghiệm (\texttt{laboratory}) trong 12 tháng gần nhất của một bệnh nhân (lọc \texttt{PATIENT} + \texttt{START}, bung mảng \texttt{observations}). & \texttt{SINGLE\_SHARD} trên \texttt{SH-hash} \\
+\texttt{Q3} & $X$ & Thống kê Top 10 mã bệnh phổ biến nhất trong một quý (lọc khoảng \texttt{START}, gom nhóm theo mã chẩn đoán, kết quả nhỏ). & \texttt{SHARD\_MERGE} trên \texttt{SH-hash}; \texttt{SINGLE\_SHARD} trên \texttt{SH-range} \\
+\texttt{Q4} & $X$ & Liệt kê các lượt khám chẩn đoán tiểu đường type 2 (mã \texttt{44054006}) trong một tháng (lọc mã bệnh + khoảng \texttt{START}, kết quả dài). & \texttt{SHARD\_MERGE} trên \texttt{SH-hash}; \texttt{SINGLE\_SHARD} trên \texttt{SH-range} \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \textbf{Quy tắc chọn cửa sổ thời gian cho \texttt{Q3} và \texttt{Q4}:} Các cửa sổ quý (\texttt{qStart..qEnd}) và tháng (\texttt{mStart..mEnd}) được chọn trong 3 năm gần nhất của tập dữ liệu. Trước khi chạy \textbf{RQ3}, hệ thống đọc biên các chunk từ lệnh \texttt{sh.status()} của cụm \texttt{SH-range} để chọn các khoảng thời gian \textbf{nằm trọn trong một chunk duy nhất}, tránh việc cửa sổ vắt ngang ranh giới chia giữa hai shard làm sai lệch phép đối chứng 1-shard so với 2-shard.
 
@@ -94,10 +67,10 @@ db.encounters.find(
 
 Nhằm loại bỏ sai lệch do khác biệt chiến lược quét dữ liệu giữa quét toàn bộ collection (\texttt{COLLSCAN}) và quét qua chỉ mục B-Tree (\texttt{IXSCAN}), bốn chỉ mục phụ sau được khởi tạo đồng nhất trên \textbf{mọi môi trường} trước khi tiến hành đo Read hoặc Write:
 \begin{enumerate}
-  \item \texttt{\{PATIENT: 1, START: -1\}} --- tối ưu trực tiếp cho \texttt{Q1} và bước lọc đầu tiên của \texttt{Q2}.
-  \item \texttt{\{START: 1\}} --- tối ưu cho phép lọc khoảng thời gian của \texttt{Q3}.
-  \item \texttt{\{"conditions.CODE": 1, START: 1\}} --- chỉ mục đa khóa (\textit{multikey index}) phục vụ trực tiếp cho \texttt{Q4}.
-  \item \texttt{\{ENCOUNTERCLASS: 1, START: 1\}} --- chỉ mục bổ trợ phản ánh chi phí duy trì nhiều chỉ mục khi ghi dữ liệu trong hệ thống EHR thực tế.
+  \item \texttt{\{PATIENT: 1, START: -1\}} \textemdash  tối ưu trực tiếp cho \texttt{Q1} và bước lọc đầu tiên của \texttt{Q2}.
+  \item \texttt{\{START: 1\}} \textemdash  tối ưu cho phép lọc khoảng thời gian của \texttt{Q3}.
+  \item \texttt{\{"conditions.CODE": 1, START: 1\}} \textemdash  chỉ mục đa khóa (\textit{multikey index}) phục vụ trực tiếp cho \texttt{Q4}.
+  \item \texttt{\{ENCOUNTERCLASS: 1, START: 1\}} \textemdash  chỉ mục bổ trợ phản ánh chi phí duy trì nhiều chỉ mục khi ghi dữ liệu trong hệ thống EHR thực tế.
 \end{enumerate}
 Bên cạnh đó, các cụm sharded có thêm chỉ mục bắt buộc phục vụ khóa phân mảnh tương ứng: \texttt{\{PATIENT: "hashed"\}} cho \texttt{B1}/\texttt{SH-hash} và \texttt{\{START: 1, PATIENT: 1\}} cho \texttt{SH-range}.
 
@@ -117,7 +90,7 @@ Bên cạnh đó, các cụm sharded có thêm chỉ mục bắt buộc phục v
 \textbf{Mã \texttt{env}} & \textbf{Kiến trúc} & \textbf{Shard Key (\texttt{encounters})} & \textbf{Mục đích kiểm soát biến} \\
 \midrule
 \texttt{SA} & Standalone (1-node RS) & Không shard & Mốc cơ sở (\textit{baseline}) không đi qua \texttt{mongos}; client kết nối trực tiếp tới một nút dữ liệu duy nhất. \\
-\texttt{B1} & Sharded 1 shard & \texttt{\{PATIENT: "hashed"\}} & Đi qua \texttt{mongos} nhưng vẫn chỉ dùng 1 shard --- dùng để cô lập chi phí điều phối (\textit{coordination overhead}). \\
+\texttt{B1} & Sharded 1 shard & \texttt{\{PATIENT: "hashed"\}} & Đi qua \texttt{mongos} nhưng vẫn chỉ dùng 1 shard \textemdash  dùng để cô lập chi phí điều phối (\textit{coordination overhead}). \\
 \texttt{SH-hash} & Sharded 2 shards & \texttt{\{PATIENT: "hashed"\}} & Khởi tạo sẵn $16$ chunk chia đều 2 shards (\texttt{numInitialChunks: 16}); đánh giá scale-out đọc/ghi và \texttt{SHARD\_MERGE}. \\
 \texttt{SH-range} & Sharded 2 shards & \texttt{\{START: 1, PATIENT: 1\}} & Không chia sẵn chunk; đối chứng cho điểm nóng ghi (\texttt{RQ2}) và Shard Pruning theo thời gian (\texttt{RQ3}). \\
 \bottomrule
@@ -126,11 +99,11 @@ Bên cạnh đó, các cụm sharded có thêm chỉ mục bắt buộc phục v
 
 \subsection{Quy trình đo đạc, Thu thập chỉ số hệ thống và Ma trận kịch bản}
 
-Trước mỗi lượt chạy, hệ thống xác minh tiến trình Balancer đã dừng (\texttt{sh.isBalancerRunning() == false}), số chunk ổn định và kiểm tra tài nguyên nút chạy tải. Mỗi lượt đo Read (\texttt{R1-2}, \texttt{R1-3}, \texttt{R3-2}, \texttt{R3-4}) gồm \textbf{10 giây làm nóng bộ nhớ đệm} (\textit{warm-up}, không ghi số liệu), \textbf{30 giây đo chính thức} và \textbf{10 giây nghỉ}, lặp lại \textbf{3 lần} (\texttt{r1}--\texttt{r3}); các bài đo ghi OLTP (\texttt{R2-2}, \texttt{R2-3}) đo trong \textbf{60 giây} (chia thành 6 cửa sổ 10 giây) lặp \textbf{3 lần}.
+Trước mỗi lượt chạy, hệ thống xác minh tiến trình Balancer đã dừng (\texttt{sh.isBalancerRunning() == false}), số chunk ổn định và kiểm tra tài nguyên nút chạy tải. Mỗi lượt đo Read (\texttt{R1-2}, \texttt{R1-3}, \texttt{R3-2}, \texttt{R3-4}) gồm \textbf{10 giây làm nóng bộ nhớ đệm} (\textit{warm-up}, không ghi số liệu), \textbf{30 giây đo chính thức} và \textbf{10 giây nghỉ}, lặp lại \textbf{3 lần} (\texttt{r1}\textendash \texttt{r3}); các bài đo ghi OLTP (\texttt{R2-2}, \texttt{R2-3}) đo trong \textbf{60 giây} (chia thành 6 cửa sổ 10 giây) lặp \textbf{3 lần}.
 
-Để đánh giá độ trễ toàn diện thay vì chỉ dựa vào giá trị trung bình dễ bị che lấp bởi ngoại lai, thực nghiệm báo cáo các mốc phân vị độ trễ gồm \textbf{\texttt{p50}} (trung vị), \textbf{\texttt{p95}} (phân vị $95\%$ --- chỉ số độ trễ đuôi chính) và \textbf{\texttt{p99}} (phân vị $99\%$), đi kèm \textbf{khoảng tin cậy $95\%$ ($95\%\text{ CI}$)} tính qua ba lần lặp độc lập. Song song với nhật ký độ trễ từng truy vấn phía máy khách, hệ thống thu thập hai lớp dữ liệu giám sát (\textit{telemetry}): (1) tài nguyên hệ điều hành trên mọi máy ảo bằng công cụ \textbf{\texttt{sar}} (\textit{System Activity Reporter} của Linux, lấy mẫu 1 giây/lần cho CPU, RAM, Disk I/O và mạng); và (2) ảnh chụp lệnh \textbf{\texttt{db.serverStatus()}} tại đầu và cuối mỗi lượt chạy trên mọi nút MongoDB nhằm tính chênh lệch số thao tác (\texttt{opcounters}), tỷ lệ trúng bộ nhớ đệm WiredTiger và lưu lượng mạng truyền qua \texttt{mongos}.
+Để đánh giá độ trễ toàn diện thay vì chỉ dựa vào giá trị trung bình dễ bị che lấp bởi ngoại lai, thực nghiệm báo cáo các mốc phân vị độ trễ gồm \textbf{\texttt{p50}} (trung vị), \textbf{\texttt{p95}} (phân vị $95\%$ \textemdash  chỉ số độ trễ đuôi chính) và \textbf{\texttt{p99}} (phân vị $99\%$), đi kèm \textbf{khoảng tin cậy $95\%$ ($95\%\text{ CI}$)} tính qua ba lần lặp độc lập. Song song với nhật ký độ trễ từng truy vấn phía máy khách, hệ thống thu thập hai lớp dữ liệu giám sát (\textit{telemetry}): (1) tài nguyên hệ điều hành trên mọi máy ảo bằng công cụ \textbf{\texttt{sar}} (\textit{System Activity Reporter} của Linux, lấy mẫu 1 giây/lần cho CPU, RAM, Disk I/O và mạng); và (2) ảnh chụp lệnh \textbf{\texttt{db.serverStatus()}} tại đầu và cuối mỗi lượt chạy trên mọi nút MongoDB nhằm tính chênh lệch số thao tác (\texttt{opcounters}), tỷ lệ trúng bộ nhớ đệm WiredTiger và lưu lượng mạng truyền qua \texttt{mongos}.
 
-Tóm tắt 12 kịch bản thực nghiệm phục vụ ba câu hỏi nghiên cứu được tổng hợp tại Bảng~\ref{tab:scenarios-matrix}. Trong đó, kịch bản \texttt{R2-3} mô phỏng tải ghi lệch truy cập bằng \textbf{phân phối Zipf} ($\theta = 1.2$) --- một phân phối quy luật lũy thừa điển hình trong đó một nhóm nhỏ bệnh nhân phát sinh tỷ trọng lớn lưu lượng ghi mới (\textit{hot patients}).
+Tóm tắt 12 kịch bản thực nghiệm phục vụ ba câu hỏi nghiên cứu được tổng hợp tại Bảng~\ref{tab:scenarios-matrix}. Trong đó, kịch bản \texttt{R2-3} mô phỏng tải ghi lệch truy cập bằng \textbf{phân phối Zipf} ($\theta = 1.2$) \textemdash  một phân phối quy luật lũy thừa điển hình trong đó một nhóm nhỏ bệnh nhân phát sinh tỷ trọng lớn lưu lượng ghi mới (\textit{hot patients}).
 
 \begin{table}[!htb]
 \centering
@@ -148,13 +121,13 @@ Tóm tắt 12 kịch bản thực nghiệm phục vụ ba câu hỏi nghiên c�
   & \texttt{R1-4} & Cold Cache (tùy chọn) & \texttt{D3M}, khởi động lại \texttt{mongod} + xóa page cache hệ điều hành, đo 30s đầu không warm-up. \\
 \midrule
 \multirow{4}{*}{\textbf{RQ2}}
-  & \texttt{R2-1} & Nạp hàng loạt \& Balancer & \texttt{D1M-nat}, \texttt{insert\_many} (lô 500--1000 docs, \texttt{ordered=False}); tốc độ nạp, phân bố shard, số lần di chuyển chunk. \\
+  & \texttt{R2-1} & Nạp hàng loạt \& Balancer & \texttt{D1M-nat}, \texttt{insert\_many} (lô 500\textendash 1000 docs, \texttt{ordered=False}); tốc độ nạp, phân bố shard, số lần di chuyển chunk. \\
   & \texttt{R2-2} & Ghi OLTP lệch tự nhiên & Ghi mới (\texttt{START=now()}), chọn \texttt{PATIENT} đều, 4/8 luồng, 60s $\times$ 3 reps; \texttt{inserts/s}, \texttt{\% insert/shard} mỗi 10s. \\
   & \texttt{R2-3} & Ghi OLTP lệch truy cập & Giống \texttt{R2-2} nhưng chọn \texttt{PATIENT} theo phân phối Zipf ($\theta = 1.2$); đối chiếu hot patient vs hot time-range. \\
   & \texttt{R2-4} & Lệch dữ liệu nặng & Nạp \texttt{D1M-heavy} trên \texttt{SH-hash} và \texttt{SH-range}; \texttt{max/avg}, \texttt{Imbalance (\%)}, số \texttt{jumbo\_chunks}. \\
 \midrule
 \multirow{4}{*}{\textbf{RQ3}}
-  & \texttt{R3-1} & Giải phẫu \texttt{explain} & 5 bộ tham số cho \texttt{Q1}--\texttt{Q4}; kế hoạch thắng cuộc, tỷ lệ Shard Pruning, số khóa/tài liệu quét, thời gian trên từng shard. \\
+  & \texttt{R3-1} & Giải phẫu \texttt{explain} & 5 bộ tham số cho \texttt{Q1}\textendash \texttt{Q4}; kế hoạch thắng cuộc, tỷ lệ Shard Pruning, số khóa/tài liệu quét, thời gian trên từng shard. \\
   & \texttt{R3-2} & Latency 1 luồng (\texttt{Q3, Q4}) & \texttt{Q3}, \texttt{Q4} trên \texttt{SA}, \texttt{SH-hash}, \texttt{SH-range} qua 4 datasets (ghép cùng \texttt{Q1, Q2} từ \texttt{R1-2}). \\
   & \texttt{R3-3} & Lưu lượng mạng & Chênh lệch \texttt{serverStatus().network} trên \texttt{mongos}; tính số KB trung bình/truy vấn. \\
   & \texttt{R3-4} & Nhiễu chéo tải hỗn hợp & Trên \texttt{SH-hash} (\texttt{D1M, D3M}), trộn $P:X$ theo $100:0 / 90:10 / 70:30$; QPS tổng, \texttt{p95} riêng nhóm $P$, CPU các VM. \\
