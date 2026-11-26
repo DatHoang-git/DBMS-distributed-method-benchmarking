@@ -1,11 +1,11 @@
 \chapter{Khuyến nghị Thiết kế, Giới hạn Thực nghiệm và Kết luận}
 \label{chap:conclusion}
 
-Chương này tổng hợp các khuyến nghị thực tiễn về lựa chọn chiến lược phân mảnh cho hệ thống hồ sơ bệnh án điện tử (EHR), đánh giá thẳng thắn các giới hạn về độ giá trị thực nghiệm (\textit{Threats to Validity}) nhằm chủ động làm rõ phạm vi khái quát hóa của kết quả, và đưa ra kết luận chung của đề tài.
+Chương này tổng hợp các khuyến nghị thực tiễn về lựa chọn chiến lược phân mảnh cho hệ thống hồ sơ bệnh án điện tử (EHR), phân tích thẳng thắn các giới hạn về độ giá trị thực nghiệm (\textit{Threats to Validity}) nhằm làm rõ phạm vi khái quát hóa của kết quả, và đưa ra kết luận chung của đề tài.
 
 \section{Khuyến nghị Thiết kế Sharding cho Hệ thống EHR}
 
-Từ phân tích cơ chế hoạt động ở Chương~\ref{chap:sharding-mechanism} kết hợp với cấu trúc thực nghiệm ở Chương~\ref{chap:methodology}--\ref{chap:results}, Bảng~\ref{tab:design-recommendations} đề xuất ma trận lựa chọn kiến trúc lưu trữ và chiến lược khóa phân mảnh phù hợp cho từng đặc trưng workload y tế.
+Từ phân tích cơ chế hoạt động ở Chương~\ref{chap:sharding-mechanism} kết hợp với thiết kế thực nghiệm ở Chương~\ref{chap:methodology}--\ref{chap:results}, Bảng~\ref{tab:design-recommendations} đề xuất ma trận lựa chọn kiến trúc lưu trữ và chiến lược khóa phân mảnh phù hợp cho từng đặc trưng tải công việc y tế.
 
 \begin{table}[!htb]
 \centering
@@ -16,39 +16,39 @@ Từ phân tích cơ chế hoạt động ở Chương~\ref{chap:sharding-mechan
 \toprule
 \textbf{Đặc trưng Workload EHR} & \textbf{Kiến trúc đề xuất} & \textbf{Lý do kỹ thuật \& Lưu ý vận hành} \\
 \midrule
-Quy mô nhỏ, \textit{working set} nằm gọn trong WiredTiger Cache của 1 nút & \textbf{Standalone / Replica Set} (\texttt{SA}) & Tránh hoàn toàn chi phí mạng và điều phối \texttt{mongos} cũng như độ phức tạp quản trị cụm sharded. \\
+Quy mô nhỏ, \textit{working set} nằm gọn trong bộ nhớ đệm của 1 nút & \textbf{Standalone / Replica Set} (\texttt{SA}) & Tránh hoàn toàn chi phí mạng, chi phí điều phối \texttt{mongos} và độ phức tạp quản trị cụm sharded. \\
 \addlinespace
-Thiên về OLTP theo bệnh nhân (\texttt{Q1, Q2}) và ghi mới liên tục (\texttt{START = now()}) & \textbf{Hashed Sharding} (\texttt{\{PATIENT: "hashed"\}}) & Bảo đảm \texttt{SINGLE\_SHARD} cho mọi truy vấn bệnh nhân và rải đều $50/50$ lưu lượng ghi mới, triệt tiêu \textit{write hotspot}. \\
+Thiên về OLTP theo bệnh nhân (\texttt{Q1, Q2}) và ghi mới liên tục (\texttt{START = now()}) & \textbf{Hashed Sharding} (\texttt{\{PATIENT: "hashed"\}}) & Bảo đảm \texttt{SINGLE\_SHARD} cho truy vấn bệnh nhân và rải đều lưu lượng ghi mới giữa các shard, triệt tiêu điểm nóng ghi (\textit{write hotspot}). \\
 \addlinespace
-Thiên về báo cáo định kỳ theo khung thời gian (\texttt{Q3, Q4}), tải ghi theo lô & \textbf{Ranged Sharding} (\texttt{\{START: 1, PATIENT: 1\}}) & Tận dụng \textit{Shard Pruning} theo khoảng thời gian; cần tách riêng hoặc chấp nhận nút thắt ghi tại biên \texttt{MaxKey}. \\
+Thiên về báo cáo định kỳ theo khung thời gian (\texttt{Q3, Q4}), tải ghi theo lô & \textbf{Ranged Sharding} (\texttt{\{START: 1, PATIENT: 1\}}) & Tận dụng cơ chế \textit{Shard Pruning} theo khoảng thời gian; cần tách riêng hoặc chấp nhận nút thắt ghi tại biên \texttt{MaxKey}. \\
 \addlinespace
-Hỗn hợp OLTP nặng + phân tích xuyên bệnh nhân (tỷ lệ $X \ge 10$--$30\%$) & \textbf{Hashed Sharding + Workload Isolation} & Tránh để truy vấn \texttt{SHARD\_MERGE} gây nhiễu chéo lên độ trễ \texttt{p95} của nhóm $P$; trong sản xuất nên định tuyến truy vấn phân tích sang nút Secondary chuyên biệt (\texttt{readPreference: secondary}) hoặc kho phân tích tách rời. \\
+Hỗn hợp OLTP nặng + phân tích xuyên bệnh nhân (tỷ lệ $X \ge 10$--$30\%$) & \textbf{Hashed Sharding + Cô lập tải} & Tránh để truy vấn \texttt{SHARD\_MERGE} gây nhiễu chéo lên độ trễ \texttt{p95} của nhóm $P$; trong sản xuất nên hướng truy vấn phân tích sang nút Secondary chuyên biệt (\texttt{readPreference: secondary}) hoặc kho phân tích tách rời. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\resultplaceholder{Cập nhật định lượng cho Mục 5.1}{Sau khi có kết quả Chương 4, bổ sung trực tiếp các mốc số liệu thực tế (ví dụ: quy mô \textit{break-even} cụ thể, mức suy giảm \texttt{p95} của nhóm $P$ ở tỷ lệ $P:X = 70:30$) vào các dòng khuyến nghị trên.}
+\resultplaceholder{Cập nhật định lượng cho Mục 5.1}{Sau khi hoàn tất Chương 4, bổ sung trực tiếp các mốc số liệu thực tế (quy mô \textit{break-even} cụ thể, hệ số tăng tốc ghi, mức suy giảm \texttt{p95} của nhóm $P$ ở tỷ lệ $P:X = 70:30$) vào bảng khuyến nghị trên.}
 
 \section{Giới hạn Thực nghiệm (\textit{Threats to Validity})}
 
-Để bảo đảm tính trung thực khoa học và chủ động giải đáp các câu hỏi phản biện chuyên sâu, báo cáo chỉ rõ bốn giới hạn chính của thiết lập thực nghiệm:
+Để bảo đảm tính khách quan khoa học và chủ động làm rõ ranh giới diễn giải kết quả, báo cáo chỉ ra bốn giới hạn chính của thiết lập thực nghiệm:
 
 \begin{enumerate}
-  \item \textbf{Mô hình Replica Set 1 thành viên trên mỗi shard (\textit{Internal/Construct Validity}):} Do hạn mức vCPU của gói Azure for Students ($4$--$6\text{ vCPU}$ tổng), mỗi shard được triển khai với 1 thành viên duy nhất. Hệ quả là \texttt{writeConcern: \{w: "majority"\}} tương đương \texttt{w: 1} và không phản ánh độ trễ đồng bộ \texttt{oplog} qua mạng tới các nút Secondary như trong môi trường sản xuất (thường dùng 3 thành viên/shard). Tuy nhiên, thiết lập này vẫn giữ nguyên vẹn bản chất định tuyến của \texttt{mongos}, cơ chế chia chunk và sự khác biệt giữa \textit{Hashed} và \textit{Ranged} sharding.
+  \item \textbf{Mô hình Replica Set 1 thành viên trên mỗi shard (\textit{Internal/Construct Validity}):} Do hạn mức vCPU của gói Azure for Students ($4$--$6\text{ vCPU}$ tổng), mỗi shard được triển khai với 1 thành viên duy nhất. Hệ quả là chính sách xác nhận ghi đa số (\texttt{writeConcern: \{w: "majority"\}}) tương đương với ghi xác nhận trên 1 nút (\texttt{w: 1}) và không phản ánh độ trễ đồng bộ nhật ký thao tác \texttt{oplog} qua mạng sang các nút Secondary như trong môi trường sản xuất (thường dùng 3 thành viên mỗi shard). Tuy nhiên, thiết lập này vẫn giữ nguyên vẹn bản chất định tuyến của \texttt{mongos}, cơ chế chia chunk và sự khác biệt giữa \textit{Hashed} và \textit{Ranged} sharding.
 
-  \item \textbf{Giới hạn bộ nhớ đệm nhân tạo và quy mô cụm 2 shard (\textit{External Validity}):} Tham số \texttt{wiredTigerCacheSizeGB} ($0.75\text{ GB}$ ở Profile A hoặc $1.5\text{ GB}$ ở Profile B) và \texttt{chunkSize = 32 MB} được thu nhỏ có chủ đích nhằm kích hoạt hiện tượng tràn cache ở quy mô $3\text{M}$ tài liệu thay vì hàng trăm triệu tài liệu. Xu hướng định tính của \textit{break-even point} và sự đánh đổi giữa \textit{Shard Pruning} với \textit{Parallel Scan} hoàn toàn có thể ngoại suy lên cụm lớn hơn, song các giá trị độ trễ tuyệt đối (ms) chỉ gắn với cấu hình phần cứng cụ thể này.
+  \item \textbf{Giới hạn bộ nhớ đệm nhân tạo và cụm 2 shard (\textit{External Validity}):} Tham số dung lượng WiredTiger Internal Cache ($0.75\text{ GB}$ ở Profile A hoặc $1.5\text{ GB}$ ở Profile B) và kích thước chunk ($32\text{ MB}$) được thu nhỏ có chủ đích nhằm kích hoạt hiện tượng tràn bộ nhớ đệm ở mốc $3\text{ triệu}$ tài liệu thay vì hàng trăm triệu tài liệu. Xu hướng định tính của điểm hòa vốn và sự đánh đổi giữa \textit{Shard Pruning} với \textit{Parallel Scan} hoàn toàn có thể khái quát hóa lên cụm lớn hơn, song các giá trị độ trễ tuyệt đối (ms) chỉ gắn với cấu hình phần cứng thử nghiệm cụ thể.
 
-  \item \textbf{Đặc thù máy ảo dòng B-series trên đám mây (nếu áp dụng Profile A):} Dòng máy ảo \texttt{Standard\_B1ms/B2s} sử dụng cơ chế tích lũy CPU credit. Mặc dù quy trình đo bắt buộc kiểm tra credit $\ge 50\%$ trước mỗi pha và tạm nghỉ hồi credit khi tụt dưới $40\%$, nhiễu từ môi trường đa thuê bao (\textit{noisy neighbor}) trên đám mây công cộng vẫn có thể gây ra một số giá trị ngoại lai ở phân vị cao (\texttt{p99}), do đó báo cáo lấy \texttt{p95} kèm $95\%\text{ CI}$ qua 3 lần lặp làm chỉ số kết luận chính.
+  \item \textbf{Đặc thù máy ảo dòng B-series trên đám mây công cộng (nếu dùng Profile A):} Dòng máy ảo \texttt{Standard\_B1ms/B2s} vận hành theo cơ chế tích lũy hạn mức CPU (\textit{CPU credit}). Dù quy trình đo bắt buộc kiểm tra credit $\ge 50\%$ trước mỗi pha và tạm nghỉ hồi credit khi tụt dưới $40\%$, hiện tượng nhiễu tài nguyên từ các máy ảo thuê chung hạ tầng vật lý (\textit{noisy neighbor}) vẫn có thể tạo ra ngoại lai ở phân vị rất cao (\texttt{p99}); vì vậy báo cáo lấy \texttt{p95} kèm $95\%\text{ CI}$ qua 3 lần lặp làm chỉ số kết luận chính.
 
-  \item \textbf{Dữ liệu tổng hợp Synthea và schema tối giản (\textit{Ecological Validity}):} Tập dữ liệu Synthea mô phỏng rất sát phân bố lâm sàng thực tế nhưng vẫn là dữ liệu tổng hợp; việc lược bỏ các trường văn bản mô tả để giữ kích thước tài liệu quanh $1.27\text{ KB}$ giúp tối ưu lưu trữ trên Standard SSD nhưng có thể làm nhẹ bớt chi phí tuần tự hóa BSON/mạng so với bệnh án thực tế có kích thước lớn hơn.
+  \item \textbf{Dữ liệu tổng hợp Synthea và schema tối giản (\textit{Ecological Validity}):} Tập dữ liệu Synthea mô phỏng sát đặc trưng lâm sàng nhưng vẫn là dữ liệu tổng hợp; việc lược bỏ các trường văn bản mô tả dài để giữ kích thước tài liệu quanh $1.27\text{ KB}$ giúp tối ưu dung lượng trên Standard SSD nhưng có thể làm nhẹ bớt chi phí truyền tải BSON so với hồ sơ bệnh án thực tế chứa nhiều ghi chú văn bản tự do.
 \end{enumerate}
 
 \section{Kết luận và Hướng phát triển}
 
-\resultplaceholder{Hoàn thiện Kết luận (Mục 5.3)}{Sau khi hoàn tất Chương 4, tổng kết ngắn gọn 3 phát hiện định lượng tương ứng với \texttt{RQ1}, \texttt{RQ2} và \texttt{RQ3}.}
+\resultplaceholder{Hoàn thiện Kết luận (Mục 5.3)}{Sau khi hoàn tất Chương 4, tổng kết ngắn gọn ba phát hiện định lượng tương ứng với \texttt{RQ1}, \texttt{RQ2} và \texttt{RQ3}.}
 
 \noindent\textbf{Hướng phát triển:}
 \begin{itemize}
-  \item Mở rộng cụm thử nghiệm lên 3--4 shard với Replica Set 3 thành viên mỗi shard (Primary--Secondary--Secondary) để đo thêm tác động của độ trễ đồng bộ \texttt{w: "majority"} và cơ chế cô lập tải phân tích bằng \texttt{readPreference: "secondary"}.
-  \item Khảo sát chiến lược khóa phân mảnh phức hợp (\textit{Compound Hashed Shard Key}, ví dụ \texttt{\{PATIENT: "hashed", START: 1\}}) và cơ chế \textit{Zone Sharding} nhằm kết hợp lợi ích chia tải đều với khả năng khoanh vùng dữ liệu theo khu vực địa lý hoặc năm khám.
+  \item Mở rộng cụm thử nghiệm lên 3--4 shard với Replica Set 3 thành viên mỗi shard (1 Primary, 2 Secondary) để đo thêm tác động của độ trễ đồng bộ \texttt{w: "majority"} và cơ chế cô lập tải phân tích bằng tùy chọn đọc từ nút phụ (\texttt{readPreference: "secondary"}).
+  \item Khảo sát khóa phân mảnh băm phức hợp (\textit{Compound Hashed Shard Key}, kết hợp một trường băm với một trường theo khoảng như \texttt{\{PATIENT: "hashed", START: 1\}}) và phân mảnh theo vùng (\textit{Zone Sharding} --- gắn dải dữ liệu vào từng nhóm shard cố định theo năm khám hoặc khu vực địa lý) nhằm cân bằng tốt hơn giữa phân tải ghi và khoanh vùng truy vấn thời gian.
 \end{itemize}

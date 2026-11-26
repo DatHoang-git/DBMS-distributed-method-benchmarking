@@ -5,54 +5,56 @@
 
 \section*{1. Bối cảnh và Lý do chọn đề tài}
 
-Trong các hệ thống thông tin y tế hiện đại, dữ liệu hồ sơ bệnh án điện tử (\textit{Electronic Health Records --- EHR}) có đặc trưng vừa bán cấu trúc (mỗi lượt khám bao gồm danh sách chẩn đoán, chỉ số xét nghiệm, đơn thuốc có số lượng biến thiên lớn), vừa tăng trưởng liên tục theo thời gian và số lượng bệnh nhân. Khi quy mô tập dữ liệu làm việc (\textit{working set}, gồm cả tài liệu và chỉ mục) vượt quá dung lượng bộ nhớ đệm RAM của một máy chủ cơ sở dữ liệu đơn lẻ, hiệu năng hệ thống suy giảm mạnh do tần suất đọc/ghi đĩa tăng đột biến và hiện tượng tranh chấp tài nguyên CPU/I/O.
+Trong các hệ thống thông tin y tế hiện đại, dữ liệu hồ sơ bệnh án điện tử (\textit{Electronic Health Records --- EHR}) mang hai đặc trưng nổi bật: tính \textbf{bán cấu trúc} (\textit{semi-structured}) và tốc độ tăng trưởng liên tục theo thời gian. Khác với dữ liệu có cấu trúc chặt chẽ trong các bảng quan hệ truyền thống --- nơi mọi bản ghi đều phải tuân theo một tập cột cố định --- dữ liệu bán cấu trúc cho phép mỗi bản ghi chứa các thuộc tính tùy chọn và các thành phần lồng nhau có số lượng biến thiên lớn. Cụ thể, trong một lượt khám bệnh, bệnh nhân này có thể chỉ có một mã chẩn đoán cơ bản, trong khi bệnh nhân khác lại phát sinh hàng chục kết quả xét nghiệm và chẩn đoán đi kèm. Khi quy mô dữ liệu tích lũy qua nhiều năm vượt quá dung lượng bộ nhớ đệm RAM của một máy chủ cơ sở dữ liệu đơn lẻ, hiệu năng hệ thống suy giảm mạnh do tần suất đọc/ghi ổ đĩa tăng đột biến và hiện tượng tranh chấp tài nguyên xử lý.
 
-Mở rộng theo chiều dọc (\textit{scale-up}) sớm chạm trần chi phí và giới hạn phần cứng vật lý. Do đó, mở rộng theo chiều ngang thông qua phân mảnh dữ liệu phân tán (\textit{Horizontal Sharding}) trở thành giải pháp kiến trúc cốt lõi trong các hệ quản trị cơ sở dữ liệu hiện đại \cite{Kleppmann2017}. Tuy nhiên, sharding không phải là giải pháp mang lại lợi ích tuyệt đối ở mọi kịch bản: nó luôn tồn tại sự đánh đổi giữa lợi ích chia tải RAM/I/O trên nhiều nút với chi phí điều phối mạng qua lớp định tuyến, độ lệch phân bố dữ liệu (\textit{data skew}) và chi phí gom kết quả cho các truy vấn xuyên phân mảnh (\textit{scatter-gather / cross-shard}).
+Giải pháp mở rộng theo chiều dọc (\textit{scale-up} --- nâng cấp phần cứng trên cùng một máy chủ) sớm chạm trần chi phí và giới hạn vật lý. Do đó, mở rộng theo chiều ngang thông qua phân mảnh dữ liệu phân tán (\textit{Horizontal Sharding}) trở thành giải pháp kiến trúc quan trọng trong các hệ quản trị cơ sở dữ liệu hiện đại \cite{Kleppmann2017}. Tuy nhiên, phân mảnh ngang không mang lại cải thiện hiệu năng tuyệt đối trong mọi tình huống: hệ thống luôn phải đánh đổi giữa lợi ích chia tải bộ nhớ đệm và I/O trên nhiều máy chủ với chi phí điều phối mạng qua tầng định tuyến, rủi ro phân bố dữ liệu không đều (\textit{data skew}) và chi phí thu gom kết quả của các truy vấn phải quét qua nhiều mảnh dữ liệu (\textit{cross-shard queries}).
 
-MongoDB là một trong những hệ quản trị cơ sở dữ liệu hướng tài liệu phổ biến nhất hỗ trợ cơ chế \textit{Native Horizontal Sharding} tích hợp sẵn \cite{MongoDBSharding}. Việc đánh giá định lượng cơ chế này trên một bài toán dữ liệu sát thực tế như EHR (sử dụng bộ sinh dữ liệu chuẩn Synthea \cite{Walonoski2018}) giúp làm rõ: \textit{khi nào sharding thực sự hiệu quả, chiến lược khóa phân mảnh nào phù hợp với từng loại tải đọc/ghi, và chi phí ẩn của các truy vấn phân tích xuyên shard lớn đến mức nào}.
+MongoDB là một trong những hệ quản trị cơ sở dữ liệu hướng tài liệu phổ biến nhất hỗ trợ sẵn cơ chế phân mảnh ngang phân tán \cite{MongoDBSharding}. Việc nghiên cứu cơ chế bên trong và đánh giá định lượng hiệu năng sharding của MongoDB trên tập dữ liệu y tế mô phỏng sát thực tế Synthea EHR \cite{Walonoski2018} giúp trả lời những câu hỏi thiết thực về mặt kỹ thuật: \textit{từ quy mô dữ liệu nào sharding bắt đầu phát huy hiệu quả, chiến lược chọn khóa phân mảnh nào chịu được dữ liệu lệch tốt hơn, và chi phí thực tế của các truy vấn phân tích xuyên mảnh lớn tới mức nào}.
 
 \section*{2. Phạm vi nghiên cứu và Câu hỏi nghiên cứu}
 
-Nhằm đi sâu vào bản chất kỹ thuật thay vì dàn trải trên nhiều hệ quản trị khác nhau, đề tài chốt phạm vi thực nghiệm tập trung vào **một hệ quản trị duy nhất (`MongoDB`)** và **một bài toán dữ liệu chính (`Synthea EHR`)**, khảo sát trên bốn mốc quy mô từ $100{,}000$ đến $3{,}000{,}000$ tài liệu trong collection \texttt{encounters} (tương ứng khoảng $1{,}822$ đến $55{,}448$ bệnh nhân tổng hợp).
+Nhằm đi sâu vào bản chất kỹ thuật thay vì khảo sát dàn trải trên nhiều hệ quản trị khác nhau, đề tài giới hạn phạm vi thực nghiệm tập trung vào \textbf{một hệ quản trị duy nhất (\texttt{MongoDB})} và \textbf{một bài toán dữ liệu chính (\texttt{Synthea EHR})}, khảo sát qua bốn mốc quy mô từ $100{,}000$ đến $3{,}000{,}000$ bản ghi lượt khám (\texttt{encounters}, tương ứng khoảng $1{,}822$ đến $55{,}448$ bệnh nhân tổng hợp).
 
-Đề tài hướng tới giải đáp ba câu hỏi nghiên cứu (\textit{Research Questions --- RQ}) chuẩn hóa được tóm tắt trong Bảng~\ref{tab:research-questions}.
+Đề tài tập trung giải quyết ba câu hỏi nghiên cứu (\textit{Research Questions --- RQ}) được trình bày tại Bảng~\ref{tab:research-questions}.
 
 \begin{table}[!htb]
 \centering
-\caption{Ba câu hỏi nghiên cứu chuẩn hóa của đề tài.}
+\caption{Ba câu hỏi nghiên cứu của đề tài.}
 \label{tab:research-questions}
 \renewcommand{\arraystretch}{1.25}
 \begin{tabularx}{\linewidth}{c L{3.2cm} X}
 \toprule
-\textbf{Mã} & \textbf{Trọng tâm} & \textbf{Câu hỏi nghiên cứu chính thức} \\
+\textbf{Mã} & \textbf{Trọng tâm} & \textbf{Nội dung câu hỏi nghiên cứu} \\
 \midrule
-\textbf{RQ1} & Scale-out Đọc \& Ngưỡng quy mô & Từ quy mô nào ($100\text{K} \rightarrow 3\text{M}$ \texttt{encounters}) thì cụm MongoDB Sharded (\texttt{SH-hash}) đạt hiệu năng đọc tốt hơn Standalone (\texttt{SA}, 1 VM); chi phí điều phối của \texttt{mongos} ($\texttt{B1} - \texttt{SA}$) và lợi ích chia đôi RAM/Index ($\texttt{B1} - \texttt{SH-hash}$) tách bạch như thế nào dưới tải 1 luồng và đa luồng? \\
+\textbf{RQ1} & Mở rộng đọc \& Ngưỡng quy mô & Từ quy mô dữ liệu nào ($100\text{K} \rightarrow 3\text{M}$ lượt khám) thì cụm MongoDB phân mảnh theo hàm băm đạt hiệu năng đọc tốt hơn máy chủ đơn lẻ (Standalone); chi phí điều phối của bộ định tuyến trung gian và lợi ích chia đôi bộ nhớ đệm được tách bạch như thế nào dưới tải đơn luồng và đa luồng? \\
 \addlinespace
-\textbf{RQ2} & Phân bố dữ liệu \& Tải ghi khi lệch & Khi dữ liệu bị lệch (\textit{Natural Skew} và \textit{Heavy Skew}) và tải thiên về ghi, mỗi chiến lược sharding (\texttt{SH-hash} so với \texttt{SH-range}) phân bố dữ liệu (số tài liệu, dung lượng MB, số chunk) và lượng \texttt{insert} giữa các shard đều đến mức nào, và thông lượng ghi tăng được bao nhiêu so với Standalone? \\
+\textbf{RQ2} & Phân bố dữ liệu \& Tải ghi khi lệch & Khi dữ liệu phân bố lệch (lệch tự nhiên và lệch nặng) dưới tải thiên về ghi, hai chiến lược phân mảnh theo hàm băm (\textit{Hashed}) và theo khoảng giá trị (\textit{Ranged}) phân bố dữ liệu (số bản ghi, dung lượng, số mảnh) và lưu lượng ghi giữa các nút đồng đều đến mức nào, đồng thời thông lượng ghi tăng được bao nhiêu so với máy chủ đơn lẻ? \\
 \addlinespace
-\textbf{RQ3} & Shard Pruning \& Chi phí Cross-Shard & Trên cụm sharded, cơ chế \textit{Shard Pruning} (\texttt{SINGLE\_SHARD}) khác biệt thế nào với truy vấn xuyên bệnh nhân (\texttt{SHARD\_MERGE}) về kế hoạch thực thi, lưu lượng mạng, chi phí cross-shard theo quy mô $100\text{K} \rightarrow 3\text{M}$ (lấy \texttt{SH-range} làm đối chứng cho truy vấn theo thời gian), và mức độ nhiễu chéo khi trộn tải $P:X$? \\
+\textbf{RQ3} & Tỉa mảnh \& Chi phí xuyên mảnh & Trên cụm phân mảnh, cơ chế định tuyến chỉ vào một mảnh dữ liệu duy nhất khác biệt thế nào với truy vấn quét xuyên nhiều mảnh về kế hoạch thực thi, lưu lượng mạng, tốc độ tăng độ trễ theo quy mô $100\text{K} \rightarrow 3\text{M}$, và mức độ ảnh hưởng chéo khi trộn đồng thời hai loại truy vấn này? \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\section*{3. Đóng góp chính của báo cáo}
+\section*{3. Mục tiêu và Nội dung thực hiện}
+
+Để trả lời có cơ sở khoa học ba câu hỏi nghiên cứu nêu trên, đề tài đặt ra ba mục tiêu cụ thể sau:
 
 \renewcommand{\labelitemi}{$-$}
 \begin{itemize}
-  \item \textbf{Chuẩn hóa khái niệm kiến trúc:} Tách bạch rõ ràng giữa \textit{Single-node Partitioning} trong RDBMS và \textit{Multi-node Horizontal Sharding} trong MongoDB, đồng thời ánh xạ cơ chế tỉa phân vùng (\textit{Partition Pruning}) sang cơ chế định tuyến mục tiêu (\textit{Shard Pruning / Targeted Routing}) của \texttt{mongos}.
-  \item \textbf{Thiết kế thực nghiệm có kiểm soát biến chặt chẽ:} Xây dựng bốn môi trường đối chứng (\texttt{SA}, \texttt{B1}, \texttt{SH-hash}, \texttt{SH-range}) trên hạ tầng Microsoft Azure for Students với giới hạn bộ nhớ WiredTiger cố định, giúp tách riêng chi phí điều phối của \texttt{mongos} khỏi lợi ích mở rộng bộ nhớ đệm.
-  \item \textbf{Pipeline dữ liệu Synthea và kịch bản đo có thể tái lập:} Chuẩn hóa schema tối giản cho tập \texttt{encounters}, sinh sáu bộ dữ liệu chuẩn ($100\text{K} \rightarrow 3\text{M}$, \texttt{D1M-nat}, \texttt{D1M-heavy}) với hạt giống cố định ($\texttt{SEED} = 42$) và công khai toàn bộ mã nguồn trên GitHub \cite{ProjectRepo}.
-  \item \textbf{Khuyến nghị kiến trúc dựa trên số liệu:} Cung cấp ma trận lựa chọn chiến lược shard key cho các workload EHR thực tế cùng phân tích thẳng thắn các giới hạn thực nghiệm (\textit{Threats to Validity}).
+  \item \textbf{Phân tích có hệ thống cơ chế hoạt động bên trong của MongoDB Sharding:} Làm rõ mối quan hệ giữa kiến trúc lưu trữ lõi của MongoDB với cơ chế phân mảnh ngang đa nút, giải phẫu quy trình định tuyến truy vấn, sự khác biệt giữa chiến lược khóa phân mảnh theo hàm băm và theo khoảng, cũng như cơ chế chia mảnh dữ liệu và cân bằng tải nền.
+  \item \textbf{Thiết kế và triển khai thực nghiệm có kiểm soát biến:} Xây dựng bốn cấu hình đối chứng (máy chủ đơn lẻ, cụm 1 shard có bộ định tuyến, cụm 2 shard theo hàm băm và cụm 2 shard theo khoảng) với giới hạn bộ nhớ đệm cố định, cho phép tách riêng chi phí điều phối mạng khỏi lợi ích chia tải bộ nhớ và đo lường định lượng các chỉ số độ trễ, thông lượng và tài nguyên hệ thống.
+  \item \textbf{Tổng hợp khuyến nghị thiết kế và đánh giá giới hạn thực nghiệm:} Từ kết quả định lượng, đề xuất định hướng lựa chọn kiến trúc lưu trữ và khóa phân mảnh phù hợp cho từng đặc trưng tải công việc EHR, kèm theo phân tích thẳng thắn các yếu tố ảnh hưởng đến độ giá trị thực nghiệm (\textit{Threats to Validity}).
 \end{itemize}
 
 \section*{4. Bố cục của báo cáo}
 
-Nội dung báo cáo được tổ chức thành năm chương, tuân thủ tỷ lệ khoảng $20\%$ cho phần giới thiệu và cài đặt MongoDB và khoảng $80\%$ cho phần phân tích chuyên sâu cùng đánh giá thực nghiệm:
+Nội dung báo cáo được tổ chức thành năm chương và một phụ lục kỹ thuật như sau:
 
 \begin{itemize}
-  \item \textit{Chương 1. Giới thiệu và Cài đặt MongoDB}: Trình bày kiến trúc lõi của MongoDB (WiredTiger, Replica Set, B-Tree Index, Native Sharding) và cấu hình triển khai cụm trên Azure for Students.
-  \item \textit{Chương 2. Cơ chế Hoạt động của MongoDB Sharding}: Phân tích sự khác biệt giữa Partitioning và Sharding, ánh xạ Shard Pruning, cơ chế định tuyến \texttt{mongos}, chiến lược \textit{Hashed} so với \textit{Ranged} Shard Key, chia chunk và Balancer.
-  \item \textit{Chương 3. Phương pháp và Thiết kế Thực nghiệm}: Đặc tả schema tối giản của \texttt{encounters}, sáu bộ dữ liệu Synthea, bốn truy vấn chuẩn hóa (\texttt{Q1}--\texttt{Q4}), hệ thống chỉ mục, quy chuẩn đo đạc telemetry và các công thức đánh giá cho \texttt{RQ1}--\texttt{RQ3}.
-  \item \textit{Chương 4. Kết quả Thực nghiệm và Phân tích Kỹ thuật}: Trình bày và phân tích định lượng kết quả thu được cho từng câu hỏi nghiên cứu \texttt{RQ1}, \texttt{RQ2} và \texttt{RQ3}.
-  \item \textit{Chương 5. Khuyến nghị Thiết kế, Giới hạn và Kết luận}: Đề xuất ma trận lựa chọn chiến lược sharding cho hệ thống EHR, thảo luận các giới hạn thực nghiệm (\textit{Threats to Validity}) và tổng kết hướng phát triển.
+  \item \textit{Chương 1. Giới thiệu và Triển khai MongoDB}: Trình bày các thành phần kiến trúc nền tảng của MongoDB (mô hình tài liệu, bộ máy lưu trữ WiredTiger, chỉ mục B-Tree và tập bản sao Replica Set) cùng tổng quan mô hình triển khai cụm thử nghiệm trên hạ tầng đám mây Microsoft Azure.
+  \item \textit{Chương 2. Cơ chế Hoạt động của MongoDB Sharding}: Phân biệt bản chất giữa phân vùng đơn nút và phân mảnh ngang đa nút, trình bày kiến trúc cụm sharded, cơ chế định tuyến và tỉa mảnh (\textit{Shard Pruning}), so sánh chiến lược \textit{Hashed} với \textit{Ranged}, cơ chế chia chunk và tiến trình Balancer.
+  \item \textit{Chương 3. Phương pháp và Thiết kế Thực nghiệm}: Đặc tả cấu trúc dữ liệu lượt khám tối giản, sáu bộ dữ liệu Synthea, bộ bốn truy vấn đại diện (\texttt{Q1}--\texttt{Q4}), hệ thống chỉ mục đồng nhất, quy chuẩn đo đạc tài nguyên và các công thức đánh giá cho \texttt{RQ1}--\texttt{RQ3}.
+  \item \textit{Chương 4. Kết quả Thực nghiệm và Phân tích Kỹ thuật}: Trình bày và phân tích định lượng kết quả thu thập được cho từng câu hỏi nghiên cứu \texttt{RQ1}, \texttt{RQ2} và \texttt{RQ3}.
+  \item \textit{Chương 5. Khuyến nghị Thiết kế, Giới hạn và Kết luận}: Đề xuất ma trận lựa chọn chiến lược phân mảnh cho hệ thống EHR, thảo luận các giới hạn thực nghiệm (\textit{Threats to Validity}) và tổng kết hướng phát triển.
+  \item \textit{Phụ lục A. Chi tiết Cấu hình Hạ tầng và Tham số Triển khai}: Tổng hợp bảng thông số phần cứng chi tiết của các cấu hình máy ảo Azure, vai trò cổng dịch vụ, tham số cấu hình MongoDB cố định và quy trình xác minh cụm vận hành.
 \end{itemize}

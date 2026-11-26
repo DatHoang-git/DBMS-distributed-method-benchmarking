@@ -1,0 +1,63 @@
+\chapter{Chi tiết Cấu hình Hạ tầng và Tham số Triển khai MongoDB}
+\label{app:infra-config}
+
+Phụ lục này tổng hợp toàn bộ thông số phần cứng chi tiết trên Microsoft Azure for Students, vai trò và cổng dịch vụ của từng máy ảo, bộ tham số cố định của MongoDB và quy trình xác minh cụm vận hành. Việc tách các chi tiết cài đặt sang phụ lục giúp giữ mạch trình bày gọn gàng ở Chương~\ref{chap:intro-mongodb} và Chương~\ref{chap:methodology}, đồng thời đảm bảo khả năng tái lập chính xác toàn bộ thực nghiệm.
+
+\section{Đối chiếu Hai Cấu hình Máy ảo trên Azure for Students}
+
+Gói tài khoản giáo dục \textbf{Microsoft Azure for Students} (\$100 credit) giới hạn cứng tổng $4$--$6\text{ vCPU}$ mỗi vùng địa lý (\textit{region}) và tối đa $4\text{ vCPU}$ cho mỗi dòng máy ảo (\textit{VM family}) \cite{AzureStudents}. Bảng~\ref{tab:app-azure-profiles} tổng hợp thông số của hai cấu hình triển khai chuẩn (\textbf{Profile A} và \textbf{Profile B}) với tổng chi phí dự toán dưới $5$--$8\text{ USD}$ cho $3$--$4$ giờ đo.
+
+\begin{table}[!htb]
+\centering
+\caption{Thông số phần cứng và giới hạn tài nguyên chi tiết của Profile A và Profile B trên Azure.}
+\label{tab:app-azure-profiles}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{L{3.2cm} X X}
+\toprule
+\textbf{Tiêu chí} & \textbf{Profile A (4 vCPU tổng)} & \textbf{Profile B (6 vCPU tổng)} \\
+\midrule
+Điều kiện áp dụng & An toàn $100\%$ trên mọi tài khoản Azure Student. & Ưu tiên khi region cấp 6 vCPU hoặc ghép 2 tài khoản. \\
+Nút dữ liệu (\texttt{vm-w1}, \texttt{vm-w2}) & $2 \times \texttt{Standard\_B1ms}$ (1 vCPU, 2 GB RAM/VM). & $2 \times \texttt{Standard\_D2s\_v5}$ / \texttt{D2s\_v3} (2 vCPU, 8 GB RAM/VM, không giới hạn CPU credit). \\
+Nút điều phối \& Client & Biến thể 3 VM: \texttt{vm-coord} dùng \texttt{Standard\_B2s} (2 vCPU, 4 GB RAM, chạy chung \texttt{mongos}, Config Server và \texttt{bench.py}); hoặc 4 VM dùng $4 \times \texttt{B1ms}$. & Tách riêng \texttt{vm-coord} (\texttt{Standard\_B1ms}) và \texttt{vm-client} (\texttt{Standard\_B1ms}). \\
+WiredTiger Cache & \texttt{cacheSizeGB = 0.75} (768 MB) & \texttt{cacheSizeGB = 1.5} (1536 MB) \\
+Giới hạn RAM systemd & \texttt{MemoryMax = 1.4G} & \texttt{MemoryMax = 3G} \\
+Kiểm soát B-series & Kiểm tra CPU credit $\ge 50\%$ trên mọi VM trước mỗi pha; nghỉ 10--15 phút nếu tụt $< 40\%$. & Không bị bóp CPU credit trên hai nút dữ liệu dòng D. \\
+Ổ đĩa lưu trữ & Standard SSD (\texttt{E4} 32 GB hoặc \texttt{E6} 64 GB), tắt Availability Zones. & Standard SSD (\texttt{E4} 32 GB hoặc \texttt{E6} 64 GB), tắt Availability Zones. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Phân công Vai trò và Cổng Dịch vụ theo Máy ảo}
+
+Bảng~\ref{tab:app-node-roles} liệt kê chi tiết tiến trình và cổng mạng của từng máy ảo trong cấu hình cụm phân mảnh so với cấu hình đối chứng đơn nút (\texttt{SA}).
+
+\begin{table}[!htb]
+\centering
+\caption{Vai trò tiến trình và cổng dịch vụ của các máy ảo trong cụm thực nghiệm.}
+\label{tab:app-node-roles}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{l X L{4.2cm}}
+\toprule
+\textbf{Hostname} & \textbf{Vai trò trong cụm Sharded (\texttt{B1}, \texttt{SH-hash}, \texttt{SH-range})} & \textbf{Vai trò trong \texttt{SA}} \\
+\midrule
+\texttt{vm-client} & Chạy \texttt{bench.py} (\texttt{pymongo} + \texttt{multiprocessing}), thu CSV độ trễ và metadata; giữ CPU $< 80\%$ (hoặc $< 75\%$ nếu ghép trên \texttt{vm-coord}). & Kết nối trực tiếp tới \texttt{vm-w1:27017}. \\
+\texttt{vm-coord} & Chạy \texttt{mongos} (cổng \texttt{27017}) và Config Server (\texttt{--configsvr --replSet cfgRS}, cổng \texttt{27019}). & Tắt / Deallocate. \\
+\texttt{vm-w1} & Chạy Shard 1 (\texttt{--shardsvr --replSet shard1RS}, cổng \texttt{27018}). & Chạy \texttt{mongod} đơn nút (\texttt{rs0}, cổng \texttt{27017}). \\
+\texttt{vm-w2} & Chạy Shard 2 (\texttt{--shardsvr --replSet shard2RS}, cổng \texttt{27018}); chỉ bật ở \texttt{SH-hash} và \texttt{SH-range}. & Tắt / Deallocate. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Bộ Tham số MongoDB Cố định và Quy trình Xác minh Cụm}
+
+\begin{itemize}
+  \item \textbf{Phiên bản DBMS:} Thống nhất một phiên bản MongoDB Community ($7.0$ hoặc $8.0$) trên toàn cụm; mã phiên bản chính xác được ghi tự động vào tệp metadata JSON của từng lượt chạy.
+  \item \textbf{Kích thước Chunk:} Cố định $32\text{ MB}$ thông qua bản ghi \texttt{\{\_id: "chunksize", value: 32\}} trong \texttt{config.settings}.
+  \item \textbf{Chính sách nhất quán đọc/ghi:} Cố định \texttt{writeConcern: \{w: "majority"\}} và \texttt{readConcern: \{level: "local"\}}.
+  \item \textbf{Collection phụ \texttt{patients}:} Luôn phân mảnh theo \texttt{\{\_id: "hashed"\}} ở mọi cụm sharded (\texttt{B1}, \texttt{SH-hash}, \texttt{SH-range}) và không sharding ở \texttt{SA}.
+  \item \textbf{Kiểm soát nghẽn phía máy khách:} Mọi lượt chạy có mức sử dụng CPU của nút sinh tải vượt ngưỡng ($80\%$ hoặc $75\%$) được gắn cờ \texttt{client\_bound: true} trong metadata JSON và loại khỏi phân tích thông lượng.
+  \item \textbf{Cấu hình Docker Dry-run (Pha 0 trên máy cá nhân):} Bốn container tương ứng (\texttt{cfgsvr}, \texttt{shard1}, \texttt{shard2}, \texttt{mongos}) áp dụng \texttt{mem\_limit: 512m} và \texttt{--wiredTigerCacheSizeGB 0.25} cho mỗi container nhằm tránh tràn bộ nhớ trên máy phát triển.
+  \item \textbf{Danh mục 4 bước xác minh cụm trên Azure trước khi đo:} (1) kiểm tra thông mạng nội bộ qua \texttt{ping} và các cổng \texttt{27017/27018/27019}; (2) kiểm tra trạng thái shard và phân bổ chunk bằng \texttt{sh.status()}; (3) xác nhận công cụ \texttt{sar} ghi log thành công trên mọi máy ảo; và (4) xác nhận \texttt{sh.isBalancerRunning() == false} trước mọi pha đo Read và OLTP Write.
+\end{itemize}
+
+Toàn bộ tệp cấu hình \texttt{mongod.conf}, Docker Compose và kịch bản dựng máy ảo tự động được lưu trữ trong thư mục \texttt{infra/} của kho GitHub \cite{ProjectRepo}.

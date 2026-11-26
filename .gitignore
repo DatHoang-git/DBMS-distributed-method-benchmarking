@@ -25,6 +25,7 @@ report/*.synctex.gz
 report/*.toc
 report/chapter/*.aux
 report/cover/*.aux
+report/appendix/*.aux
 
 # OS / Editor files
 .DS_Store
