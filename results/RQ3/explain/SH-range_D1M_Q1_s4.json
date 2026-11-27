@@ -1,0 +1,403 @@
+{
+  "query": "Q1",
+  "type": "find",
+  "winning_stage": "SHARD_MERGE_SORT",
+  "shards_targeted": 2,
+  "merge_type": "mongos",
+  "total_exec_ms": 107,
+  "nReturned": 456,
+  "totalKeysExamined": 456,
+  "totalDocsExamined": 456,
+  "raw": {
+    "queryPlanner": {
+      "mongosPlannerVersion": 1,
+      "winningPlan": {
+        "stage": "SHARD_MERGE_SORT",
+        "shards": [
+          {
+            "shardName": "shard2RS",
+            "connectionString": "shard2RS/mdb-shard2:27018",
+            "serverInfo": {
+              "host": "3c6dbdc703fd",
+              "port": 27018,
+              "version": "7.0.48",
+              "gitVersion": "6937736f0539a5d4c8edb2970255b9369cb385a5"
+            },
+            "namespace": "ehr.encounters",
+            "indexFilterSet": false,
+            "parsedQuery": {
+              "PATIENT": {
+                "$eq": "6df21e29-c772-4f19-a25a-fb9950427b72"
+              }
+            },
+            "queryHash": "4648C6E1",
+            "planCacheKey": "997DAC83",
+            "optimizationTimeMillis": 0,
+            "maxIndexedOrSolutionsReached": false,
+            "maxIndexedAndSolutionsReached": false,
+            "maxScansToExplodeReached": false,
+            "winningPlan": {
+              "stage": "PROJECTION_SIMPLE",
+              "transformBy": {
+                "START": 1,
+                "ENCOUNTERCLASS": 1,
+                "ORGANIZATION": 1,
+                "conditions": 1
+              },
+              "inputStage": {
+                "stage": "FETCH",
+                "inputStage": {
+                  "stage": "SHARDING_FILTER",
+                  "inputStage": {
+                    "stage": "IXSCAN",
+                    "keyPattern": {
+                      "PATIENT": 1,
+                      "START": -1
+                    },
+                    "indexName": "PATIENT_1_START_-1",
+                    "isMultiKey": false,
+                    "multiKeyPaths": {
+                      "PATIENT": [],
+                      "START": []
+                    },
+                    "isUnique": false,
+                    "isSparse": false,
+                    "isPartial": false,
+                    "indexVersion": 2,
+                    "direction": "forward",
+                    "indexBounds": {
+                      "PATIENT": [
+                        "[\"6df21e29-c772-4f19-a25a-fb9950427b72\", \"6df21e29-c772-4f19-a25a-fb9950427b72\"]"
+                      ],
+                      "START": [
+                        "[MaxKey, MinKey]"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "rejectedPlans": []
+          },
+          {
+            "shardName": "shard1RS",
+            "connectionString": "shard1RS/mdb-shard1:27018",
+            "serverInfo": {
+              "host": "cba08973947a",
+              "port": 27018,
+              "version": "7.0.48",
+              "gitVersion": "6937736f0539a5d4c8edb2970255b9369cb385a5"
+            },
+            "namespace": "ehr.encounters",
+            "indexFilterSet": false,
+            "parsedQuery": {
+              "PATIENT": {
+                "$eq": "6df21e29-c772-4f19-a25a-fb9950427b72"
+              }
+            },
+            "queryHash": "4648C6E1",
+            "planCacheKey": "997DAC83",
+            "optimizationTimeMillis": 0,
+            "maxIndexedOrSolutionsReached": false,
+            "maxIndexedAndSolutionsReached": false,
+            "maxScansToExplodeReached": false,
+            "winningPlan": {
+              "stage": "PROJECTION_SIMPLE",
+              "transformBy": {
+                "START": 1,
+                "ENCOUNTERCLASS": 1,
+                "ORGANIZATION": 1,
+                "conditions": 1
+              },
+              "inputStage": {
+                "stage": "FETCH",
+                "inputStage": {
+                  "stage": "SHARDING_FILTER",
+                  "inputStage": {
+                    "stage": "IXSCAN",
+                    "keyPattern": {
+                      "PATIENT": 1,
+                      "START": -1
+                    },
+                    "indexName": "PATIENT_1_START_-1",
+                    "isMultiKey": false,
+                    "multiKeyPaths": {
+                      "PATIENT": [],
+                      "START": []
+                    },
+                    "isUnique": false,
+                    "isSparse": false,
+                    "isPartial": false,
+                    "indexVersion": 2,
+                    "direction": "forward",
+                    "indexBounds": {
+                      "PATIENT": [
+                        "[\"6df21e29-c772-4f19-a25a-fb9950427b72\", \"6df21e29-c772-4f19-a25a-fb9950427b72\"]"
+                      ],
+                      "START": [
+                        "[MaxKey, MinKey]"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "rejectedPlans": []
+          }
+        ]
+      }
+    },
+    "executionStats": {
+      "nReturned": 456,
+      "executionTimeMillis": 107,
+      "totalKeysExamined": 456,
+      "totalDocsExamined": 456,
+      "executionStages": {
+        "stage": "SHARD_MERGE_SORT",
+        "nReturned": 456,
+        "executionTimeMillis": 107,
+        "totalKeysExamined": 456,
+        "totalDocsExamined": 456,
+        "totalChildMillis": 115,
+        "shards": [
+          {
+            "shardName": "shard2RS",
+            "executionSuccess": true,
+            "nReturned": 75,
+            "executionTimeMillis": 9,
+            "totalKeysExamined": 75,
+            "totalDocsExamined": 75,
+            "executionStages": {
+              "stage": "PROJECTION_SIMPLE",
+              "nReturned": 75,
+              "executionTimeMillisEstimate": 3,
+              "works": 76,
+              "advanced": 75,
+              "needTime": 0,
+              "needYield": 0,
+              "saveState": 0,
+              "restoreState": 0,
+              "isEOF": 1,
+              "transformBy": {
+                "START": 1,
+                "ENCOUNTERCLASS": 1,
+                "ORGANIZATION": 1,
+                "conditions": 1
+              },
+              "inputStage": {
+                "stage": "FETCH",
+                "nReturned": 75,
+                "executionTimeMillisEstimate": 3,
+                "works": 76,
+                "advanced": 75,
+                "needTime": 0,
+                "needYield": 0,
+                "saveState": 0,
+                "restoreState": 0,
+                "isEOF": 1,
+                "docsExamined": 75,
+                "alreadyHasObj": 0,
+                "inputStage": {
+                  "stage": "SHARDING_FILTER",
+                  "nReturned": 75,
+                  "executionTimeMillisEstimate": 0,
+                  "works": 76,
+                  "advanced": 75,
+                  "needTime": 0,
+                  "needYield": 0,
+                  "saveState": 0,
+                  "restoreState": 0,
+                  "isEOF": 1,
+                  "chunkSkips": 0,
+                  "inputStage": {
+                    "stage": "IXSCAN",
+                    "nReturned": 75,
+                    "executionTimeMillisEstimate": 0,
+                    "works": 76,
+                    "advanced": 75,
+                    "needTime": 0,
+                    "needYield": 0,
+                    "saveState": 0,
+                    "restoreState": 0,
+                    "isEOF": 1,
+                    "keyPattern": {
+                      "PATIENT": 1,
+                      "START": -1
+                    },
+                    "indexName": "PATIENT_1_START_-1",
+                    "isMultiKey": false,
+                    "multiKeyPaths": {
+                      "PATIENT": [],
+                      "START": []
+                    },
+                    "isUnique": false,
+                    "isSparse": false,
+                    "isPartial": false,
+                    "indexVersion": 2,
+                    "direction": "forward",
+                    "indexBounds": {
+                      "PATIENT": [
+                        "[\"6df21e29-c772-4f19-a25a-fb9950427b72\", \"6df21e29-c772-4f19-a25a-fb9950427b72\"]"
+                      ],
+                      "START": [
+                        "[MaxKey, MinKey]"
+                      ]
+                    },
+                    "keysExamined": 75,
+                    "seeks": 1,
+                    "dupsTested": 0,
+                    "dupsDropped": 0
+                  }
+                }
+              }
+            }
+          },
+          {
+            "shardName": "shard1RS",
+            "executionSuccess": true,
+            "nReturned": 381,
+            "executionTimeMillis": 106,
+            "totalKeysExamined": 381,
+            "totalDocsExamined": 381,
+            "executionStages": {
+              "stage": "PROJECTION_SIMPLE",
+              "nReturned": 381,
+              "executionTimeMillisEstimate": 103,
+              "works": 382,
+              "advanced": 381,
+              "needTime": 0,
+              "needYield": 0,
+              "saveState": 5,
+              "restoreState": 5,
+              "isEOF": 1,
+              "transformBy": {
+                "START": 1,
+                "ENCOUNTERCLASS": 1,
+                "ORGANIZATION": 1,
+                "conditions": 1
+              },
+              "inputStage": {
+                "stage": "FETCH",
+                "nReturned": 381,
+                "executionTimeMillisEstimate": 103,
+                "works": 382,
+                "advanced": 381,
+                "needTime": 0,
+                "needYield": 0,
+                "saveState": 5,
+                "restoreState": 5,
+                "isEOF": 1,
+                "docsExamined": 381,
+                "alreadyHasObj": 0,
+                "inputStage": {
+                  "stage": "SHARDING_FILTER",
+                  "nReturned": 381,
+                  "executionTimeMillisEstimate": 0,
+                  "works": 382,
+                  "advanced": 381,
+                  "needTime": 0,
+                  "needYield": 0,
+                  "saveState": 5,
+                  "restoreState": 5,
+                  "isEOF": 1,
+                  "chunkSkips": 0,
+                  "inputStage": {
+                    "stage": "IXSCAN",
+                    "nReturned": 381,
+                    "executionTimeMillisEstimate": 0,
+                    "works": 382,
+                    "advanced": 381,
+                    "needTime": 0,
+                    "needYield": 0,
+                    "saveState": 5,
+                    "restoreState": 5,
+                    "isEOF": 1,
+                    "keyPattern": {
+                      "PATIENT": 1,
+                      "START": -1
+                    },
+                    "indexName": "PATIENT_1_START_-1",
+                    "isMultiKey": false,
+                    "multiKeyPaths": {
+                      "PATIENT": [],
+                      "START": []
+                    },
+                    "isUnique": false,
+                    "isSparse": false,
+                    "isPartial": false,
+                    "indexVersion": 2,
+                    "direction": "forward",
+                    "indexBounds": {
+                      "PATIENT": [
+                        "[\"6df21e29-c772-4f19-a25a-fb9950427b72\", \"6df21e29-c772-4f19-a25a-fb9950427b72\"]"
+                      ],
+                      "START": [
+                        "[MaxKey, MinKey]"
+                      ]
+                    },
+                    "keysExamined": 381,
+                    "seeks": 1,
+                    "dupsTested": 0,
+                    "dupsDropped": 0
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "serverInfo": {
+      "host": "34876f4b8471",
+      "port": 27017,
+      "version": "7.0.48",
+      "gitVersion": "6937736f0539a5d4c8edb2970255b9369cb385a5"
+    },
+    "serverParameters": {
+      "internalQueryFacetBufferSizeBytes": 104857600,
+      "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+      "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+      "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+      "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+      "internalQueryProhibitBlockingMergeOnMongoS": 0,
+      "internalQueryMaxAddToSetBytes": 104857600,
+      "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+      "internalQueryFrameworkControl": "forceClassicEngine"
+    },
+    "command": {
+      "find": "encounters",
+      "filter": {
+        "PATIENT": "6df21e29-c772-4f19-a25a-fb9950427b72"
+      },
+      "projection": {
+        "START": 1,
+        "ENCOUNTERCLASS": 1,
+        "ORGANIZATION": 1,
+        "conditions": 1
+      },
+      "sort": {
+        "START": -1
+      },
+      "lsid": {
+        "id": "b'\"\\xb5\\x03X\\x99\\xbbE\\xa5\\x82\\xb0_?6\\xb0N\\xc8'"
+      },
+      "$clusterTime": {
+        "clusterTime": "Timestamp(1795792427, 1)",
+        "signature": {
+          "hash": "b'\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00'",
+          "keyId": 0
+        }
+      },
+      "$db": "ehr"
+    },
+    "ok": 1.0,
+    "$clusterTime": {
+      "clusterTime": "Timestamp(1795792427, 1)",
+      "signature": {
+        "hash": "b'\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00'",
+        "keyId": 0
+      }
+    },
+    "operationTime": "Timestamp(1795792425, 1)"
+  }
+}

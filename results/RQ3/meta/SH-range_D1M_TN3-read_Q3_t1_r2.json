@@ -1,0 +1,35 @@
+{
+  "spec_version": 3,
+  "env": "SH-range",
+  "dataset": "D1M",
+  "scenario": "TN3-read",
+  "query": "Q3",
+  "threads": 1,
+  "rep": 2,
+  "seed": 42,
+  "client_host": "dathoang-NgocTrinh",
+  "mongo_version": "7.0.48",
+  "balancer_preflight": {
+    "checked": true,
+    "mode": "off",
+    "inBalancerRound": false,
+    "active_migrations": 0
+  },
+  "idle_network_baseline": {
+    "idle_seconds": 15.01,
+    "idle_bytes_in_per_s": 112.42,
+    "idle_bytes_out_per_s": 1982.49
+  },
+  "elapsed_s": 50.019,
+  "n_requests": 928,
+  "n_success": 928,
+  "qps_or_inserts_s": 18.55,
+  "p50_ms": 31.004,
+  "p95_ms": 41.196,
+  "net_kb_per_req": 1.62,
+  "client_cpu_max": 22.22,
+  "client_cpu_avg": 14.84,
+  "client_bound": false,
+  "start_utc": "2026-11-27T15:16:05.503940+00:00",
+  "end_utc": "2026-11-27T15:16:55.555097+00:00"
+}

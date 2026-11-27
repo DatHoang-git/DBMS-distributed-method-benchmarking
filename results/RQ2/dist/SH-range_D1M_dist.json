@@ -1,0 +1,24 @@
+{
+  "timestamp_utc": "2026-11-27T15:13:31.277656+00:00",
+  "env": "SH-range",
+  "total_count": 1000000,
+  "total_size_mb": 1309.66,
+  "total_storage_mb": 869.17,
+  "total_index_mb": 543.37,
+  "shards": {
+    "shard1RS": {
+      "count": 508126,
+      "size_mb": 696.4,
+      "size_pct": 53.17,
+      "storage_mb": 663.24,
+      "index_mb": 406.4
+    },
+    "shard2RS": {
+      "count": 491874,
+      "size_mb": 613.26,
+      "size_pct": 46.83,
+      "storage_mb": 205.93,
+      "index_mb": 136.97
+    }
+  }
+}
