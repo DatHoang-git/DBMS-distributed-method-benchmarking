@@ -1,0 +1,29 @@
+{
+  "spec_version": 3,
+  "env": "SA",
+  "dataset": "D1M",
+  "scenario": "TN2-write",
+  "query": "INSERT",
+  "threads": 4,
+  "rep": 1,
+  "seed": 42,
+  "client_host": "controller",
+  "mongo_version": "7.0.48",
+  "balancer_preflight": {
+    "checked": false,
+    "env": "SA"
+  },
+  "idle_network_baseline": null,
+  "elapsed_s": 60.025,
+  "n_requests": 93678,
+  "n_success": 93678,
+  "qps_or_inserts_s": 1560.65,
+  "p50_ms": 2.433,
+  "p95_ms": 3.763,
+  "net_kb_per_req": 0.892,
+  "client_cpu_max": 25.55,
+  "client_cpu_avg": 17.42,
+  "client_bound": false,
+  "start_utc": "2026-11-27T15:31:40.071623+00:00",
+  "end_utc": "2026-11-27T15:32:40.114024+00:00"
+}

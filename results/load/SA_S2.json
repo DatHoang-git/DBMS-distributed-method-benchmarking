@@ -1,0 +1,56 @@
+{
+  "env": "SA",
+  "dataset_dir": "data/load_v2/S2",
+  "batch_size": 1000,
+  "write_concern_w": "majority",
+  "start_utc": "2026-11-27T15:15:29.696924+00:00",
+  "server_version": "7.0.48",
+  "patients": {
+    "docs": 7380,
+    "seconds": 0.09
+  },
+  "encounters": {
+    "docs": 400000,
+    "seconds": 18.44,
+    "docs_per_s": 21694.0,
+    "timeline": [
+      {
+        "elapsed_s": 1.59,
+        "docs": 50000
+      },
+      {
+        "elapsed_s": 3.49,
+        "docs": 100000
+      },
+      {
+        "elapsed_s": 7.5,
+        "docs": 150000
+      },
+      {
+        "elapsed_s": 9.66,
+        "docs": 200000
+      },
+      {
+        "elapsed_s": 11.73,
+        "docs": 250000
+      },
+      {
+        "elapsed_s": 13.98,
+        "docs": 300000
+      },
+      {
+        "elapsed_s": 16.18,
+        "docs": 350000
+      },
+      {
+        "elapsed_s": 18.44,
+        "docs": 400000
+      },
+      {
+        "elapsed_s": 18.44,
+        "docs": 400000
+      }
+    ]
+  },
+  "end_utc": "2026-11-27T15:15:48.229301+00:00"
+}
