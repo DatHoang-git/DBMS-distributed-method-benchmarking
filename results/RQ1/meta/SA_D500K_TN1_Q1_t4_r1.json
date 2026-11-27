@@ -1,0 +1,29 @@
+{
+  "spec_version": 3,
+  "env": "SA",
+  "dataset": "D500K",
+  "scenario": "TN1",
+  "query": "Q1",
+  "threads": 4,
+  "rep": 1,
+  "seed": 42,
+  "client_host": "controller",
+  "mongo_version": "7.0.48",
+  "balancer_preflight": {
+    "checked": false,
+    "env": "SA"
+  },
+  "idle_network_baseline": null,
+  "elapsed_s": 50.012,
+  "n_requests": 25751,
+  "n_success": 25751,
+  "qps_or_inserts_s": 514.9,
+  "p50_ms": 2.15,
+  "p95_ms": 21.627,
+  "net_kb_per_req": 18.104,
+  "client_cpu_max": 24.29,
+  "client_cpu_avg": 14.64,
+  "client_bound": false,
+  "start_utc": "2026-11-27T15:18:21.130613+00:00",
+  "end_utc": "2026-11-27T15:19:11.162694+00:00"
+}
