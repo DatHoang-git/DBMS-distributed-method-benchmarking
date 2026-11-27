@@ -1,0 +1,184 @@
+{
+  "env": "SH-hash",
+  "dataset_dir": "data/load_v2/S4",
+  "batch_size": 1000,
+  "write_concern_w": "majority",
+  "start_utc": "2026-11-27T15:23:32.619334+00:00",
+  "server_version": "7.0.48",
+  "patients": {
+    "docs": 37005,
+    "seconds": 0.74
+  },
+  "encounters": {
+    "docs": 2000000,
+    "seconds": 223.43,
+    "docs_per_s": 8951.4,
+    "timeline": [
+      {
+        "elapsed_s": 2.53,
+        "docs": 50000
+      },
+      {
+        "elapsed_s": 5.45,
+        "docs": 100000
+      },
+      {
+        "elapsed_s": 8.39,
+        "docs": 150000
+      },
+      {
+        "elapsed_s": 11.73,
+        "docs": 200000
+      },
+      {
+        "elapsed_s": 15.41,
+        "docs": 250000
+      },
+      {
+        "elapsed_s": 19.39,
+        "docs": 300000
+      },
+      {
+        "elapsed_s": 23.97,
+        "docs": 350000
+      },
+      {
+        "elapsed_s": 28.11,
+        "docs": 400000
+      },
+      {
+        "elapsed_s": 31.78,
+        "docs": 450000
+      },
+      {
+        "elapsed_s": 35.87,
+        "docs": 500000
+      },
+      {
+        "elapsed_s": 39.93,
+        "docs": 550000
+      },
+      {
+        "elapsed_s": 45.26,
+        "docs": 600000
+      },
+      {
+        "elapsed_s": 50.28,
+        "docs": 650000
+      },
+      {
+        "elapsed_s": 56.78,
+        "docs": 700000
+      },
+      {
+        "elapsed_s": 62.11,
+        "docs": 750000
+      },
+      {
+        "elapsed_s": 70.35,
+        "docs": 800000
+      },
+      {
+        "elapsed_s": 75.54,
+        "docs": 850000
+      },
+      {
+        "elapsed_s": 80.9,
+        "docs": 900000
+      },
+      {
+        "elapsed_s": 87.75,
+        "docs": 950000
+      },
+      {
+        "elapsed_s": 93.79,
+        "docs": 1000000
+      },
+      {
+        "elapsed_s": 100.08,
+        "docs": 1050000
+      },
+      {
+        "elapsed_s": 106.88,
+        "docs": 1100000
+      },
+      {
+        "elapsed_s": 113.65,
+        "docs": 1150000
+      },
+      {
+        "elapsed_s": 120.47,
+        "docs": 1200000
+      },
+      {
+        "elapsed_s": 126.47,
+        "docs": 1250000
+      },
+      {
+        "elapsed_s": 133.33,
+        "docs": 1300000
+      },
+      {
+        "elapsed_s": 139.85,
+        "docs": 1350000
+      },
+      {
+        "elapsed_s": 146.77,
+        "docs": 1400000
+      },
+      {
+        "elapsed_s": 152.85,
+        "docs": 1450000
+      },
+      {
+        "elapsed_s": 159.09,
+        "docs": 1500000
+      },
+      {
+        "elapsed_s": 165.17,
+        "docs": 1550000
+      },
+      {
+        "elapsed_s": 171.28,
+        "docs": 1600000
+      },
+      {
+        "elapsed_s": 177.49,
+        "docs": 1650000
+      },
+      {
+        "elapsed_s": 183.73,
+        "docs": 1700000
+      },
+      {
+        "elapsed_s": 189.68,
+        "docs": 1750000
+      },
+      {
+        "elapsed_s": 196.15,
+        "docs": 1800000
+      },
+      {
+        "elapsed_s": 202.31,
+        "docs": 1850000
+      },
+      {
+        "elapsed_s": 209.52,
+        "docs": 1900000
+      },
+      {
+        "elapsed_s": 216.78,
+        "docs": 1950000
+      },
+      {
+        "elapsed_s": 223.43,
+        "docs": 2000000
+      },
+      {
+        "elapsed_s": 223.43,
+        "docs": 2000000
+      }
+    ]
+  },
+  "end_utc": "2026-11-27T15:27:16.794047+00:00"
+}

@@ -1,0 +1,31 @@
+{
+  "spec_version": 3,
+  "env": "SH-hash",
+  "dataset": "D3M",
+  "scenario": "TN1",
+  "query": "Q1",
+  "threads": 8,
+  "rep": 3,
+  "seed": 42,
+  "client_host": "ubuntu-thinkpade14",
+  "mongo_version": "7.0.48",
+  "balancer_preflight": {
+    "checked": true,
+    "mode": "off",
+    "inBalancerRound": false,
+    "active_migrations": 0
+  },
+  "idle_network_baseline": null,
+  "elapsed_s": 50.068,
+  "n_requests": 10769,
+  "n_success": 10769,
+  "qps_or_inserts_s": 215.09,
+  "p50_ms": 12.357,
+  "p95_ms": 64.134,
+  "net_kb_per_req": 15.151,
+  "client_cpu_max": 56.76,
+  "client_cpu_avg": 30.66,
+  "client_bound": false,
+  "start_utc": "2026-11-27T15:34:08.235672+00:00",
+  "end_utc": "2026-11-27T15:34:58.353599+00:00"
+}

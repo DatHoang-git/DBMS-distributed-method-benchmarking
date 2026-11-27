@@ -1,0 +1,25 @@
+{
+  "host": "f625f1674b50:27018",
+  "process": "mongod",
+  "opcounters_delta": {
+    "insert": 34217,
+    "query": 10,
+    "update": 0,
+    "delete": 0,
+    "getmore": 0,
+    "command": 64
+  },
+  "network_delta": {
+    "bytesIn": 43547904,
+    "bytesOut": 9863526,
+    "numRequests": 34281
+  },
+  "wt_cache_delta": {
+    "max_bytes": 0,
+    "current_bytes": 2082130,
+    "pages_requested": 586824,
+    "pages_read_into_cache": 2272,
+    "bytes_read_into_cache": 23448121
+  },
+  "wt_cache_hit_ratio": 0.996128
+}

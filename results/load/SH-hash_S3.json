@@ -1,0 +1,64 @@
+{
+  "env": "SH-hash",
+  "dataset_dir": "data/load_v2/S3",
+  "batch_size": 1000,
+  "write_concern_w": "majority",
+  "start_utc": "2026-11-27T15:05:29.471344+00:00",
+  "server_version": "7.0.48",
+  "patients": {
+    "docs": 9241,
+    "seconds": 0.16
+  },
+  "encounters": {
+    "docs": 500000,
+    "seconds": 33.17,
+    "docs_per_s": 15072.9,
+    "timeline": [
+      {
+        "elapsed_s": 2.51,
+        "docs": 50000
+      },
+      {
+        "elapsed_s": 5.96,
+        "docs": 100000
+      },
+      {
+        "elapsed_s": 8.9,
+        "docs": 150000
+      },
+      {
+        "elapsed_s": 12.2,
+        "docs": 200000
+      },
+      {
+        "elapsed_s": 15.56,
+        "docs": 250000
+      },
+      {
+        "elapsed_s": 18.82,
+        "docs": 300000
+      },
+      {
+        "elapsed_s": 22.39,
+        "docs": 350000
+      },
+      {
+        "elapsed_s": 26.22,
+        "docs": 400000
+      },
+      {
+        "elapsed_s": 29.62,
+        "docs": 450000
+      },
+      {
+        "elapsed_s": 33.17,
+        "docs": 500000
+      },
+      {
+        "elapsed_s": 33.17,
+        "docs": 500000
+      }
+    ]
+  },
+  "end_utc": "2026-11-27T15:06:02.805357+00:00"
+}

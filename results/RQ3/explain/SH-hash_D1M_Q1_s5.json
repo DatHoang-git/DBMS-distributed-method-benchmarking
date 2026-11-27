@@ -1,0 +1,274 @@
+{
+  "query": "Q1",
+  "type": "find",
+  "winning_stage": "SINGLE_SHARD",
+  "shards_targeted": 1,
+  "merge_type": "none",
+  "total_exec_ms": 2,
+  "nReturned": 51,
+  "totalKeysExamined": 51,
+  "totalDocsExamined": 51,
+  "raw": {
+    "queryPlanner": {
+      "mongosPlannerVersion": 1,
+      "winningPlan": {
+        "stage": "SINGLE_SHARD",
+        "shards": [
+          {
+            "shardName": "shard1RS",
+            "connectionString": "shard1RS/mdb-shard1:27018",
+            "serverInfo": {
+              "host": "6fc4f0de5738",
+              "port": 27018,
+              "version": "7.0.48",
+              "gitVersion": "6937736f0539a5d4c8edb2970255b9369cb385a5"
+            },
+            "namespace": "ehr.encounters",
+            "indexFilterSet": false,
+            "parsedQuery": {
+              "PATIENT": {
+                "$eq": "a70ae850-6fcc-4a80-8c56-11c3ea208df6"
+              }
+            },
+            "queryHash": "4648C6E1",
+            "planCacheKey": "997DAC83",
+            "optimizationTimeMillis": 2,
+            "maxIndexedOrSolutionsReached": false,
+            "maxIndexedAndSolutionsReached": false,
+            "maxScansToExplodeReached": false,
+            "winningPlan": {
+              "stage": "PROJECTION_SIMPLE",
+              "transformBy": {
+                "START": 1,
+                "ENCOUNTERCLASS": 1,
+                "ORGANIZATION": 1,
+                "conditions": 1
+              },
+              "inputStage": {
+                "stage": "FETCH",
+                "inputStage": {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "PATIENT": 1,
+                    "START": -1
+                  },
+                  "indexName": "PATIENT_1_START_-1",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "PATIENT": [],
+                    "START": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "PATIENT": [
+                      "[\"a70ae850-6fcc-4a80-8c56-11c3ea208df6\", \"a70ae850-6fcc-4a80-8c56-11c3ea208df6\"]"
+                    ],
+                    "START": [
+                      "[MaxKey, MinKey]"
+                    ]
+                  }
+                }
+              }
+            },
+            "rejectedPlans": [
+              {
+                "stage": "SORT",
+                "sortPattern": {
+                  "START": -1
+                },
+                "memLimit": 104857600,
+                "type": "simple",
+                "inputStage": {
+                  "stage": "PROJECTION_SIMPLE",
+                  "transformBy": {
+                    "START": 1,
+                    "ENCOUNTERCLASS": 1,
+                    "ORGANIZATION": 1,
+                    "conditions": 1
+                  },
+                  "inputStage": {
+                    "stage": "FETCH",
+                    "filter": {
+                      "PATIENT": {
+                        "$eq": "a70ae850-6fcc-4a80-8c56-11c3ea208df6"
+                      }
+                    },
+                    "inputStage": {
+                      "stage": "IXSCAN",
+                      "keyPattern": {
+                        "PATIENT": "hashed"
+                      },
+                      "indexName": "PATIENT_hashed",
+                      "isMultiKey": false,
+                      "isUnique": false,
+                      "isSparse": false,
+                      "isPartial": false,
+                      "indexVersion": 2,
+                      "direction": "forward",
+                      "indexBounds": {
+                        "PATIENT": [
+                          "[4134887055294117095, 4134887055294117095]"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "executionStats": {
+      "nReturned": 51,
+      "executionTimeMillis": 2,
+      "totalKeysExamined": 51,
+      "totalDocsExamined": 51,
+      "executionStages": {
+        "stage": "SINGLE_SHARD",
+        "nReturned": 51,
+        "executionTimeMillis": 2,
+        "totalKeysExamined": 51,
+        "totalDocsExamined": 51,
+        "totalChildMillis": 2,
+        "shards": [
+          {
+            "shardName": "shard1RS",
+            "executionSuccess": true,
+            "nReturned": 51,
+            "executionTimeMillis": 2,
+            "totalKeysExamined": 51,
+            "totalDocsExamined": 51,
+            "executionStages": {
+              "stage": "PROJECTION_SIMPLE",
+              "nReturned": 51,
+              "executionTimeMillisEstimate": 0,
+              "works": 53,
+              "advanced": 51,
+              "needTime": 0,
+              "needYield": 0,
+              "saveState": 0,
+              "restoreState": 0,
+              "isEOF": 1,
+              "transformBy": {
+                "START": 1,
+                "ENCOUNTERCLASS": 1,
+                "ORGANIZATION": 1,
+                "conditions": 1
+              },
+              "inputStage": {
+                "stage": "FETCH",
+                "nReturned": 51,
+                "executionTimeMillisEstimate": 0,
+                "works": 53,
+                "advanced": 51,
+                "needTime": 0,
+                "needYield": 0,
+                "saveState": 0,
+                "restoreState": 0,
+                "isEOF": 1,
+                "docsExamined": 51,
+                "alreadyHasObj": 0,
+                "inputStage": {
+                  "stage": "IXSCAN",
+                  "nReturned": 51,
+                  "executionTimeMillisEstimate": 0,
+                  "works": 52,
+                  "advanced": 51,
+                  "needTime": 0,
+                  "needYield": 0,
+                  "saveState": 0,
+                  "restoreState": 0,
+                  "isEOF": 1,
+                  "keyPattern": {
+                    "PATIENT": 1,
+                    "START": -1
+                  },
+                  "indexName": "PATIENT_1_START_-1",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "PATIENT": [],
+                    "START": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "PATIENT": [
+                      "[\"a70ae850-6fcc-4a80-8c56-11c3ea208df6\", \"a70ae850-6fcc-4a80-8c56-11c3ea208df6\"]"
+                    ],
+                    "START": [
+                      "[MaxKey, MinKey]"
+                    ]
+                  },
+                  "keysExamined": 51,
+                  "seeks": 1,
+                  "dupsTested": 0,
+                  "dupsDropped": 0
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "serverInfo": {
+      "host": "2170f03492ea",
+      "port": 27017,
+      "version": "7.0.48",
+      "gitVersion": "6937736f0539a5d4c8edb2970255b9369cb385a5"
+    },
+    "serverParameters": {
+      "internalQueryFacetBufferSizeBytes": 104857600,
+      "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+      "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+      "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+      "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+      "internalQueryProhibitBlockingMergeOnMongoS": 0,
+      "internalQueryMaxAddToSetBytes": 104857600,
+      "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+      "internalQueryFrameworkControl": "forceClassicEngine"
+    },
+    "command": {
+      "find": "encounters",
+      "filter": {
+        "PATIENT": "a70ae850-6fcc-4a80-8c56-11c3ea208df6"
+      },
+      "projection": {
+        "START": 1,
+        "ENCOUNTERCLASS": 1,
+        "ORGANIZATION": 1,
+        "conditions": 1
+      },
+      "sort": {
+        "START": -1
+      },
+      "lsid": {
+        "id": "b'\\xf0y\\x87\\x19\\x14\\xdbDi\\xb3\\xc8^]t:\\xca\\xf9'"
+      },
+      "$clusterTime": {
+        "clusterTime": "Timestamp(1795792435, 1)",
+        "signature": {
+          "hash": "b'\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00'",
+          "keyId": 0
+        }
+      },
+      "$db": "ehr"
+    },
+    "ok": 1.0,
+    "$clusterTime": {
+      "clusterTime": "Timestamp(1795792435, 1)",
+      "signature": {
+        "hash": "b'\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00'",
+        "keyId": 0
+      }
+    },
+    "operationTime": "Timestamp(1795792429, 2)"
+  }
+}

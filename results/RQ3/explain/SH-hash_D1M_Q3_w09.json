@@ -1,0 +1,504 @@
+{
+  "query": "Q3",
+  "type": "aggregate",
+  "winning_stage": "SPLIT_PIPELINE",
+  "shards_targeted": 2,
+  "merge_type": "mongos",
+  "totalKeysExamined": 18174,
+  "totalDocsExamined": 18174,
+  "raw": {
+    "serverInfo": {
+      "host": "2170f03492ea",
+      "port": 27017,
+      "version": "7.0.48",
+      "gitVersion": "6937736f0539a5d4c8edb2970255b9369cb385a5"
+    },
+    "serverParameters": {
+      "internalQueryFacetBufferSizeBytes": 104857600,
+      "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+      "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+      "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+      "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+      "internalQueryProhibitBlockingMergeOnMongoS": 0,
+      "internalQueryMaxAddToSetBytes": 104857600,
+      "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+      "internalQueryFrameworkControl": "forceClassicEngine"
+    },
+    "mergeType": "mongos",
+    "splitPipeline": {
+      "shardsPart": [
+        {
+          "$match": {
+            "$and": [
+              {
+                "START": {
+                  "$gte": "2025-11-01 00:00:00"
+                }
+              },
+              {
+                "START": {
+                  "$lt": "2026-02-01 00:00:00"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "$unwind": {
+            "path": "$conditions"
+          }
+        },
+        {
+          "$group": {
+            "_id": "$conditions.CODE",
+            "n": {
+              "$sum": {
+                "$const": 1
+              }
+            }
+          }
+        }
+      ],
+      "mergerPart": [
+        {
+          "$mergeCursors": {
+            "lsid": {
+              "id": "b'\\xf0y\\x87\\x19\\x14\\xdbDi\\xb3\\xc8^]t:\\xca\\xf9'",
+              "uid": "b\"\\xe3\\xb0\\xc4B\\x98\\xfc\\x1c\\x14\\x9a\\xfb\\xf4\\xc8\\x99o\\xb9$'\\xaeA\\xe4d\\x9b\\x93L\\xa4\\x95\\x99\\x1bxR\\xb8U\""
+            },
+            "compareWholeSortKey": false,
+            "tailableMode": "normal",
+            "nss": "ehr.encounters",
+            "allowPartialResults": false,
+            "recordRemoteOpWaitTime": false
+          }
+        },
+        {
+          "$group": {
+            "_id": "$$ROOT._id",
+            "n": {
+              "$sum": "$$ROOT.n"
+            },
+            "$doingMerge": true
+          }
+        },
+        {
+          "$sort": {
+            "sortKey": {
+              "n": -1
+            },
+            "limit": 10
+          }
+        }
+      ]
+    },
+    "shards": {
+      "shard2RS": {
+        "host": "mdb-shard2:27018",
+        "stages": [
+          {
+            "$cursor": {
+              "queryPlanner": {
+                "namespace": "ehr.encounters",
+                "indexFilterSet": false,
+                "parsedQuery": {
+                  "$and": [
+                    {
+                      "START": {
+                        "$lt": "2026-02-01 00:00:00"
+                      }
+                    },
+                    {
+                      "START": {
+                        "$gte": "2025-11-01 00:00:00"
+                      }
+                    }
+                  ]
+                },
+                "queryHash": "B5488127",
+                "planCacheKey": "80E7206D",
+                "optimizationTimeMillis": 0,
+                "maxIndexedOrSolutionsReached": false,
+                "maxIndexedAndSolutionsReached": false,
+                "maxScansToExplodeReached": false,
+                "winningPlan": {
+                  "stage": "PROJECTION_SIMPLE",
+                  "transformBy": {
+                    "conditions": 1,
+                    "_id": 0
+                  },
+                  "inputStage": {
+                    "stage": "SHARDING_FILTER",
+                    "inputStage": {
+                      "stage": "FETCH",
+                      "inputStage": {
+                        "stage": "IXSCAN",
+                        "keyPattern": {
+                          "START": 1
+                        },
+                        "indexName": "START_1",
+                        "isMultiKey": false,
+                        "multiKeyPaths": {
+                          "START": []
+                        },
+                        "isUnique": false,
+                        "isSparse": false,
+                        "isPartial": false,
+                        "indexVersion": 2,
+                        "direction": "forward",
+                        "indexBounds": {
+                          "START": [
+                            "[new Date(1761955200000), new Date(1769904000000))"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "rejectedPlans": []
+              },
+              "executionStats": {
+                "executionSuccess": true,
+                "nReturned": 9661,
+                "executionTimeMillis": 32,
+                "totalKeysExamined": 9661,
+                "totalDocsExamined": 9661,
+                "executionStages": {
+                  "stage": "PROJECTION_SIMPLE",
+                  "nReturned": 9661,
+                  "executionTimeMillisEstimate": 8,
+                  "works": 9662,
+                  "advanced": 9661,
+                  "needTime": 0,
+                  "needYield": 0,
+                  "saveState": 10,
+                  "restoreState": 10,
+                  "isEOF": 1,
+                  "transformBy": {
+                    "conditions": 1,
+                    "_id": 0
+                  },
+                  "inputStage": {
+                    "stage": "SHARDING_FILTER",
+                    "nReturned": 9661,
+                    "executionTimeMillisEstimate": 5,
+                    "works": 9662,
+                    "advanced": 9661,
+                    "needTime": 0,
+                    "needYield": 0,
+                    "saveState": 10,
+                    "restoreState": 10,
+                    "isEOF": 1,
+                    "chunkSkips": 0,
+                    "inputStage": {
+                      "stage": "FETCH",
+                      "nReturned": 9661,
+                      "executionTimeMillisEstimate": 5,
+                      "works": 9662,
+                      "advanced": 9661,
+                      "needTime": 0,
+                      "needYield": 0,
+                      "saveState": 10,
+                      "restoreState": 10,
+                      "isEOF": 1,
+                      "docsExamined": 9661,
+                      "alreadyHasObj": 0,
+                      "inputStage": {
+                        "stage": "IXSCAN",
+                        "nReturned": 9661,
+                        "executionTimeMillisEstimate": 0,
+                        "works": 9662,
+                        "advanced": 9661,
+                        "needTime": 0,
+                        "needYield": 0,
+                        "saveState": 10,
+                        "restoreState": 10,
+                        "isEOF": 1,
+                        "keyPattern": {
+                          "START": 1
+                        },
+                        "indexName": "START_1",
+                        "isMultiKey": false,
+                        "multiKeyPaths": {
+                          "START": []
+                        },
+                        "isUnique": false,
+                        "isSparse": false,
+                        "isPartial": false,
+                        "indexVersion": 2,
+                        "direction": "forward",
+                        "indexBounds": {
+                          "START": [
+                            "[new Date(1761955200000), new Date(1769904000000))"
+                          ]
+                        },
+                        "keysExamined": 9661,
+                        "seeks": 1,
+                        "dupsTested": 0,
+                        "dupsDropped": 0
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "nReturned": 9661,
+            "executionTimeMillisEstimate": 28
+          },
+          {
+            "$unwind": {
+              "path": "$conditions"
+            },
+            "nReturned": 5335,
+            "executionTimeMillisEstimate": 33
+          },
+          {
+            "$group": {
+              "_id": "$conditions.CODE",
+              "n": {
+                "$sum": {
+                  "$const": 1
+                }
+              }
+            },
+            "maxAccumulatorMemoryUsageBytes": {
+              "n": 9696
+            },
+            "totalOutputDataSizeBytes": 33787,
+            "usedDisk": false,
+            "spills": 0,
+            "spilledDataStorageSize": 0,
+            "numBytesSpilledEstimate": 0,
+            "spilledRecords": 0,
+            "nReturned": 101,
+            "executionTimeMillisEstimate": 33
+          }
+        ]
+      },
+      "shard1RS": {
+        "host": "mdb-shard1:27018",
+        "stages": [
+          {
+            "$cursor": {
+              "queryPlanner": {
+                "namespace": "ehr.encounters",
+                "indexFilterSet": false,
+                "parsedQuery": {
+                  "$and": [
+                    {
+                      "START": {
+                        "$lt": "2026-02-01 00:00:00"
+                      }
+                    },
+                    {
+                      "START": {
+                        "$gte": "2025-11-01 00:00:00"
+                      }
+                    }
+                  ]
+                },
+                "queryHash": "B5488127",
+                "planCacheKey": "80E7206D",
+                "optimizationTimeMillis": 0,
+                "maxIndexedOrSolutionsReached": false,
+                "maxIndexedAndSolutionsReached": false,
+                "maxScansToExplodeReached": false,
+                "winningPlan": {
+                  "stage": "PROJECTION_SIMPLE",
+                  "transformBy": {
+                    "conditions": 1,
+                    "_id": 0
+                  },
+                  "inputStage": {
+                    "stage": "SHARDING_FILTER",
+                    "inputStage": {
+                      "stage": "FETCH",
+                      "inputStage": {
+                        "stage": "IXSCAN",
+                        "keyPattern": {
+                          "START": 1
+                        },
+                        "indexName": "START_1",
+                        "isMultiKey": false,
+                        "multiKeyPaths": {
+                          "START": []
+                        },
+                        "isUnique": false,
+                        "isSparse": false,
+                        "isPartial": false,
+                        "indexVersion": 2,
+                        "direction": "forward",
+                        "indexBounds": {
+                          "START": [
+                            "[new Date(1761955200000), new Date(1769904000000))"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "rejectedPlans": []
+              },
+              "executionStats": {
+                "executionSuccess": true,
+                "nReturned": 8513,
+                "executionTimeMillis": 42,
+                "totalKeysExamined": 8513,
+                "totalDocsExamined": 8513,
+                "executionStages": {
+                  "stage": "PROJECTION_SIMPLE",
+                  "nReturned": 8513,
+                  "executionTimeMillisEstimate": 13,
+                  "works": 8514,
+                  "advanced": 8513,
+                  "needTime": 0,
+                  "needYield": 0,
+                  "saveState": 9,
+                  "restoreState": 9,
+                  "isEOF": 1,
+                  "transformBy": {
+                    "conditions": 1,
+                    "_id": 0
+                  },
+                  "inputStage": {
+                    "stage": "SHARDING_FILTER",
+                    "nReturned": 8513,
+                    "executionTimeMillisEstimate": 10,
+                    "works": 8514,
+                    "advanced": 8513,
+                    "needTime": 0,
+                    "needYield": 0,
+                    "saveState": 9,
+                    "restoreState": 9,
+                    "isEOF": 1,
+                    "chunkSkips": 0,
+                    "inputStage": {
+                      "stage": "FETCH",
+                      "nReturned": 8513,
+                      "executionTimeMillisEstimate": 9,
+                      "works": 8514,
+                      "advanced": 8513,
+                      "needTime": 0,
+                      "needYield": 0,
+                      "saveState": 9,
+                      "restoreState": 9,
+                      "isEOF": 1,
+                      "docsExamined": 8513,
+                      "alreadyHasObj": 0,
+                      "inputStage": {
+                        "stage": "IXSCAN",
+                        "nReturned": 8513,
+                        "executionTimeMillisEstimate": 7,
+                        "works": 8514,
+                        "advanced": 8513,
+                        "needTime": 0,
+                        "needYield": 0,
+                        "saveState": 9,
+                        "restoreState": 9,
+                        "isEOF": 1,
+                        "keyPattern": {
+                          "START": 1
+                        },
+                        "indexName": "START_1",
+                        "isMultiKey": false,
+                        "multiKeyPaths": {
+                          "START": []
+                        },
+                        "isUnique": false,
+                        "isSparse": false,
+                        "isPartial": false,
+                        "indexVersion": 2,
+                        "direction": "forward",
+                        "indexBounds": {
+                          "START": [
+                            "[new Date(1761955200000), new Date(1769904000000))"
+                          ]
+                        },
+                        "keysExamined": 8513,
+                        "seeks": 1,
+                        "dupsTested": 0,
+                        "dupsDropped": 0
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "nReturned": 8513,
+            "executionTimeMillisEstimate": 35
+          },
+          {
+            "$unwind": {
+              "path": "$conditions"
+            },
+            "nReturned": 5211,
+            "executionTimeMillisEstimate": 39
+          },
+          {
+            "$group": {
+              "_id": "$conditions.CODE",
+              "n": {
+                "$sum": {
+                  "$const": 1
+                }
+              }
+            },
+            "maxAccumulatorMemoryUsageBytes": {
+              "n": 9792
+            },
+            "totalOutputDataSizeBytes": 34120,
+            "usedDisk": false,
+            "spills": 0,
+            "spilledDataStorageSize": 0,
+            "numBytesSpilledEstimate": 0,
+            "spilledRecords": 0,
+            "nReturned": 102,
+            "executionTimeMillisEstimate": 43
+          }
+        ]
+      }
+    },
+    "command": {
+      "aggregate": "encounters",
+      "pipeline": [
+        {
+          "$match": {
+            "START": {
+              "$gte": "2025-11-01 00:00:00",
+              "$lt": "2026-02-01 00:00:00"
+            }
+          }
+        },
+        {
+          "$unwind": "$conditions"
+        },
+        {
+          "$group": {
+            "_id": "$conditions.CODE",
+            "n": {
+              "$sum": 1
+            }
+          }
+        },
+        {
+          "$sort": {
+            "n": -1
+          }
+        },
+        {
+          "$limit": 10
+        }
+      ],
+      "cursor": {}
+    },
+    "ok": 1.0,
+    "$clusterTime": {
+      "clusterTime": "Timestamp(1795792435, 1)",
+      "signature": {
+        "hash": "b'\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00'",
+        "keyId": 0
+      }
+    },
+    "operationTime": "Timestamp(1795792430, 1)"
+  }
+}

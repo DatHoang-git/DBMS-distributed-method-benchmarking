@@ -1,0 +1,123 @@
+=== 2026-11-27 21:46:23 LOAD S1 ===
+Loaded patients: 1,822 docs in 0.0s (42,942 docs/s)
+Loaded encounters: 100,000 docs in 5.1s (19,777 docs/s)
+Wrote results/load/SH-hash_S1.json
+=== 2026-11-27 21:46:29 TN1 D100K Q1 t1 r1 ===
+DONE SH-hash_D100K_TN1_Q1_t1_r1: n=24540, rate=490.79/s, p95=2.279ms, net=20.695KB/req, client_cpu_max=37.82% (bound=False)
+=== 2026-11-27 21:47:20 TN1 D100K Q1 t1 r2 ===
+DONE SH-hash_D100K_TN1_Q1_t1_r2: n=26493, rate=529.84/s, p95=2.085ms, net=20.154KB/req, client_cpu_max=33.67% (bound=False)
+=== 2026-11-27 21:48:11 TN1 D100K Q1 t1 r3 ===
+DONE SH-hash_D100K_TN1_Q1_t1_r3: n=25818, rate=516.35/s, p95=2.093ms, net=20.565KB/req, client_cpu_max=36.56% (bound=False)
+=== 2026-11-27 21:49:01 TN1 D100K Q1 t4 r1 ===
+DONE SH-hash_D100K_TN1_Q1_t4_r1: n=63483, rate=1269.56/s, p95=3.556ms, net=15.81KB/req, client_cpu_max=59.56% (bound=False)
+=== 2026-11-27 21:49:52 TN1 D100K Q1 t4 r2 ===
+DONE SH-hash_D100K_TN1_Q1_t4_r2: n=64438, rate=1288.66/s, p95=3.458ms, net=15.595KB/req, client_cpu_max=58.5% (bound=False)
+=== 2026-11-27 21:50:43 TN1 D100K Q1 t4 r3 ===
+DONE SH-hash_D100K_TN1_Q1_t4_r3: n=61023, rate=1220.39/s, p95=3.683ms, net=15.651KB/req, client_cpu_max=59.95% (bound=False)
+=== 2026-11-27 21:51:33 TN1 D100K Q1 t8 r1 ===
+DONE SH-hash_D100K_TN1_Q1_t8_r1: n=63045, rate=1260.77/s, p95=7.564ms, net=15.542KB/req, client_cpu_max=57.66% (bound=False)
+=== 2026-11-27 21:52:24 TN1 D100K Q1 t8 r2 ===
+DONE SH-hash_D100K_TN1_Q1_t8_r2: n=63482, rate=1269.51/s, p95=7.395ms, net=15.444KB/req, client_cpu_max=55.92% (bound=False)
+=== 2026-11-27 21:53:15 TN1 D100K Q1 t8 r3 ===
+DONE SH-hash_D100K_TN1_Q1_t8_r3: n=66692, rate=1333.71/s, p95=7.049ms, net=15.51KB/req, client_cpu_max=50.77% (bound=False)
+=== 2026-11-27 21:54:05 TN3-read D100K Q3 r1 ===
+DONE SH-hash_D100K_TN3-read_Q3_t1_r1: n=5171, rate=103.41/s, p95=6.529ms, net=1.679KB/req, client_cpu_max=32.66% (bound=False)
+=== 2026-11-27 21:54:56 TN3-read D100K Q4 r1 ===
+DONE SH-hash_D100K_TN3-read_Q4_t1_r1: n=23942, rate=478.83/s, p95=1.678ms, net=25.18KB/req, client_cpu_max=30.66% (bound=False)
+=== 2026-11-27 21:55:47 LOAD S2 ===
+Loaded patients: 7,380 docs in 0.1s (52,429 docs/s)
+Loaded encounters: 400,000 docs in 23.6s (16,935 docs/s)
+Wrote results/load/SH-hash_S2.json
+=== 2026-11-27 21:56:11 TN1 D500K Q1 t1 r1 ===
+DONE SH-hash_D500K_TN1_Q1_t1_r1: n=23481, rate=469.61/s, p95=2.332ms, net=20.304KB/req, client_cpu_max=28.19% (bound=False)
+=== 2026-11-27 21:57:02 TN1 D500K Q1 t1 r2 ===
+DONE SH-hash_D500K_TN1_Q1_t1_r2: n=24363, rate=487.23/s, p95=2.215ms, net=20.655KB/req, client_cpu_max=26.56% (bound=False)
+=== 2026-11-27 21:57:52 TN1 D500K Q1 t1 r3 ===
+DONE SH-hash_D500K_TN1_Q1_t1_r3: n=24247, rate=484.92/s, p95=2.282ms, net=20.808KB/req, client_cpu_max=26.9% (bound=False)
+=== 2026-11-27 21:58:43 TN1 D500K Q1 t4 r1 ===
+DONE SH-hash_D500K_TN1_Q1_t4_r1: n=64547, rate=1290.84/s, p95=3.452ms, net=15.449KB/req, client_cpu_max=50.43% (bound=False)
+=== 2026-11-27 21:59:34 TN1 D500K Q1 t4 r2 ===
+DONE SH-hash_D500K_TN1_Q1_t4_r2: n=64652, rate=1292.88/s, p95=3.449ms, net=15.233KB/req, client_cpu_max=49.62% (bound=False)
+=== 2026-11-27 22:00:25 TN1 D500K Q1 t4 r3 ===
+DONE SH-hash_D500K_TN1_Q1_t4_r3: n=64562, rate=1291.16/s, p95=3.488ms, net=15.342KB/req, client_cpu_max=48.47% (bound=False)
+=== 2026-11-27 22:01:15 TN1 D500K Q1 t8 r1 ===
+DONE SH-hash_D500K_TN1_Q1_t8_r1: n=64607, rate=1292.04/s, p95=7.362ms, net=15.447KB/req, client_cpu_max=58.9% (bound=False)
+=== 2026-11-27 22:02:06 TN1 D500K Q1 t8 r2 ===
+DONE SH-hash_D500K_TN1_Q1_t8_r2: n=65460, rate=1309.1/s, p95=7.151ms, net=15.294KB/req, client_cpu_max=50.99% (bound=False)
+=== 2026-11-27 22:02:57 TN1 D500K Q1 t8 r3 ===
+DONE SH-hash_D500K_TN1_Q1_t8_r3: n=66724, rate=1334.37/s, p95=7.022ms, net=15.309KB/req, client_cpu_max=51.29% (bound=False)
+=== 2026-11-27 22:03:47 TN3-read D500K Q3 r1 ===
+DONE SH-hash_D500K_TN3-read_Q3_t1_r1: n=1527, rate=30.53/s, p95=22.361ms, net=1.686KB/req, client_cpu_max=37.39% (bound=False)
+=== 2026-11-27 22:04:38 TN3-read D500K Q4 r1 ===
+DONE SH-hash_D500K_TN3-read_Q4_t1_r1: n=8945, rate=178.89/s, p95=4.339ms, net=118.92KB/req, client_cpu_max=47.78% (bound=False)
+=== 2026-11-27 22:05:29 LOAD S3 ===
+Loaded patients: 9,241 docs in 0.2s (58,161 docs/s)
+Loaded encounters: 500,000 docs in 33.2s (15,073 docs/s)
+Wrote results/load/SH-hash_S3.json
+=== 2026-11-27 22:06:03 TN2-dist D1M ===
+Wrote results/RQ2/dist/SH-hash_D1M_dist.json: {'shard1RS': {'count': 500182, 'size_mb': 651.8, 'size_pct': 49.77, 'storage_mb': 224.91, 'index_mb': 117.06}, 'shard2RS': {'count': 499818, 'size_mb': 657.87, 'size_pct': 50.23, 'storage_mb': 225.52, 'index_mb': 117.57}}
+=== 2026-11-27 22:06:03 TN1 D1M Q1 t1 r1 ===
+DONE SH-hash_D1M_TN1_Q1_t1_r1: n=9364, rate=187.28/s, p95=6.684ms, net=18.774KB/req, client_cpu_max=25.83% (bound=False)
+=== 2026-11-27 22:07:09 TN1 D1M Q1 t1 r2 ===
+DONE SH-hash_D1M_TN1_Q1_t1_r2: n=10574, rate=211.47/s, p95=5.811ms, net=20.497KB/req, client_cpu_max=27.19% (bound=False)
+=== 2026-11-27 22:08:00 TN1 D1M Q1 t1 r3 ===
+DONE SH-hash_D1M_TN1_Q1_t1_r3: n=11312, rate=226.23/s, p95=5.48ms, net=20.104KB/req, client_cpu_max=24.37% (bound=False)
+=== 2026-11-27 22:08:50 TN1 D1M Q1 t4 r1 ===
+DONE SH-hash_D1M_TN1_Q1_t4_r1: n=38282, rate=765.58/s, p95=6.506ms, net=14.749KB/req, client_cpu_max=51.32% (bound=False)
+=== 2026-11-27 22:09:41 TN1 D1M Q1 t4 r2 ===
+DONE SH-hash_D1M_TN1_Q1_t4_r2: n=38530, rate=770.48/s, p95=6.45ms, net=14.567KB/req, client_cpu_max=50.04% (bound=False)
+=== 2026-11-27 22:10:32 TN1 D1M Q1 t4 r3 ===
+DONE SH-hash_D1M_TN1_Q1_t4_r3: n=37993, rate=759.81/s, p95=6.5ms, net=14.597KB/req, client_cpu_max=59.37% (bound=False)
+=== 2026-11-27 22:11:22 TN1 D1M Q1 t8 r1 ===
+DONE SH-hash_D1M_TN1_Q1_t8_r1: n=47478, rate=949.33/s, p95=12.857ms, net=14.272KB/req, client_cpu_max=66.22% (bound=False)
+=== 2026-11-27 22:12:13 TN1 D1M Q1 t8 r2 ===
+DONE SH-hash_D1M_TN1_Q1_t8_r2: n=49131, rate=982.01/s, p95=11.995ms, net=14.067KB/req, client_cpu_max=65.36% (bound=False)
+=== 2026-11-27 22:13:04 TN1 D1M Q1 t8 r3 ===
+DONE SH-hash_D1M_TN1_Q1_t8_r3: n=49256, rate=984.8/s, p95=11.74ms, net=14.022KB/req, client_cpu_max=66.21% (bound=False)
+=== 2026-11-27 22:13:55 TN3-explain D1M ===
+Wrote explain JSONs for SH-hash/D1M to results/RQ3/explain
+=== 2026-11-27 22:13:56 TN3-read D1M Q3 r1 ===
+DONE SH-hash_D1M_TN3-read_Q3_t1_r1: n=840, rate=16.79/s, p95=42.201ms, net=1.63KB/req, client_cpu_max=33.89% (bound=False)
+=== 2026-11-27 22:15:01 TN3-read D1M Q3 r2 ===
+DONE SH-hash_D1M_TN3-read_Q3_t1_r2: n=997, rate=19.93/s, p95=38.897ms, net=1.542KB/req, client_cpu_max=28.16% (bound=False)
+=== 2026-11-27 22:16:07 TN3-read D1M Q3 r3 ===
+DONE SH-hash_D1M_TN3-read_Q3_t1_r3: n=1094, rate=21.88/s, p95=33.378ms, net=1.625KB/req, client_cpu_max=21.01% (bound=False)
+=== 2026-11-27 22:17:13 TN3-read D1M Q4 r1 ===
+DONE SH-hash_D1M_TN3-read_Q4_t1_r1: n=4302, rate=86.02/s, p95=8.818ms, net=240.004KB/req, client_cpu_max=24.07% (bound=False)
+=== 2026-11-27 22:18:19 TN3-read D1M Q4 r2 ===
+DONE SH-hash_D1M_TN3-read_Q4_t1_r2: n=4248, rate=84.94/s, p95=8.779ms, net=240.879KB/req, client_cpu_max=24.7% (bound=False)
+=== 2026-11-27 22:19:24 TN3-read D1M Q4 r3 ===
+DONE SH-hash_D1M_TN3-read_Q4_t1_r3: n=4226, rate=84.5/s, p95=8.819ms, net=241.9KB/req, client_cpu_max=22.84% (bound=False)
+=== 2026-11-27 22:20:30 TN2-write D1M r1 ===
+DONE SH-hash_D1M_TN2-write_t4_r1: n=68926, rate=1148.63/s, p95=5.131ms, net=0.833KB/req, client_cpu_max=49.52% (bound=False)
+=== 2026-11-27 22:21:31 TN2-write D1M r2 ===
+DONE SH-hash_D1M_TN2-write_t4_r2: n=70972, rate=1182.49/s, p95=4.79ms, net=0.833KB/req, client_cpu_max=38.6% (bound=False)
+=== 2026-11-27 22:22:31 TN2-write D1M r3 ===
+DONE SH-hash_D1M_TN2-write_t4_r3: n=71516, rate=1191.81/s, p95=4.717ms, net=0.833KB/req, client_cpu_max=36.04% (bound=False)
+=== 2026-11-27 22:23:32 LOAD S4 ===
+Loaded patients: 37,005 docs in 0.7s (49,779 docs/s)
+Loaded encounters: 2,000,000 docs in 223.4s (8,951 docs/s)
+Wrote results/load/SH-hash_S4.json
+=== 2026-11-27 22:27:16 TN1 D3M Q1 t1 r1 ===
+DONE SH-hash_D3M_TN1_Q1_t1_r1: n=2000, rate=38.17/s, p95=35.542ms, net=20.821KB/req, client_cpu_max=17.62% (bound=False)
+=== 2026-11-27 22:28:10 TN1 D3M Q1 t1 r2 ===
+DONE SH-hash_D3M_TN1_Q1_t1_r2: n=2008, rate=40.15/s, p95=31.173ms, net=20.57KB/req, client_cpu_max=19.19% (bound=False)
+=== 2026-11-27 22:29:00 TN1 D3M Q1 t1 r3 ===
+DONE SH-hash_D3M_TN1_Q1_t1_r3: n=2000, rate=37.89/s, p95=36.703ms, net=20.945KB/req, client_cpu_max=25.02% (bound=False)
+=== 2026-11-27 22:29:54 TN1 D3M Q1 t4 r1 ===
+DONE SH-hash_D3M_TN1_Q1_t4_r1: n=10269, rate=205.25/s, p95=23.738ms, net=14.734KB/req, client_cpu_max=33.16% (bound=False)
+=== 2026-11-27 22:30:45 TN1 D3M Q1 t4 r2 ===
+DONE SH-hash_D3M_TN1_Q1_t4_r2: n=11627, rate=232.26/s, p95=21.937ms, net=14.566KB/req, client_cpu_max=33.3% (bound=False)
+=== 2026-11-27 22:31:35 TN1 D3M Q1 t4 r3 ===
+DONE SH-hash_D3M_TN1_Q1_t4_r3: n=12685, rate=253.24/s, p95=20.025ms, net=14.809KB/req, client_cpu_max=33.11% (bound=False)
+=== 2026-11-27 22:32:26 TN1 D3M Q1 t8 r1 ===
+DONE SH-hash_D3M_TN1_Q1_t8_r1: n=10481, rate=209.26/s, p95=66.838ms, net=15.154KB/req, client_cpu_max=56.92% (bound=False)
+=== 2026-11-27 22:33:17 TN1 D3M Q1 t8 r2 ===
+DONE SH-hash_D3M_TN1_Q1_t8_r2: n=10771, rate=215.05/s, p95=64.47ms, net=14.899KB/req, client_cpu_max=53.04% (bound=False)
+=== 2026-11-27 22:34:08 TN1 D3M Q1 t8 r3 ===
+DONE SH-hash_D3M_TN1_Q1_t8_r3: n=10769, rate=215.09/s, p95=64.134ms, net=15.151KB/req, client_cpu_max=56.76% (bound=False)
+=== 2026-11-27 22:34:58 TN3-read D3M Q3 r1 ===
+DONE SH-hash_D3M_TN3-read_Q3_t1_r1: n=300, rate=5.79/s, p95=241.974ms, net=1.689KB/req, client_cpu_max=20.42% (bound=False)
+=== 2026-11-27 22:35:51 TN3-read D3M Q4 r1 ===
+DONE SH-hash_D3M_TN3-read_Q4_t1_r1: n=1501, rate=30.01/s, p95=33.469ms, net=705.47KB/req, client_cpu_max=23.3% (bound=False)
+=== 2026-11-27 22:36:42 ALL DONE ===
