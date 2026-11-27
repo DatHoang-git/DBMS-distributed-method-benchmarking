@@ -1,0 +1,43 @@
+# Phase 0 Local Dry-Run: MongoDB 7.0 Sharded Cluster (2 shards + cfgRS + mongos)
+# Giới hạn RAM chặt (512m / container, 0.25 GB WT cache) an toàn cho máy cá nhân.
+# Usage:
+#   docker compose -f infra/docker/docker-compose.yml up -d
+#   ./infra/docker/init-cluster.sh
+
+services:
+  cfgsvr:
+    image: mongo:7.0
+    container_name: mdb-cfgsvr
+    command: ["mongod", "--configsvr", "--replSet", "cfgRS", "--port", "27019", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.25"]
+    mem_limit: 512m
+    ports: ["27019:27019"]
+    networks: [mdb-net]
+
+  shard1:
+    image: mongo:7.0
+    container_name: mdb-shard1
+    command: ["mongod", "--shardsvr", "--replSet", "shard1RS", "--port", "27018", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.25"]
+    mem_limit: 512m
+    ports: ["27118:27018"]
+    networks: [mdb-net]
+
+  shard2:
+    image: mongo:7.0
+    container_name: mdb-shard2
+    command: ["mongod", "--shardsvr", "--replSet", "shard2RS", "--port", "27018", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.25"]
+    mem_limit: 512m
+    ports: ["27218:27018"]
+    networks: [mdb-net]
+
+  mongos:
+    image: mongo:7.0
+    container_name: mdb-mongos
+    depends_on: [cfgsvr, shard1, shard2]
+    command: ["mongos", "--configdb", "cfgRS/cfgsvr:27019", "--port", "27017", "--bind_ip_all"]
+    mem_limit: 512m
+    ports: ["27017:27017"]
+    networks: [mdb-net]
+
+networks:
+  mdb-net:
+    driver: bridge

@@ -1,0 +1,519 @@
+{
+  "chunk_mb": 32,
+  "windows": {
+    "anchor": "2026-11-01T00:00:00Z",
+    "d12mAgo": "2025-11-01T00:00:00Z",
+    "q3_windows": [
+      {
+        "qStart": "2023-11-01T00:00:00Z",
+        "qEnd": "2024-02-01T00:00:00Z"
+      },
+      {
+        "qStart": "2024-02-01T00:00:00Z",
+        "qEnd": "2024-05-01T00:00:00Z"
+      },
+      {
+        "qStart": "2024-05-01T00:00:00Z",
+        "qEnd": "2024-08-01T00:00:00Z"
+      },
+      {
+        "qStart": "2024-08-01T00:00:00Z",
+        "qEnd": "2024-11-01T00:00:00Z"
+      },
+      {
+        "qStart": "2024-11-01T00:00:00Z",
+        "qEnd": "2025-02-01T00:00:00Z"
+      },
+      {
+        "qStart": "2025-02-01T00:00:00Z",
+        "qEnd": "2025-05-01T00:00:00Z"
+      },
+      {
+        "qStart": "2025-05-01T00:00:00Z",
+        "qEnd": "2025-08-01T00:00:00Z"
+      },
+      {
+        "qStart": "2025-08-01T00:00:00Z",
+        "qEnd": "2025-11-01T00:00:00Z"
+      },
+      {
+        "qStart": "2025-11-01T00:00:00Z",
+        "qEnd": "2026-02-01T00:00:00Z"
+      },
+      {
+        "qStart": "2026-02-01T00:00:00Z",
+        "qEnd": "2026-05-01T00:00:00Z"
+      },
+      {
+        "qStart": "2026-05-01T00:00:00Z",
+        "qEnd": "2026-08-01T00:00:00Z"
+      },
+      {
+        "qStart": "2026-08-01T00:00:00Z",
+        "qEnd": "2026-11-01T00:00:00Z"
+      }
+    ],
+    "q4_windows": [
+      {
+        "mStart": "2023-11-01T00:00:00Z",
+        "mEnd": "2023-12-01T00:00:00Z"
+      },
+      {
+        "mStart": "2023-12-01T00:00:00Z",
+        "mEnd": "2024-01-01T00:00:00Z"
+      },
+      {
+        "mStart": "2024-01-01T00:00:00Z",
+        "mEnd": "2024-02-01T00:00:00Z"
+      },
+      {
+        "mStart": "2024-02-01T00:00:00Z",
+        "mEnd": "2024-03-01T00:00:00Z"
+      },
+      {
+        "mStart": "2024-03-01T00:00:00Z",
+        "mEnd": "2024-04-01T00:00:00Z"
+      },
+      {
+        "mStart": "2024-04-01T00:00:00Z",
+        "mEnd": "2024-05-01T00:00:00Z"
+      },
+      {
+        "mStart": "2024-05-01T00:00:00Z",
+        "mEnd": "2024-06-01T00:00:00Z"
+      },
+      {
+        "mStart": "2024-06-01T00:00:00Z",
+        "mEnd": "2024-07-01T00:00:00Z"
+      },
+      {
+        "mStart": "2024-07-01T00:00:00Z",
+        "mEnd": "2024-08-01T00:00:00Z"
+      },
+      {
+        "mStart": "2024-08-01T00:00:00Z",
+        "mEnd": "2024-09-01T00:00:00Z"
+      },
+      {
+        "mStart": "2024-09-01T00:00:00Z",
+        "mEnd": "2024-10-01T00:00:00Z"
+      },
+      {
+        "mStart": "2024-10-01T00:00:00Z",
+        "mEnd": "2024-11-01T00:00:00Z"
+      },
+      {
+        "mStart": "2024-11-01T00:00:00Z",
+        "mEnd": "2024-12-01T00:00:00Z"
+      },
+      {
+        "mStart": "2024-12-01T00:00:00Z",
+        "mEnd": "2025-01-01T00:00:00Z"
+      },
+      {
+        "mStart": "2025-01-01T00:00:00Z",
+        "mEnd": "2025-02-01T00:00:00Z"
+      },
+      {
+        "mStart": "2025-02-01T00:00:00Z",
+        "mEnd": "2025-03-01T00:00:00Z"
+      },
+      {
+        "mStart": "2025-03-01T00:00:00Z",
+        "mEnd": "2025-04-01T00:00:00Z"
+      },
+      {
+        "mStart": "2025-04-01T00:00:00Z",
+        "mEnd": "2025-05-01T00:00:00Z"
+      },
+      {
+        "mStart": "2025-05-01T00:00:00Z",
+        "mEnd": "2025-06-01T00:00:00Z"
+      },
+      {
+        "mStart": "2025-06-01T00:00:00Z",
+        "mEnd": "2025-07-01T00:00:00Z"
+      },
+      {
+        "mStart": "2025-07-01T00:00:00Z",
+        "mEnd": "2025-08-01T00:00:00Z"
+      },
+      {
+        "mStart": "2025-08-01T00:00:00Z",
+        "mEnd": "2025-09-01T00:00:00Z"
+      },
+      {
+        "mStart": "2025-09-01T00:00:00Z",
+        "mEnd": "2025-10-01T00:00:00Z"
+      },
+      {
+        "mStart": "2025-10-01T00:00:00Z",
+        "mEnd": "2025-11-01T00:00:00Z"
+      },
+      {
+        "mStart": "2025-11-01T00:00:00Z",
+        "mEnd": "2025-12-01T00:00:00Z"
+      },
+      {
+        "mStart": "2025-12-01T00:00:00Z",
+        "mEnd": "2026-01-01T00:00:00Z"
+      },
+      {
+        "mStart": "2026-01-01T00:00:00Z",
+        "mEnd": "2026-02-01T00:00:00Z"
+      },
+      {
+        "mStart": "2026-02-01T00:00:00Z",
+        "mEnd": "2026-03-01T00:00:00Z"
+      },
+      {
+        "mStart": "2026-03-01T00:00:00Z",
+        "mEnd": "2026-04-01T00:00:00Z"
+      },
+      {
+        "mStart": "2026-04-01T00:00:00Z",
+        "mEnd": "2026-05-01T00:00:00Z"
+      },
+      {
+        "mStart": "2026-05-01T00:00:00Z",
+        "mEnd": "2026-06-01T00:00:00Z"
+      },
+      {
+        "mStart": "2026-06-01T00:00:00Z",
+        "mEnd": "2026-07-01T00:00:00Z"
+      },
+      {
+        "mStart": "2026-07-01T00:00:00Z",
+        "mEnd": "2026-08-01T00:00:00Z"
+      },
+      {
+        "mStart": "2026-08-01T00:00:00Z",
+        "mEnd": "2026-09-01T00:00:00Z"
+      },
+      {
+        "mStart": "2026-09-01T00:00:00Z",
+        "mEnd": "2026-10-01T00:00:00Z"
+      },
+      {
+        "mStart": "2026-10-01T00:00:00Z",
+        "mEnd": "2026-11-01T00:00:00Z"
+      }
+    ]
+  },
+  "q4s_code": "44054006",
+  "q4l_code": "314529007",
+  "tiers": {
+    "D100K": {
+      "encounters": 100000,
+      "bson_mb": 130.3,
+      "avg_bson_bytes": 1366.3,
+      "chunks_at_32mb": 4.1,
+      "key_mass_PATIENT": {
+        "min_imbalance_pct_2shards": 0.0,
+        "distinct_keys": 1822,
+        "max_mb": 1.86,
+        "p99_mb": 0.936,
+        "keys_over_chunk": 0,
+        "mass_over_chunk_pct": 0.0,
+        "top1_pct": 1.43
+      },
+      "key_mass_ORGANIZATION": {
+        "min_imbalance_pct_2shards": 0.0,
+        "distinct_keys": 821,
+        "max_mb": 4.12,
+        "p99_mb": 1.647,
+        "keys_over_chunk": 0,
+        "mass_over_chunk_pct": 0.0,
+        "top1_pct": 3.16
+      },
+      "key_mass_ENCOUNTERCLASS": {
+        "min_imbalance_pct_2shards": 0.0,
+        "distinct_keys": 10,
+        "max_mb": 49.03,
+        "p99_mb": 49.031,
+        "keys_over_chunk": 1,
+        "mass_over_chunk_pct": 37.63,
+        "top1_pct": 37.63
+      },
+      "q3_docs_per_quarter": {
+        "min": 1746,
+        "max": 1951,
+        "mean": 1886.0
+      },
+      "q3_mb_per_quarter_max": 2.8,
+      "q3_quarter_exceeds_one_chunk": false,
+      "q4s_docs_per_month": {
+        "min": 0,
+        "max": 3,
+        "mean": 0.5
+      },
+      "q4l_docs_per_month": {
+        "min": 66,
+        "max": 109,
+        "mean": 84.4
+      },
+      "q1_hotset_mb_all_patients": 25.6,
+      "q2_hotset_mb_all_patients": 11.1
+    },
+    "D500K": {
+      "encounters": 500000,
+      "bson_mb": 656.5,
+      "avg_bson_bytes": 1376.7,
+      "chunks_at_32mb": 20.5,
+      "key_mass_PATIENT": {
+        "min_imbalance_pct_2shards": 0.0,
+        "distinct_keys": 9202,
+        "max_mb": 1.86,
+        "p99_mb": 0.952,
+        "keys_over_chunk": 0,
+        "mass_over_chunk_pct": 0.0,
+        "top1_pct": 0.28
+      },
+      "key_mass_ORGANIZATION": {
+        "min_imbalance_pct_2shards": 0.0,
+        "distinct_keys": 821,
+        "max_mb": 20.74,
+        "p99_mb": 8.056,
+        "keys_over_chunk": 0,
+        "mass_over_chunk_pct": 0.0,
+        "top1_pct": 3.16
+      },
+      "key_mass_ENCOUNTERCLASS": {
+        "min_imbalance_pct_2shards": 5.67,
+        "distinct_keys": 10,
+        "max_mb": 246.84,
+        "p99_mb": 246.844,
+        "keys_over_chunk": 4,
+        "mass_over_chunk_pct": 91.35,
+        "top1_pct": 37.6
+      },
+      "q3_docs_per_quarter": {
+        "min": 8476,
+        "max": 9524,
+        "mean": 9159.0
+      },
+      "q3_mb_per_quarter_max": 14.0,
+      "q3_quarter_exceeds_one_chunk": false,
+      "q4s_docs_per_month": {
+        "min": 0,
+        "max": 12,
+        "mean": 2.3
+      },
+      "q4l_docs_per_month": {
+        "min": 361,
+        "max": 543,
+        "mean": 415.8
+      },
+      "q1_hotset_mb_all_patients": 129.2,
+      "q2_hotset_mb_all_patients": 55.0
+    },
+    "D1M": {
+      "encounters": 1000000,
+      "bson_mb": 1309.7,
+      "avg_bson_bytes": 1373.3,
+      "chunks_at_32mb": 40.9,
+      "key_mass_PATIENT": {
+        "min_imbalance_pct_2shards": 0.0,
+        "distinct_keys": 18443,
+        "max_mb": 1.86,
+        "p99_mb": 0.936,
+        "keys_over_chunk": 0,
+        "mass_over_chunk_pct": 0.0,
+        "top1_pct": 0.14
+      },
+      "key_mass_ORGANIZATION": {
+        "min_imbalance_pct_2shards": 0.0,
+        "distinct_keys": 821,
+        "max_mb": 41.91,
+        "p99_mb": 16.003,
+        "keys_over_chunk": 1,
+        "mass_over_chunk_pct": 3.2,
+        "top1_pct": 3.2
+      },
+      "key_mass_ENCOUNTERCLASS": {
+        "min_imbalance_pct_2shards": 5.85,
+        "distinct_keys": 10,
+        "max_mb": 494.23,
+        "p99_mb": 494.226,
+        "keys_over_chunk": 6,
+        "mass_over_chunk_pct": 99.74,
+        "top1_pct": 37.74
+      },
+      "q3_docs_per_quarter": {
+        "min": 16938,
+        "max": 19070,
+        "mean": 18319.2
+      },
+      "q3_mb_per_quarter_max": 27.9,
+      "q3_quarter_exceeds_one_chunk": false,
+      "q4s_docs_per_month": {
+        "min": 0,
+        "max": 21,
+        "mean": 4.4
+      },
+      "q4l_docs_per_month": {
+        "min": 703,
+        "max": 1078,
+        "mean": 834.3
+      },
+      "q1_hotset_mb_all_patients": 258.9,
+      "q2_hotset_mb_all_patients": 109.9
+    },
+    "D2M": {
+      "encounters": 2000007,
+      "bson_mb": 2621.4,
+      "avg_bson_bytes": 1374.4,
+      "chunks_at_32mb": 81.9,
+      "key_mass_PATIENT": {
+        "min_imbalance_pct_2shards": 0.0,
+        "distinct_keys": 36925,
+        "max_mb": 1.86,
+        "p99_mb": 0.936,
+        "keys_over_chunk": 0,
+        "mass_over_chunk_pct": 0.0,
+        "top1_pct": 0.07
+      },
+      "key_mass_ORGANIZATION": {
+        "min_imbalance_pct_2shards": 0.0,
+        "distinct_keys": 821,
+        "max_mb": 83.37,
+        "p99_mb": 31.149,
+        "keys_over_chunk": 8,
+        "mass_over_chunk_pct": 14.5,
+        "top1_pct": 3.18
+      },
+      "key_mass_ENCOUNTERCLASS": {
+        "min_imbalance_pct_2shards": 5.85,
+        "distinct_keys": 10,
+        "max_mb": 989.78,
+        "p99_mb": 989.778,
+        "keys_over_chunk": 6,
+        "mass_over_chunk_pct": 99.74,
+        "top1_pct": 37.76
+      },
+      "q3_docs_per_quarter": {
+        "min": 33939,
+        "max": 38142,
+        "mean": 36722.3
+      },
+      "q3_mb_per_quarter_max": 55.8,
+      "q3_quarter_exceeds_one_chunk": true,
+      "q4s_docs_per_month": {
+        "min": 0,
+        "max": 42,
+        "mean": 9.0
+      },
+      "q4l_docs_per_month": {
+        "min": 1397,
+        "max": 2201,
+        "mean": 1676.4
+      },
+      "q1_hotset_mb_all_patients": 518.7,
+      "q2_hotset_mb_all_patients": 220.6
+    },
+    "D3M": {
+      "encounters": 3000000,
+      "bson_mb": 3932.0,
+      "avg_bson_bytes": 1374.3,
+      "chunks_at_32mb": 122.9,
+      "key_mass_PATIENT": {
+        "min_imbalance_pct_2shards": 0.0,
+        "distinct_keys": 55448,
+        "max_mb": 1.86,
+        "p99_mb": 0.936,
+        "keys_over_chunk": 0,
+        "mass_over_chunk_pct": 0.0,
+        "top1_pct": 0.05
+      },
+      "key_mass_ORGANIZATION": {
+        "min_imbalance_pct_2shards": 0.0,
+        "distinct_keys": 821,
+        "max_mb": 125.61,
+        "p99_mb": 47.255,
+        "keys_over_chunk": 23,
+        "mass_over_chunk_pct": 29.17,
+        "top1_pct": 3.19
+      },
+      "key_mass_ENCOUNTERCLASS": {
+        "min_imbalance_pct_2shards": 5.92,
+        "distinct_keys": 10,
+        "max_mb": 1486.01,
+        "p99_mb": 1486.011,
+        "keys_over_chunk": 6,
+        "mass_over_chunk_pct": 99.74,
+        "top1_pct": 37.79
+      },
+      "q3_docs_per_quarter": {
+        "min": 50920,
+        "max": 57155,
+        "mean": 55071.9
+      },
+      "q3_mb_per_quarter_max": 83.6,
+      "q3_quarter_exceeds_one_chunk": true,
+      "q4s_docs_per_month": {
+        "min": 0,
+        "max": 64,
+        "mean": 13.4
+      },
+      "q4l_docs_per_month": {
+        "min": 2115,
+        "max": 3295,
+        "mean": 2513.5
+      },
+      "q1_hotset_mb_all_patients": 778.9,
+      "q2_hotset_mb_all_patients": 330.2
+    },
+    "D1M-heavy": {
+      "encounters": 1000000,
+      "bson_mb": 1262.8,
+      "avg_bson_bytes": 1324.2,
+      "chunks_at_32mb": 39.5,
+      "key_mass_PATIENT": {
+        "min_imbalance_pct_2shards": 0.0,
+        "distinct_keys": 13000,
+        "max_mb": 6.17,
+        "p99_mb": 1.511,
+        "keys_over_chunk": 0,
+        "mass_over_chunk_pct": 0.0,
+        "top1_pct": 0.49
+      },
+      "key_mass_ORGANIZATION": {
+        "min_imbalance_pct_2shards": 0.0,
+        "distinct_keys": 821,
+        "max_mb": 33.77,
+        "p99_mb": 13.218,
+        "keys_over_chunk": 1,
+        "mass_over_chunk_pct": 2.67,
+        "top1_pct": 2.67
+      },
+      "key_mass_ENCOUNTERCLASS": {
+        "min_imbalance_pct_2shards": 0.68,
+        "distinct_keys": 10,
+        "max_mb": 576.86,
+        "p99_mb": 576.857,
+        "keys_over_chunk": 6,
+        "mass_over_chunk_pct": 99.73,
+        "top1_pct": 45.68
+      },
+      "q3_docs_per_quarter": {
+        "min": 30896,
+        "max": 38384,
+        "mean": 36966.0
+      },
+      "q3_mb_per_quarter_max": 47.5,
+      "q3_quarter_exceeds_one_chunk": true,
+      "q4s_docs_per_month": {
+        "min": 0,
+        "max": 34,
+        "mean": 15.1
+      },
+      "q4l_docs_per_month": {
+        "min": 815,
+        "max": 2211,
+        "mean": 1974.3
+      },
+      "q1_hotset_mb_all_patients": 182.6,
+      "q2_hotset_mb_all_patients": 196.1
+    }
+  }
+}

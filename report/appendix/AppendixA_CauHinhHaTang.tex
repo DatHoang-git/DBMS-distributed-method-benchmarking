@@ -1,63 +1,58 @@
-\chapter{Chi tiết Cấu hình Hạ tầng và Tham số Triển khai MongoDB}
+\chapter{Chi tiết Cấu hình Hạ tầng và Tham số Triển khai MongoDB 7.0}
 \label{app:infra-config}
 
-Phụ lục này tổng hợp toàn bộ thông số phần cứng chi tiết trên Microsoft Azure for Students, vai trò và cổng dịch vụ của từng máy ảo, bộ tham số cố định của MongoDB và quy trình xác minh cụm vận hành. Việc tách các chi tiết cài đặt sang phụ lục giúp giữ mạch trình bày gọn gàng ở Chương~\ref{chap:intro-mongodb} và Chương~\ref{chap:methodology}, đồng thời đảm bảo khả năng tái lập chính xác toàn bộ thực nghiệm.
+Phụ lục này tổng hợp thông số phần cứng trên Microsoft Azure for Students, vai trò và cổng dịch vụ của từng máy ảo, bộ tham số cố định của \textbf{MongoDB 7.0 Community LTS} và lịch trình chạy ba pha phục vụ khả năng tái lập thực nghiệm.
 
-\section{Đối chiếu Hai Cấu hình Máy ảo trên Azure for Students}
+\section{Thông số Hạ tầng Chuẩn hóa trên Microsoft Azure}
 
-Gói tài khoản giáo dục \textbf{Microsoft Azure for Students} (\$100 credit) giới hạn cứng tổng $4$\textendash $6\text{ vCPU}$ mỗi vùng địa lý (\textit{region}) và tối đa $4\text{ vCPU}$ cho mỗi dòng máy ảo (\textit{VM family}) \cite{AzureStudents}. Bảng~\ref{tab:app-azure-profiles} tổng hợp thông số của hai cấu hình triển khai chuẩn (\textbf{Profile A} và \textbf{Profile B}) với tổng chi phí dự toán dưới $5$\textendash $8\text{ USD}$ cho $3$\textendash $4$ giờ đo.
+Bảng~\ref{tab:app-azure-profiles} tổng hợp cấu hình máy ảo, ổ đĩa và giới hạn bộ nhớ áp dụng đồng nhất cho các nút dữ liệu (ưu tiên dòng \texttt{Standard\_D2s\_v5} không giới hạn CPU credit cho \texttt{vm-w1}, \texttt{vm-w2}; tổng chi phí ước tính dưới $4$\textendash $6\text{ USD}$ cho khoảng $2$\textendash $2.5$ giờ chạy thực nghiệm).
 
 \begin{table}[!htb]
 \centering
-\caption{Thông số phần cứng và giới hạn tài nguyên chi tiết của Profile A và Profile B trên Azure.}
+\caption{Thông số phần cứng, lưu trữ và giới hạn bộ nhớ trên Microsoft Azure.}
 \label{tab:app-azure-profiles}
-\renewcommand{\arraystretch}{1.25}
-\begin{tabularx}{\linewidth}{L{3.2cm} X X}
+\renewcommand{\arraystretch}{1.24}
+\begin{tabularx}{\linewidth}{L{3.6cm} X}
 \toprule
-\textbf{Tiêu chí} & \textbf{Profile A (4 vCPU tổng)} & \textbf{Profile B (6 vCPU tổng)} \\
+\textbf{Hạng mục} & \textbf{Cấu hình áp dụng} \\
 \midrule
-Điều kiện áp dụng & An toàn $100\%$ trên mọi tài khoản Azure Student. & Ưu tiên khi region cấp 6 vCPU hoặc ghép 2 tài khoản. \\
-Nút dữ liệu (\texttt{vm-w1}, \texttt{vm-w2}) & $2 \times \texttt{Standard\_B1ms}$ (1 vCPU, 2 GB RAM/VM). & $2 \times \texttt{Standard\_D2s\_v5}$ / \texttt{D2s\_v3} (2 vCPU, 8 GB RAM/VM, không giới hạn CPU credit). \\
-Nút điều phối \& Client & Biến thể 3 VM: \texttt{vm-coord} dùng \texttt{Standard\_B2s} (2 vCPU, 4 GB RAM, chạy chung \texttt{mongos}, Config Server và \texttt{bench.py}); hoặc 4 VM dùng $4 \times \texttt{B1ms}$. & Tách riêng \texttt{vm-coord} (\texttt{Standard\_B1ms}) và \texttt{vm-client} (\texttt{Standard\_B1ms}). \\
-WiredTiger Cache & \texttt{cacheSizeGB = 0.75} (768 MB) & \texttt{cacheSizeGB = 1.5} (1536 MB) \\
-Giới hạn RAM systemd & \texttt{MemoryMax = 1.4G} & \texttt{MemoryMax = 3G} \\
-Kiểm soát B-series & Kiểm tra CPU credit $\ge 50\%$ trên mọi VM trước mỗi pha; nghỉ 10\textendash 15 phút nếu tụt $< 40\%$. & Không bị bóp CPU credit trên hai nút dữ liệu dòng D. \\
-Ổ đĩa lưu trữ & Standard SSD (\texttt{E4} 32 GB hoặc \texttt{E6} 64 GB), tắt Availability Zones. & Standard SSD (\texttt{E4} 32 GB hoặc \texttt{E6} 64 GB), tắt Availability Zones. \\
+Nút dữ liệu (\texttt{vm-w1}, \texttt{vm-w2}) & $2 \times \texttt{Standard\_D2s\_v5}$ ($2\text{ vCPU}$, $8\text{ GB RAM}$/VM, không giới hạn CPU credit). \\
+Nút điều phối (\texttt{vm-coord}) \& Client (\texttt{vm-client}) & Đặt trong cùng mạng ảo nội bộ (\textit{VNet}); kiểm soát CPU máy khách luôn $< 75\%$ (nếu ở $8$ luồng vượt $75\%$ thì hạ đồng nhất dải luồng \texttt{TN1} xuống $1 / 2 / 4$). \\
+Ổ đĩa dữ liệu & Managed Disk \textbf{Standard SSD \texttt{E4}} ($32\text{ GB}$) gắn riêng cho \texttt{/var/lib/mongodb}, tắt Availability Zones, \textbf{đặt \texttt{Host Caching = None}}. \\
+Giới hạn bộ nhớ mỗi nút dữ liệu & \texttt{wiredTigerCacheSizeGB = 0.50} ($512\text{ MB}$) và systemd cgroup v2 \texttt{MemoryMax = 1G}. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \section{Phân công Vai trò và Cổng Dịch vụ theo Máy ảo}
 
-Bảng~\ref{tab:app-node-roles} liệt kê chi tiết tiến trình và cổng mạng của từng máy ảo trong cấu hình cụm phân mảnh so với cấu hình đối chứng đơn nút (\texttt{SA}).
-
 \begin{table}[!htb]
 \centering
 \caption{Vai trò tiến trình và cổng dịch vụ của các máy ảo trong cụm thực nghiệm.}
 \label{tab:app-node-roles}
-\renewcommand{\arraystretch}{1.25}
+\renewcommand{\arraystretch}{1.24}
 \begin{tabularx}{\linewidth}{l X L{4.2cm}}
 \toprule
-\textbf{Hostname} & \textbf{Vai trò trong cụm Sharded (\texttt{B1}, \texttt{SH-hash}, \texttt{SH-range})} & \textbf{Vai trò trong \texttt{SA}} \\
+\textbf{Hostname} & \textbf{Vai trò trong cụm Sharded (\texttt{SH-hash}, \texttt{SH-range})} & \textbf{Vai trò trong \texttt{SA}} \\
 \midrule
-\texttt{vm-client} & Chạy \texttt{bench.py} (\texttt{pymongo} + \texttt{multiprocessing}), thu CSV độ trễ và metadata; giữ CPU $< 80\%$ (hoặc $< 75\%$ nếu ghép trên \texttt{vm-coord}). & Kết nối trực tiếp tới \texttt{vm-w1:27017}. \\
+\texttt{vm-client} & Chạy \texttt{bench\_v2.py}, thu CSV độ trễ, \texttt{explain} và \texttt{meta/*.json}; gắn cờ \texttt{client\_bound} nếu CPU $\ge 75\%$. & Kết nối trực tiếp tới \texttt{vm-w1:27017}. \\
 \texttt{vm-coord} & Chạy \texttt{mongos} (cổng \texttt{27017}) và Config Server (\texttt{--configsvr --replSet cfgRS}, cổng \texttt{27019}). & Tắt / Deallocate. \\
-\texttt{vm-w1} & Chạy Shard 1 (\texttt{--shardsvr --replSet shard1RS}, cổng \texttt{27018}). & Chạy \texttt{mongod} đơn nút (\texttt{rs0}, cổng \texttt{27017}). \\
-\texttt{vm-w2} & Chạy Shard 2 (\texttt{--shardsvr --replSet shard2RS}, cổng \texttt{27018}); chỉ bật ở \texttt{SH-hash} và \texttt{SH-range}. & Tắt / Deallocate. \\
+\texttt{vm-w1} & Chạy Shard 1 (\texttt{--shardsvr --replSet shard1RS}, cổng \texttt{27018}). & Chạy 1-node RS (\texttt{rs0}, cổng \texttt{27017}). \\
+\texttt{vm-w2} & Chạy Shard 2 (\texttt{--shardsvr --replSet shard2RS}, cổng \texttt{27018}). & Tắt / Deallocate. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\section{Bộ Tham số MongoDB Cố định và Quy trình Xác minh Cụm}
+\section{Tham số MongoDB 7.0 Cố định và Lịch chạy Ba Pha}
 
 \begin{itemize}
-  \item \textbf{Phiên bản DBMS:} Thống nhất một phiên bản MongoDB Community ($7.0$ hoặc $8.0$) trên toàn cụm; mã phiên bản chính xác được ghi tự động vào tệp metadata JSON của từng lượt chạy.
-  \item \textbf{Kích thước Chunk:} Cố định $32\text{ MB}$ thông qua bản ghi \texttt{\{\_id: "chunksize", value: 32\}} trong \texttt{config.settings}.
-  \item \textbf{Chính sách nhất quán đọc/ghi:} Cố định \texttt{writeConcern: \{w: "majority"\}} và \texttt{readConcern: \{level: "local"\}}.
-  \item \textbf{Collection phụ \texttt{patients}:} Luôn phân mảnh theo \texttt{\{\_id: "hashed"\}} ở mọi cụm sharded (\texttt{B1}, \texttt{SH-hash}, \texttt{SH-range}) và không sharding ở \texttt{SA}.
-  \item \textbf{Kiểm soát nghẽn phía máy khách:} Mọi lượt chạy có mức sử dụng CPU của nút sinh tải vượt ngưỡng ($80\%$ hoặc $75\%$) được gắn cờ \texttt{client\_bound: true} trong metadata JSON và loại khỏi phân tích thông lượng.
-  \item \textbf{Cấu hình Docker Dry-run (Pha 0 trên máy cá nhân):} Bốn container tương ứng (\texttt{cfgsvr}, \texttt{shard1}, \texttt{shard2}, \texttt{mongos}) áp dụng \texttt{mem\_limit: 512m} và \texttt{--wiredTigerCacheSizeGB 0.25} cho mỗi container nhằm tránh tràn bộ nhớ trên máy phát triển.
-  \item \textbf{Danh mục 4 bước xác minh cụm trên Azure trước khi đo:} (1) kiểm tra thông mạng nội bộ qua \texttt{ping} và các cổng \texttt{27017/27018/27019}; (2) kiểm tra trạng thái shard và phân bổ chunk bằng \texttt{sh.status()}; (3) xác nhận công cụ \texttt{sar} ghi log thành công trên mọi máy ảo; và (4) xác nhận \texttt{sh.isBalancerRunning() == false} trước mọi pha đo Read và OLTP Write.
+  \item \textbf{Phiên bản DBMS:} Cố định \textbf{MongoDB 7.0 Community LTS} trên mọi máy ảo.
+  \item \textbf{Kích thước Chunk (\texttt{rangeSize}):} Cố định $32\text{ MB}$ qua \texttt{\{\_id: "chunksize", value: 32\}} trong \texttt{config.settings}.
+  \item \textbf{Chính sách đọc/ghi:} Cố định \texttt{writeConcern: \{w: "majority"\}} và \texttt{readConcern: \{level: "local"\}}.
+  \item \textbf{Tiền kiểm Balancer chuẩn MongoDB 7.0:} Trước mọi bài đo đọc và ghi trực tuyến, gọi \texttt{sh.stopBalancer()} và xác minh qua lệnh \texttt{balancerStatus} rằng đồng thời \texttt{mode == "off"}, \texttt{inBalancerRound == false}, và \texttt{config.migrations} không còn bản ghi đang chạy.
+  \item \textbf{Lịch chạy gọn $3$ pha ($\sim 2$\textendash $2.5$ giờ Azure):} (1) \textbf{Pha 1 (\texttt{SA})}: nạp nối tiếp $100\text{K}\rightarrow 3\text{M}$, chạy \texttt{TN1} tại $4$ mốc và \texttt{TN2} tại \texttt{1M}; (2) \textbf{Pha 2 (\texttt{SH-hash})}: nạp nối tiếp $100\text{K}\rightarrow 3\text{M}$, chạy \texttt{TN1} tại $4$ mốc, đo \texttt{Q3/Q4} độ dốc $100\text{K}\rightarrow 3\text{M}$, và chạy \texttt{TN2}, \texttt{TN3} tại \texttt{1M}; (3) \textbf{Pha 3 (\texttt{SH-range})}: nạp duy nhất mốc \texttt{1M}, chờ Balancer ổn định rồi chạy \texttt{TN2} và \texttt{TN3}.
+  \item \textbf{Cấu hình Docker Dry-run (Pha 0 cục bộ):} Dựng $4$ container MongoDB 7.0 (\texttt{infra/docker/}) với \texttt{mem\_limit: 512m} và \texttt{--wiredTigerCacheSizeGB 0.25} để kiểm thử toàn bộ quy trình nạp và đo trên mốc \texttt{100K}.
+  \item \textbf{Quản trị chi phí Azure:} Sau khi sao lưu đầy đủ thư mục \texttt{results/} về máy cá nhân, \textbf{xóa toàn bộ Resource Group} (gồm cả Managed Disk và Public IP) để tránh phát sinh phí lưu trữ.
 \end{itemize}
 
-Toàn bộ tệp cấu hình \texttt{mongod.conf}, Docker Compose và kịch bản dựng máy ảo tự động được lưu trữ trong thư mục \texttt{infra/} của kho GitHub \cite{ProjectRepo}.
+Toàn bộ mã nguồn chuẩn bị dữ liệu (\texttt{prepare\_v2.py}), nạp nối tiếp (\texttt{load\_dataset.py}), đo đạc (\texttt{bench\_v2.py}) và cấu hình Docker Pha 0 được lưu trữ công khai tại kho GitHub của nhóm \cite{ProjectRepo}.

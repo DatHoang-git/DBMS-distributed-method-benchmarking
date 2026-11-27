@@ -105,7 +105,7 @@
 \definecolor{todoborder}{RGB}{210,145,20}
 
 \lstdefinelanguage{MongoJS}{
-  morekeywords={db, find, aggregate, sort, limit, match, unwind, group, project, sum, gte, lt, explain, sh, status, stopBalancer, isBalancerRunning, true, false, null},
+  morekeywords={db, find, aggregate, sort, limit, match, unwind, group, project, sum, gte, lt, explain, sh, status, stopBalancer, getBalancerState, isBalancerRunning, balancerStatus, splitAt, moveChunk, adminCommand, ISODate, MinKey, MaxKey, true, false, null},
   sensitive=true,
   morecomment=[l]{//},
   morecomment=[s]{/*}{*/},
@@ -225,7 +225,7 @@
 \begin{thebibliography}{99}
 
 \bibitem{MongoDBSharding}
-MongoDB, Inc., \textquotedblleft Sharding \textemdash  MongoDB Manual (v7.0 / v8.0),\textquotedblright  [Online]. Available: \url{https://www.mongodb.com/docs/manual/sharding/}
+MongoDB, Inc., \textquotedblleft Sharding \textemdash  MongoDB Manual (v7.0 LTS),\textquotedblright  [Online]. Available: \url{https://www.mongodb.com/docs/v7.0/sharding/}
 
 \bibitem{MongoDBWiredTiger}
 MongoDB, Inc., \textquotedblleft WiredTiger Storage Engine \textemdash  MongoDB Manual,\textquotedblright  [Online]. Available: \url{https://www.mongodb.com/docs/manual/core/wiredtiger/}

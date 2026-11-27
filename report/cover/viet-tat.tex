@@ -6,24 +6,25 @@
 \begin{table}[!htb]
 \centering
 \renewcommand{\arraystretch}{1.25}
-\begin{tabularx}{\linewidth}{l L{4.5cm} X}
+\begin{tabularx}{\linewidth}{l L{4.6cm} X}
 \toprule
 \textbf{Viết tắt} & \textbf{Tiếng Anh} & \textbf{Giải nghĩa} \\
 \midrule
 BSON & Binary JSON & Định dạng nhị phân biểu diễn tài liệu trong MongoDB. \\
-CI & Confidence Interval & Khoảng tin cậy thống kê (mặc định $95\%$ trong báo cáo). \\
 CSRS & Config Server Replica Set & Cụm máy chủ cấu hình lưu siêu dữ liệu định tuyến của cụm sharded. \\
 DBMS & Database Management System & Hệ quản trị cơ sở dữ liệu. \\
 EHR & Electronic Health Record & Hồ sơ bệnh án điện tử. \\
-MVCC & Multi-Version Concurrency Control & Cơ chế kiểm soát tương tranh đa phiên bản. \\
+IOPS & Input/Output Operations Per Second & Số thao tác đọc/ghi đĩa mỗi giây. \\
+MVCC & Multi-Version Concurrency Control & Cơ chế kiểm soát tương tranh đa phiên bản trong WiredTiger. \\
 OLAP & Online Analytical Processing & Tải truy vấn phân tích, tổng hợp dữ liệu diện rộng. \\
 OLTP & Online Transaction Processing & Tải giao dịch trực tuyến tốc độ cao, truy cập điểm. \\
 QPS & Queries Per Second & Thông lượng truy vấn mỗi giây. \\
 RDBMS & Relational DBMS & Hệ quản trị cơ sở dữ liệu quan hệ. \\
 RQ & Research Question & Câu hỏi nghiên cứu (\texttt{RQ1}\textendash \texttt{RQ3}). \\
-SA & Standalone & Môi trường MongoDB chạy đơn nút (1-node replica set). \\
-VM & Virtual Machine & Máy ảo triển khai trên hạ tầng đám mây Azure. \\
-WT & WiredTiger & Bộ máy lưu trữ (Storage Engine) mặc định của MongoDB. \\
+RS & Replica Set & Tập bản sao trong MongoDB (gồm Primary và các Secondary tùy chọn). \\
+SA & Standalone (1-node Replica Set) & Môi trường đối chứng $1$ nút dữ liệu (\texttt{rs0}), không qua \texttt{mongos}. \\
+VM & Virtual Machine & Máy ảo triển khai trên hạ tầng đám mây Microsoft Azure. \\
+WT & WiredTiger & Bộ máy lưu trữ (\textit{Storage Engine}) mặc định của MongoDB. \\
 \bottomrule
 \end{tabularx}
 \end{table}

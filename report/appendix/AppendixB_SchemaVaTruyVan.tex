@@ -1,45 +1,42 @@
-\chapter{Đặc tả Schema Dữ liệu và Mã Truy vấn Thực nghiệm}
+\chapter{Đặc tả Schema Thực tế và Mã Ba Truy vấn Thực nghiệm}
 \label{app:schema-queries}
 
-Phụ lục này cung cấp cấu trúc JSON mẫu chính xác của tài liệu trong collection \texttt{encounters} và mã truy vấn MongoDB hoàn chỉnh của bốn truy vấn đại diện \texttt{Q1}\textendash \texttt{Q4} đã được mô tả tổng quan tại Chương~\ref{chap:methodology}.
+Phụ lục này cung cấp cấu trúc JSON mẫu khớp chính xác với các tệp dữ liệu \texttt{encounters.jsonl.gz} thực tế đã sinh (gồm $9$ trường gốc) và mã truy vấn MongoDB hoàn chỉnh của ba truy vấn đọc đại diện \texttt{Q1}, \texttt{Q3}, \texttt{Q4}.
 
-\section{Cấu trúc JSON Tối giản của Tài liệu \texttt{encounters}}
+\section{Cấu trúc JSON Thực tế của Tài liệu \texttt{encounters}}
 
-Kịch bản tiền xử lý dữ liệu (\texttt{scripts/build\_datasets.py}) đọc dữ liệu gốc từ Synthea CSV, lược bỏ các trường văn bản mô tả không tham gia truy vấn (\texttt{DESCRIPTION}, \texttt{UNITS}, \texttt{STOP}, \texttt{TOTAL\_CLAIM\_COST}) và đóng gói theo cấu trúc minh họa tại Đoạn mã~\ref{lst:encounter-schema}. Toàn bộ tập dữ liệu sau khi sinh được kiểm chứng tự động bằng \texttt{scripts/verify\_datasets.py} cùng các tệp tham số cố định (\texttt{patient\_ids.txt}, \texttt{query\_params.json}) sinh từ $\texttt{SEED} = 42$.
+Kịch bản \texttt{build\_datasets.py} chuyển đổi dữ liệu gốc từ Synthea CSV sang cấu trúc $9$ trường minh họa tại Đoạn mã~\ref{lst:encounter-schema} (trung bình $1{,}273.6\text{ B}$ JSON và $1{,}374.3\text{ B}$ BSON trên \texttt{D3M}). Khi nạp bằng \texttt{load\_dataset.py}, hai trường \texttt{START} và \texttt{STOP} được chuyển đổi sang kiểu ngày giờ nhị phân \texttt{ISODate}. Trước khi nạp, \texttt{prepare\_v2.py} sắp xếp tăng dần các tài liệu theo \texttt{START} trong từng gói tăng dần (\texttt{data/load\_v2/}) để mô phỏng thứ tự ghi thời gian thực.
 
-\begin{lstlisting}[language=MongoJS, caption={Schema JSON tối giản của mỗi tài liệu trong collection \texttt{encounters}.}, label={lst:encounter-schema}]
+\begin{lstlisting}[language=MongoJS, caption={Schema JSON thực tế ($9$ trường) của mỗi tài liệu trong collection \texttt{encounters}.}, label={lst:encounter-schema}]
 {
-  "_id": "enc_uuid_string",
-  "PATIENT": "pat_uuid_string",
-  "ORGANIZATION": "org_uuid_string",
-  "ENCOUNTERCLASS": "ambulatory",
-  "START": "2023-05-12T08:30:00Z", // luu duoi dang ISODate (BSON datetime)
+  "_id": "b116b69b-478a-d7a1-82cf-d9440c7c0c5f",
+  "PATIENT": "b116b69b-478a-d7a1-b732-6d03d35d7388",
+  "ORGANIZATION": "bce5b907-584b-345d-bbcf-912cf56cb6c3",
+  "ENCOUNTERCLASS": "wellness",
+  "START": "2011-04-02T21:13:28Z",          // luu kieu ISODate (BSON datetime)
+  "STOP": "2011-04-02T21:28:28Z",           // luu kieu ISODate (BSON datetime)
+  "TOTAL_CLAIM_COST": 136.8,
   "conditions": [
-    { "CODE": "44054006" }
+    { "CODE": "314529007", "DESCRIPTION": "Medication review due (situation)" }
   ],
   "observations": [
-    { "CATEGORY": "laboratory", "CODE": "4548-4", "VALUE": 6.8 }
+    { "CATEGORY": "laboratory", "CODE": "4548-4", "VALUE": 6.8, "UNITS": "%" }
   ]
 }
 \end{lstlisting}
 
-\section{Mã Truy vấn MongoDB cho Bộ \texttt{Q1}\textendash \texttt{Q4}}
+\section{Mã Truy vấn MongoDB cho Bộ Ba Truy vấn (\texttt{Q1}, \texttt{Q3}, \texttt{Q4})}
 
-Đoạn mã~\ref{lst:queries-q1-q4} trình bày cú pháp MongoDB chính xác của bốn truy vấn được thực thi đồng nhất trên mọi môi trường (\texttt{SA}, \texttt{B1}, \texttt{SH-hash}, \texttt{SH-range}).
+Đoạn mã~\ref{lst:queries-q1-q4} trình bày cú pháp MongoDB chính xác của ba truy vấn đọc được thực thi đồng nhất bởi \texttt{bench\_v2.py}.
 
-\begin{lstlisting}[language=MongoJS, caption={Định nghĩa mã MongoDB của bốn truy vấn đại diện \texttt{Q1}--\texttt{Q4}.}, label={lst:queries-q1-q4}]
-// Q1: 10 luot kham gan nhat cua 1 benh nhan (OLTP diem -> SINGLE_SHARD tren SH-hash)
-db.encounters.find({ PATIENT: pid }).sort({ START: -1 }).limit(10)
+\begin{lstlisting}[language=MongoJS, caption={Định nghĩa mã MongoDB của ba truy vấn đọc đại diện (\texttt{Q1}, \texttt{Q3}, \texttt{Q4}).}, label={lst:queries-q1-q4}]
+// Q1: Toan bo lich su kham cua 1 benh nhan (dung cho RQ1 va tai su dung cho RQ3)
+db.encounters.find(
+  { PATIENT: pid },
+  { START: 1, ENCOUNTERCLASS: 1, ORGANIZATION: 1, conditions: 1 }
+).sort({ START: -1 })
 
-// Q2: Ket qua xet nghiem 12 thang cua 1 benh nhan (Aggregation -> SINGLE_SHARD tren SH-hash)
-db.encounters.aggregate([
-  { $match: { PATIENT: pid, START: { $gte: d12mAgo } } },
-  { $unwind: "$observations" },
-  { $match: { "observations.CATEGORY": "laboratory" } },
-  { $project: { START: 1, "observations.CODE": 1, "observations.VALUE": 1 } }
-])
-
-// Q3: Top 10 ma benh trong 1 quy (Xuyen benh nhan, ket qua nho -> SHARD_MERGE tren SH-hash)
+// Q3: Top 10 ma benh pho bien trong 1 quy (xuyen benh nhan, ket qua nho = 10 dong)
 db.encounters.aggregate([
   { $match: { START: { $gte: qStart, $lt: qEnd } } },
   { $unwind: "$conditions" },
@@ -48,9 +45,9 @@ db.encounters.aggregate([
   { $limit: 10 }
 ])
 
-// Q4: Luot kham chan doan tieu duong type 2 trong 1 thang (Xuyen benh nhan, ket qua dai)
+// Q4: Luot kham danh gia thuoc (ma 314529007) trong 1 thang (xuyen benh nhan, ket qua lon)
 db.encounters.find(
-  { "conditions.CODE": "44054006", START: { $gte: mStart, $lt: mEnd } },
+  { "conditions.CODE": "314529007", START: { $gte: mStart, $lt: mEnd } },
   { PATIENT: 1, START: 1, ORGANIZATION: 1 }
 )
 \end{lstlisting}
