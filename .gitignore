@@ -3,6 +3,8 @@ data/*/*.jsonl
 data/*/*.jsonl.gz
 data/*/*.csv
 data/raw/
+data/D*/
+data/load_v2/
 
 # Python cache & virtual environments
 __pycache__/
