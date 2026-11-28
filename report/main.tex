@@ -211,6 +211,9 @@
 % --- Phụ lục ---
 \appendix
 \renewcommand{\chaptername}{Phụ lục}
+\renewcommand{\appendixname}{Phụ lục}
+% Mục lục: các mục phụ lục hiển thị "PHỤ LỤC A. ..." thay vì "CHƯƠNG A. ..."
+\addtocontents{toc}{\protect\renewcommand{\protect\chaptername}{Phụ lục}}
 \input{appendix/AppendixA_CauHinhHaTang}
 \newpage
 \input{appendix/AppendixB_SchemaVaTruyVan}
