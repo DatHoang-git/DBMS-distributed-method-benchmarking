@@ -7,7 +7,7 @@
   "threads": 1,
   "rep": 3,
   "seed": 42,
-  "client_host": "ubuntu-thinkpade14",
+  "client_host": "dathoang-NgocTrinh",
   "mongo_version": "7.0.48",
   "balancer_preflight": {
     "checked": true,
@@ -16,20 +16,39 @@
     "active_migrations": 0
   },
   "idle_network_baseline": {
-    "idle_seconds": 15.01,
-    "idle_bytes_in_per_s": 119.59,
-    "idle_bytes_out_per_s": 1981.97
+    "idle_seconds": 15.02,
+    "idle_bytes_in_per_s": 112.33,
+    "idle_bytes_out_per_s": 1978.45
   },
-  "elapsed_s": 50.007,
-  "n_requests": 1094,
-  "n_success": 1094,
-  "qps_or_inserts_s": 21.88,
-  "p50_ms": 27.465,
-  "p95_ms": 33.378,
-  "net_kb_per_req": 1.625,
-  "client_cpu_max": 21.01,
-  "client_cpu_avg": 17.13,
+  "idle_network_baseline_by_node": {
+    "mongos": {
+      "idle_seconds": 15.02,
+      "idle_bytes_in_per_s": 112.33,
+      "idle_bytes_out_per_s": 1978.45
+    },
+    "s1": {
+      "idle_seconds": 15.02,
+      "idle_bytes_in_per_s": 198.42,
+      "idle_bytes_out_per_s": 5675.46
+    },
+    "s2": {
+      "idle_seconds": 15.02,
+      "idle_bytes_in_per_s": 213.34,
+      "idle_bytes_out_per_s": 5727.79
+    }
+  },
+  "elapsed_s": 30.004,
+  "n_requests": 1585,
+  "n_success": 1585,
+  "qps_or_inserts_s": 52.83,
+  "p50_ms": 18.553,
+  "p95_ms": 23.301,
+  "net_kb_per_req": 0.994,
+  "shard_net_kb_per_req": 17.642,
+  "net_amp_ratio": 17.748,
+  "client_cpu_max": 15.24,
+  "client_cpu_avg": 10.86,
   "client_bound": false,
-  "start_utc": "2026-11-27T15:16:22.769462+00:00",
-  "end_utc": "2026-11-27T15:17:12.819907+00:00"
+  "start_utc": "2026-11-28T03:50:24.040607+00:00",
+  "end_utc": "2026-11-28T03:50:54.075260+00:00"
 }

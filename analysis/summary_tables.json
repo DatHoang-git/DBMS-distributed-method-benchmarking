@@ -1,0 +1,848 @@
+{
+  "rq1": {
+    "D100K": {
+      "1": {
+        "SA": {
+          "reps": 3,
+          "p95_mean": 0.92,
+          "p95_std": 0.07,
+          "p50_mean": 0.33,
+          "qps_mean": 2376.4,
+          "qps_std": 101.2,
+          "client_net_kb_mean": 12.44,
+          "shard_net_kb_mean": null,
+          "net_amp_ratio_mean": null,
+          "client_cpu_max": 18.4,
+          "pages_read_mean": 0,
+          "pages_read_per_req": 0.0,
+          "wt_hit_ratio_mean": 100.0
+        },
+        "SH-hash": {
+          "reps": 3,
+          "p95_mean": 1.7,
+          "p95_std": 0.04,
+          "p50_mean": 0.69,
+          "qps_mean": 1198.1,
+          "qps_std": 11.4,
+          "client_net_kb_mean": 12.37,
+          "shard_net_kb_mean": 12.93,
+          "net_amp_ratio_mean": 1.04,
+          "client_cpu_max": 12.8,
+          "pages_read_mean": 1,
+          "pages_read_per_req": 0.0,
+          "wt_hit_ratio_mean": 100.0
+        }
+      },
+      "4": {
+        "SA": {
+          "reps": 3,
+          "p95_mean": 2.44,
+          "p95_std": 0.0,
+          "p50_mean": 1.08,
+          "qps_mean": 3215.9,
+          "qps_std": 6.7,
+          "client_net_kb_mean": 12.44,
+          "shard_net_kb_mean": null,
+          "net_amp_ratio_mean": null,
+          "client_cpu_max": 18.6,
+          "pages_read_mean": 0,
+          "pages_read_per_req": 0.0,
+          "wt_hit_ratio_mean": 100.0
+        },
+        "SH-hash": {
+          "reps": 3,
+          "p95_mean": 2.88,
+          "p95_std": 0.01,
+          "p50_mean": 1.35,
+          "qps_mean": 2555.6,
+          "qps_std": 1.5,
+          "client_net_kb_mean": 12.39,
+          "shard_net_kb_mean": 12.95,
+          "net_amp_ratio_mean": 1.05,
+          "client_cpu_max": 25.3,
+          "pages_read_mean": 1,
+          "pages_read_per_req": 0.0,
+          "wt_hit_ratio_mean": 100.0
+        }
+      },
+      "8": {
+        "SA": {
+          "reps": 3,
+          "p95_mean": 6.52,
+          "p95_std": 0.11,
+          "p50_mean": 2.76,
+          "qps_mean": 2525.6,
+          "qps_std": 33.8,
+          "client_net_kb_mean": 12.44,
+          "shard_net_kb_mean": null,
+          "net_amp_ratio_mean": null,
+          "client_cpu_max": 37.9,
+          "pages_read_mean": 0,
+          "pages_read_per_req": 0.0,
+          "wt_hit_ratio_mean": 100.0
+        },
+        "SH-hash": {
+          "reps": 3,
+          "p95_mean": 6.38,
+          "p95_std": 0.01,
+          "p50_mean": 2.85,
+          "qps_mean": 2468.6,
+          "qps_std": 4.8,
+          "client_net_kb_mean": 12.4,
+          "shard_net_kb_mean": 12.96,
+          "net_amp_ratio_mean": 1.04,
+          "client_cpu_max": 25.0,
+          "pages_read_mean": 0,
+          "pages_read_per_req": 0.0,
+          "wt_hit_ratio_mean": 100.0
+        }
+      }
+    },
+    "D500K": {
+      "1": {
+        "SA": {
+          "reps": 3,
+          "p95_mean": 3.66,
+          "p95_std": 0.06,
+          "p50_mean": 1.26,
+          "qps_mean": 604.4,
+          "qps_std": 13.4,
+          "client_net_kb_mean": 12.46,
+          "shard_net_kb_mean": null,
+          "net_amp_ratio_mean": null,
+          "client_cpu_max": 13.4,
+          "pages_read_mean": 348288,
+          "pages_read_per_req": 19.21,
+          "wt_hit_ratio_mean": 80.66
+        },
+        "SH-hash": {
+          "reps": 3,
+          "p95_mean": 1.55,
+          "p95_std": 0.04,
+          "p50_mean": 0.62,
+          "qps_mean": 1310.0,
+          "qps_std": 38.3,
+          "client_net_kb_mean": 12.33,
+          "shard_net_kb_mean": 12.89,
+          "net_amp_ratio_mean": 1.04,
+          "client_cpu_max": 10.1,
+          "pages_read_mean": 88,
+          "pages_read_per_req": 0.0,
+          "wt_hit_ratio_mean": 100.0
+        }
+      },
+      "4": {
+        "SA": {
+          "reps": 3,
+          "p95_mean": 8.48,
+          "p95_std": 0.09,
+          "p50_mean": 1.81,
+          "qps_mean": 1238.9,
+          "qps_std": 7.0,
+          "client_net_kb_mean": 12.38,
+          "shard_net_kb_mean": null,
+          "net_amp_ratio_mean": null,
+          "client_cpu_max": 25.0,
+          "pages_read_mean": 703311,
+          "pages_read_per_req": 18.92,
+          "wt_hit_ratio_mean": 80.85
+        },
+        "SH-hash": {
+          "reps": 3,
+          "p95_mean": 2.73,
+          "p95_std": 0.04,
+          "p50_mean": 1.28,
+          "qps_mean": 2695.8,
+          "qps_std": 26.1,
+          "client_net_kb_mean": 12.33,
+          "shard_net_kb_mean": 12.89,
+          "net_amp_ratio_mean": 1.05,
+          "client_cpu_max": 22.9,
+          "pages_read_mean": 3,
+          "pages_read_per_req": 0.0,
+          "wt_hit_ratio_mean": 100.0
+        }
+      },
+      "8": {
+        "SA": {
+          "reps": 3,
+          "p95_mean": 51.93,
+          "p95_std": 1.14,
+          "p50_mean": 2.93,
+          "qps_mean": 1133.2,
+          "qps_std": 24.6,
+          "client_net_kb_mean": 12.36,
+          "shard_net_kb_mean": null,
+          "net_amp_ratio_mean": null,
+          "client_cpu_max": 26.9,
+          "pages_read_mean": 678151,
+          "pages_read_per_req": 19.93,
+          "wt_hit_ratio_mean": 79.79
+        },
+        "SH-hash": {
+          "reps": 3,
+          "p95_mean": 6.0,
+          "p95_std": 0.05,
+          "p50_mean": 2.69,
+          "qps_mean": 2614.3,
+          "qps_std": 11.2,
+          "client_net_kb_mean": 12.33,
+          "shard_net_kb_mean": 12.89,
+          "net_amp_ratio_mean": 1.05,
+          "client_cpu_max": 24.4,
+          "pages_read_mean": 0,
+          "pages_read_per_req": 0.0,
+          "wt_hit_ratio_mean": 100.0
+        }
+      }
+    },
+    "D1M": {
+      "1": {
+        "SA": {
+          "reps": 3,
+          "p95_mean": 10.47,
+          "p95_std": 0.07,
+          "p50_mean": 3.39,
+          "qps_mean": 212.6,
+          "qps_std": 9.8,
+          "client_net_kb_mean": 12.27,
+          "shard_net_kb_mean": null,
+          "net_amp_ratio_mean": null,
+          "client_cpu_max": 12.0,
+          "pages_read_mean": 222957,
+          "pages_read_per_req": 34.96,
+          "wt_hit_ratio_mean": 64.95
+        },
+        "SH-hash": {
+          "reps": 3,
+          "p95_mean": 3.74,
+          "p95_std": 0.16,
+          "p50_mean": 1.48,
+          "qps_mean": 537.3,
+          "qps_std": 11.0,
+          "client_net_kb_mean": 12.23,
+          "shard_net_kb_mean": 12.78,
+          "net_amp_ratio_mean": 1.05,
+          "client_cpu_max": 10.2,
+          "pages_read_mean": 322480,
+          "pages_read_per_req": 20.0,
+          "wt_hit_ratio_mean": 79.12
+        }
+      },
+      "4": {
+        "SA": {
+          "reps": 3,
+          "p95_mean": 13.13,
+          "p95_std": 1.11,
+          "p50_mean": 3.97,
+          "qps_mean": 711.0,
+          "qps_std": 50.6,
+          "client_net_kb_mean": 12.27,
+          "shard_net_kb_mean": null,
+          "net_amp_ratio_mean": null,
+          "client_cpu_max": 25.9,
+          "pages_read_mean": 748865,
+          "pages_read_per_req": 35.1,
+          "wt_hit_ratio_mean": 64.8
+        },
+        "SH-hash": {
+          "reps": 3,
+          "p95_mean": 5.26,
+          "p95_std": 0.15,
+          "p50_mean": 1.99,
+          "qps_mean": 1574.4,
+          "qps_std": 22.8,
+          "client_net_kb_mean": 12.24,
+          "shard_net_kb_mean": 12.8,
+          "net_amp_ratio_mean": 1.05,
+          "client_cpu_max": 36.1,
+          "pages_read_mean": 930354,
+          "pages_read_per_req": 19.69,
+          "wt_hit_ratio_mean": 79.47
+        }
+      },
+      "8": {
+        "SA": {
+          "reps": 3,
+          "p95_mean": 47.09,
+          "p95_std": 4.88,
+          "p50_mean": 6.06,
+          "qps_mean": 664.0,
+          "qps_std": 34.9,
+          "client_net_kb_mean": 12.27,
+          "shard_net_kb_mean": null,
+          "net_amp_ratio_mean": null,
+          "client_cpu_max": 20.8,
+          "pages_read_mean": 703432,
+          "pages_read_per_req": 35.25,
+          "wt_hit_ratio_mean": 64.74
+        },
+        "SH-hash": {
+          "reps": 3,
+          "p95_mean": 8.15,
+          "p95_std": 0.15,
+          "p50_mean": 2.75,
+          "qps_mean": 2214.7,
+          "qps_std": 11.5,
+          "client_net_kb_mean": 12.23,
+          "shard_net_kb_mean": 12.79,
+          "net_amp_ratio_mean": 1.05,
+          "client_cpu_max": 36.2,
+          "pages_read_mean": 1289212,
+          "pages_read_per_req": 19.39,
+          "wt_hit_ratio_mean": 79.73
+        }
+      }
+    },
+    "D3M": {
+      "1": {
+        "SA": {
+          "reps": 3,
+          "p95_mean": 22.7,
+          "p95_std": 1.24,
+          "p50_mean": 7.28,
+          "qps_mean": 97.2,
+          "qps_std": 3.0,
+          "client_net_kb_mean": 12.28,
+          "shard_net_kb_mean": null,
+          "net_amp_ratio_mean": null,
+          "client_cpu_max": 10.6,
+          "pages_read_mean": 134644,
+          "pages_read_per_req": 46.18,
+          "wt_hit_ratio_mean": 54.88
+        },
+        "SH-hash": {
+          "reps": 3,
+          "p95_mean": 18.0,
+          "p95_std": 0.63,
+          "p50_mean": 6.21,
+          "qps_mean": 120.3,
+          "qps_std": 5.4,
+          "client_net_kb_mean": 12.19,
+          "shard_net_kb_mean": 12.71,
+          "net_amp_ratio_mean": 1.04,
+          "client_cpu_max": 6.4,
+          "pages_read_mean": 142878,
+          "pages_read_per_req": 39.59,
+          "wt_hit_ratio_mean": 59.99
+        }
+      },
+      "4": {
+        "SA": {
+          "reps": 3,
+          "p95_mean": 29.9,
+          "p95_std": 0.79,
+          "p50_mean": 9.64,
+          "qps_mean": 290.3,
+          "qps_std": 5.8,
+          "client_net_kb_mean": 12.28,
+          "shard_net_kb_mean": null,
+          "net_amp_ratio_mean": null,
+          "client_cpu_max": 18.0,
+          "pages_read_mean": 405656,
+          "pages_read_per_req": 46.55,
+          "wt_hit_ratio_mean": 54.56
+        },
+        "SH-hash": {
+          "reps": 3,
+          "p95_mean": 24.38,
+          "p95_std": 0.33,
+          "p50_mean": 8.01,
+          "qps_mean": 358.0,
+          "qps_std": 6.2,
+          "client_net_kb_mean": 12.28,
+          "shard_net_kb_mean": 12.85,
+          "net_amp_ratio_mean": 1.05,
+          "client_cpu_max": 10.8,
+          "pages_read_mean": 431604,
+          "pages_read_per_req": 40.13,
+          "wt_hit_ratio_mean": 59.65
+        }
+      },
+      "8": {
+        "SA": {
+          "reps": 3,
+          "p95_mean": 48.29,
+          "p95_std": 2.17,
+          "p50_mean": 14.5,
+          "qps_mean": 362.3,
+          "qps_std": 18.1,
+          "client_net_kb_mean": 12.33,
+          "shard_net_kb_mean": null,
+          "net_amp_ratio_mean": null,
+          "client_cpu_max": 15.3,
+          "pages_read_mean": 514292,
+          "pages_read_per_req": 47.22,
+          "wt_hit_ratio_mean": 54.45
+        },
+        "SH-hash": {
+          "reps": 3,
+          "p95_mean": 37.79,
+          "p95_std": 0.82,
+          "p50_mean": 12.14,
+          "qps_mean": 468.0,
+          "qps_std": 7.4,
+          "client_net_kb_mean": 12.32,
+          "shard_net_kb_mean": 12.89,
+          "net_amp_ratio_mean": 1.05,
+          "client_cpu_max": 14.2,
+          "pages_read_mean": 568170,
+          "pages_read_per_req": 40.41,
+          "wt_hit_ratio_mean": 59.74
+        }
+      }
+    }
+  },
+  "rq2": {
+    "SA": {
+      "inserts_s_mean": 787.2,
+      "inserts_s_std": 218.3,
+      "p95_mean": 16.09,
+      "p95_std": 5.24,
+      "client_cpu_max": 9.7,
+      "data_pct": [
+        100.0,
+        0.0
+      ],
+      "data_mb": [
+        1309.66,
+        0.0
+      ],
+      "storage_mb": [
+        450.88,
+        0.0
+      ],
+      "index_mb": [
+        212.37,
+        0.0
+      ],
+      "write_pct": [
+        100.0,
+        0.0
+      ]
+    },
+    "SH-hash": {
+      "inserts_s_mean": 910.2,
+      "inserts_s_std": 80.5,
+      "p95_mean": 12.71,
+      "p95_std": 0.29,
+      "client_cpu_max": 13.8,
+      "data_pct": [
+        49.77,
+        50.23
+      ],
+      "data_mb": [
+        651.8,
+        657.87
+      ],
+      "data_count": [
+        500182,
+        499818
+      ],
+      "storage_mb": [
+        222.43,
+        221.69
+      ],
+      "index_mb": [
+        112.45,
+        113.46
+      ],
+      "write_pct": [
+        50.31,
+        49.69
+      ]
+    },
+    "SH-range": {
+      "inserts_s_mean": 1032.2,
+      "inserts_s_std": 316.8,
+      "p95_mean": 10.2,
+      "p95_std": 5.36,
+      "client_cpu_max": 15.0,
+      "data_pct": [
+        51.22,
+        48.78
+      ],
+      "data_mb": [
+        670.79,
+        638.87
+      ],
+      "data_count": [
+        489352,
+        510648
+      ],
+      "storage_mb": [
+        603.99,
+        217.76
+      ],
+      "index_mb": [
+        362.97,
+        149.29
+      ],
+      "post_compact_storage_mb": [
+        264.62,
+        217.75
+      ],
+      "post_compact_index_mb": [
+        117.98,
+        103.51
+      ],
+      "write_pct": [
+        100.0,
+        0.0
+      ]
+    }
+  },
+  "rq3": {
+    "SH-hash": {
+      "Q1": {
+        "explain_samples": 5,
+        "shards_targeted": {
+          "1": 5
+        },
+        "merge_type": {
+          "none": 5
+        },
+        "winning_stage": {
+          "SINGLE_SHARD": 5
+        },
+        "reps": 3,
+        "p95_mean": 3.74,
+        "p95_std": 0.16,
+        "p50_mean": 1.48,
+        "qps_mean": 537.3,
+        "qps_std": 11.0,
+        "client_net_kb_mean": 12.23,
+        "shard_net_kb_mean": 12.78,
+        "net_amp_ratio_mean": 1.05,
+        "client_cpu_max": 10.2,
+        "pages_read_mean": 322480,
+        "pages_read_per_req": 20.0,
+        "wt_hit_ratio_mean": 79.12
+      },
+      "Q3": {
+        "explain_samples": 12,
+        "shards_targeted": {
+          "2": 12
+        },
+        "merge_type": {
+          "mongos": 12
+        },
+        "winning_stage": {
+          "SPLIT_PIPELINE": 12
+        },
+        "reps": 3,
+        "p95_mean": 23.18,
+        "p95_std": 0.11,
+        "p50_mean": 18.56,
+        "qps_mean": 52.8,
+        "qps_std": 0.0,
+        "client_net_kb_mean": 0.99,
+        "shard_net_kb_mean": 17.65,
+        "net_amp_ratio_mean": 17.76,
+        "client_cpu_max": 15.2,
+        "pages_read_mean": 6,
+        "pages_read_per_req": 0.0,
+        "wt_hit_ratio_mean": 100.0
+      },
+      "Q4": {
+        "explain_samples": 36,
+        "shards_targeted": {
+          "2": 36
+        },
+        "merge_type": {
+          "mongos": 36
+        },
+        "winning_stage": {
+          "SHARD_MERGE": 36
+        },
+        "reps": 3,
+        "p95_mean": 4.74,
+        "p95_std": 0.04,
+        "p50_mean": 3.2,
+        "qps_mean": 298.0,
+        "qps_std": 3.4,
+        "client_net_kb_mean": 144.21,
+        "shard_net_kb_mean": 146.96,
+        "net_amp_ratio_mean": 1.02,
+        "client_cpu_max": 11.7,
+        "pages_read_mean": 0,
+        "pages_read_per_req": 0.0,
+        "wt_hit_ratio_mean": 100.0
+      }
+    },
+    "SH-range": {
+      "Q1": {
+        "explain_samples": 5,
+        "shards_targeted": {
+          "2": 5
+        },
+        "merge_type": {
+          "mongos": 5
+        },
+        "winning_stage": {
+          "SHARD_MERGE_SORT": 5
+        },
+        "reps": 3,
+        "p95_mean": 4.97,
+        "p95_std": 0.18,
+        "p50_mean": 1.86,
+        "qps_mean": 412.4,
+        "qps_std": 9.1,
+        "client_net_kb_mean": 12.2,
+        "shard_net_kb_mean": 15.33,
+        "net_amp_ratio_mean": 1.26,
+        "client_cpu_max": 18.4,
+        "pages_read_mean": 263105,
+        "pages_read_per_req": 21.26,
+        "wt_hit_ratio_mean": 79.72
+      },
+      "Q3": {
+        "explain_samples": 12,
+        "shards_targeted": {
+          "1": 12
+        },
+        "merge_type": {
+          "none": 12
+        },
+        "winning_stage": {
+          "SINGLE_SHARD_AGG": 12
+        },
+        "reps": 3,
+        "p95_mean": 31.53,
+        "p95_std": 4.52,
+        "p50_mean": 27.25,
+        "qps_mean": 36.2,
+        "qps_std": 2.8,
+        "client_net_kb_mean": 0.99,
+        "shard_net_kb_mean": 1.71,
+        "net_amp_ratio_mean": 1.74,
+        "client_cpu_max": 22.5,
+        "pages_read_mean": 23,
+        "pages_read_per_req": 0.02,
+        "wt_hit_ratio_mean": 100.0
+      },
+      "Q4": {
+        "explain_samples": 36,
+        "shards_targeted": {
+          "1": 36
+        },
+        "merge_type": {
+          "none": 36
+        },
+        "winning_stage": {
+          "SINGLE_SHARD": 36
+        },
+        "reps": 3,
+        "p95_mean": 5.66,
+        "p95_std": 0.37,
+        "p50_mean": 4.07,
+        "qps_mean": 238.3,
+        "qps_std": 13.1,
+        "client_net_kb_mean": 144.21,
+        "shard_net_kb_mean": 145.16,
+        "net_amp_ratio_mean": 1.01,
+        "client_cpu_max": 13.6,
+        "pages_read_mean": 0,
+        "pages_read_per_req": 0.0,
+        "wt_hit_ratio_mean": 100.0
+      }
+    }
+  },
+  "rq3_slope": {
+    "D100K": {
+      "Q1": {
+        "reps": 3,
+        "p95_mean": 1.7,
+        "p95_std": 0.04,
+        "p50_mean": 0.69,
+        "qps_mean": 1198.1,
+        "qps_std": 11.4,
+        "client_net_kb_mean": 12.37,
+        "shard_net_kb_mean": 12.93,
+        "net_amp_ratio_mean": 1.04,
+        "client_cpu_max": 12.8,
+        "pages_read_mean": 1,
+        "pages_read_per_req": 0.0,
+        "wt_hit_ratio_mean": 100.0
+      },
+      "Q3": {
+        "reps": 3,
+        "p95_mean": 4.92,
+        "p95_std": 0.26,
+        "p50_mean": 3.0,
+        "qps_mean": 301.9,
+        "qps_std": 16.8,
+        "client_net_kb_mean": 1.01,
+        "shard_net_kb_mean": 14.01,
+        "net_amp_ratio_mean": 13.89,
+        "client_cpu_max": 29.9,
+        "pages_read_mean": 0,
+        "pages_read_per_req": 0.0,
+        "wt_hit_ratio_mean": 100.0
+      },
+      "Q4": {
+        "reps": 3,
+        "p95_mean": 1.28,
+        "p95_std": 0.01,
+        "p50_mean": 0.71,
+        "qps_mean": 1271.8,
+        "qps_std": 6.8,
+        "client_net_kb_mean": 15.04,
+        "shard_net_kb_mean": 16.67,
+        "net_amp_ratio_mean": 1.11,
+        "client_cpu_max": 12.3,
+        "pages_read_mean": 0,
+        "pages_read_per_req": 0.0,
+        "wt_hit_ratio_mean": 100.0
+      }
+    },
+    "D500K": {
+      "Q1": {
+        "reps": 3,
+        "p95_mean": 1.55,
+        "p95_std": 0.04,
+        "p50_mean": 0.62,
+        "qps_mean": 1310.0,
+        "qps_std": 38.3,
+        "client_net_kb_mean": 12.33,
+        "shard_net_kb_mean": 12.89,
+        "net_amp_ratio_mean": 1.04,
+        "client_cpu_max": 10.1,
+        "pages_read_mean": 88,
+        "pages_read_per_req": 0.0,
+        "wt_hit_ratio_mean": 100.0
+      },
+      "Q3": {
+        "reps": 3,
+        "p95_mean": 13.66,
+        "p95_std": 0.12,
+        "p50_mean": 9.22,
+        "qps_mean": 101.8,
+        "qps_std": 0.9,
+        "client_net_kb_mean": 1.0,
+        "shard_net_kb_mean": 17.32,
+        "net_amp_ratio_mean": 17.28,
+        "client_cpu_max": 16.0,
+        "pages_read_mean": 0,
+        "pages_read_per_req": 0.0,
+        "wt_hit_ratio_mean": 100.0
+      },
+      "Q4": {
+        "reps": 3,
+        "p95_mean": 3.26,
+        "p95_std": 0.02,
+        "p50_mean": 1.96,
+        "qps_mean": 466.6,
+        "qps_std": 3.0,
+        "client_net_kb_mean": 72.27,
+        "shard_net_kb_mean": 75.04,
+        "net_amp_ratio_mean": 1.04,
+        "client_cpu_max": 12.8,
+        "pages_read_mean": 0,
+        "pages_read_per_req": 0.0,
+        "wt_hit_ratio_mean": 100.0
+      }
+    },
+    "D1M": {
+      "Q1": {
+        "reps": 3,
+        "p95_mean": 3.74,
+        "p95_std": 0.16,
+        "p50_mean": 1.48,
+        "qps_mean": 537.3,
+        "qps_std": 11.0,
+        "client_net_kb_mean": 12.23,
+        "shard_net_kb_mean": 12.78,
+        "net_amp_ratio_mean": 1.05,
+        "client_cpu_max": 10.2,
+        "pages_read_mean": 322480,
+        "pages_read_per_req": 20.0,
+        "wt_hit_ratio_mean": 79.12
+      },
+      "Q3": {
+        "reps": 3,
+        "p95_mean": 23.18,
+        "p95_std": 0.11,
+        "p50_mean": 18.56,
+        "qps_mean": 52.8,
+        "qps_std": 0.0,
+        "client_net_kb_mean": 0.99,
+        "shard_net_kb_mean": 17.65,
+        "net_amp_ratio_mean": 17.76,
+        "client_cpu_max": 15.2,
+        "pages_read_mean": 6,
+        "pages_read_per_req": 0.0,
+        "wt_hit_ratio_mean": 100.0
+      },
+      "Q4": {
+        "reps": 3,
+        "p95_mean": 4.74,
+        "p95_std": 0.04,
+        "p50_mean": 3.2,
+        "qps_mean": 298.0,
+        "qps_std": 3.4,
+        "client_net_kb_mean": 144.21,
+        "shard_net_kb_mean": 146.96,
+        "net_amp_ratio_mean": 1.02,
+        "client_cpu_max": 11.7,
+        "pages_read_mean": 0,
+        "pages_read_per_req": 0.0,
+        "wt_hit_ratio_mean": 100.0
+      }
+    },
+    "D3M": {
+      "Q1": {
+        "reps": 3,
+        "p95_mean": 18.0,
+        "p95_std": 0.63,
+        "p50_mean": 6.21,
+        "qps_mean": 120.3,
+        "qps_std": 5.4,
+        "client_net_kb_mean": 12.19,
+        "shard_net_kb_mean": 12.71,
+        "net_amp_ratio_mean": 1.04,
+        "client_cpu_max": 6.4,
+        "pages_read_mean": 142878,
+        "pages_read_per_req": 39.59,
+        "wt_hit_ratio_mean": 59.99
+      },
+      "Q3": {
+        "reps": 3,
+        "p95_mean": 238.73,
+        "p95_std": 16.61,
+        "p50_mean": 61.4,
+        "qps_mean": 10.7,
+        "qps_std": 0.1,
+        "client_net_kb_mean": 0.92,
+        "shard_net_kb_mean": 17.46,
+        "net_amp_ratio_mean": 18.93,
+        "client_cpu_max": 11.1,
+        "pages_read_mean": 617165,
+        "pages_read_per_req": 1928.64,
+        "wt_hit_ratio_mean": 97.63
+      },
+      "Q4": {
+        "reps": 3,
+        "p95_mean": 23.58,
+        "p95_std": 0.03,
+        "p50_mean": 10.23,
+        "qps_mean": 83.5,
+        "qps_std": 2.1,
+        "client_net_kb_mean": 434.18,
+        "shard_net_kb_mean": 435.82,
+        "net_amp_ratio_mean": 1.0,
+        "client_cpu_max": 12.4,
+        "pages_read_mean": 520583,
+        "pages_read_per_req": 207.9,
+        "wt_hit_ratio_mean": 94.59
+      }
+    }
+  },
+  "meta_info": {
+    "hosts": {
+      "SA|dathoang-NgocTrinh|7.0.48": 39,
+      "SH-hash|dathoang-NgocTrinh|7.0.48": 63,
+      "SH-range|dathoang-NgocTrinh|7.0.48": 12
+    }
+  }
+}

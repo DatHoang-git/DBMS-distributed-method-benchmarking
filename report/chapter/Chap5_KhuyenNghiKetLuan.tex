@@ -1,50 +1,56 @@
 \chapter{Khuyến nghị Thiết kế, Giới hạn Thực nghiệm và Kết luận}
 \label{chap:conclusion}
 
-Chương này tổng hợp khung lựa chọn kiến trúc dựa trên ba câu hỏi nghiên cứu, phân tích thẳng thắn các giới hạn thực nghiệm (\textit{Threats to Validity}) nhằm làm rõ phạm vi diễn giải số liệu, và đề xuất hướng phát triển tiếp theo.
-
 \section{Khung Khuyến nghị Thiết kế Sharding cho Hệ thống EHR}
 
-Từ cơ chế hoạt động của MongoDB 7.0 ở Chương~\ref{chap:sharding-mechanism} kết hợp với ba bảng kết quả của Chương~\ref{chap:results}, Bảng~\ref{tab:design-recommendations} định hình khung khuyến nghị lựa chọn cấu hình lưu trữ theo đặc trưng tải công việc (các mốc định lượng cụ thể sẽ được cập nhật trực tiếp từ Bảng~\ref{tab:rq1-results}\textendash \ref{tab:rq3-results}).
+Từ cơ chế hoạt động của MongoDB 7.0 ở Chương~\ref{chap:sharding-mechanism} kết hợp với bằng chứng định lượng từ Chương~\ref{chap:results}, Bảng~\ref{tab:recommendations} tổng hợp khung khuyến nghị lựa chọn cấu hình lưu trữ theo đặc trưng tải EHR.
 
 \begin{table}[!htb]
 \centering
 \caption{Khung khuyến nghị lựa chọn kiến trúc và khóa phân mảnh theo đặc trưng tải EHR.}
-\label{tab:design-recommendations}
-\renewcommand{\arraystretch}{1.24}
-\begin{tabularx}{\linewidth}{L{3.5cm} L{2.7cm} X}
+\label{tab:recommendations}
+\renewcommand{\arraystretch}{1.22}
+\small
+\begin{tabularx}{\linewidth}{L{3.7cm} L{2.8cm} >{\raggedright\arraybackslash}X}
 \toprule
-\textbf{Đặc trưng tải EHR} & \textbf{Cấu hình đề xuất} & \textbf{Cơ sở kỹ thuật \& Tiêu chí từ Chương 4} \\
+\textbf{Đặc trưng tải EHR} & \textbf{Cấu hình đề xuất} & \textbf{Cơ sở kỹ thuật \& Mốc định lượng từ Chương~\ref{chap:results}} \\
 \midrule
-Dữ liệu nhỏ (nằm gọn trong RAM đệm $1$ nút), ít luồng đồng thời & \textbf{1 nút đơn} (\texttt{SA}) & Tránh chi phí định tuyến \texttt{mongos} và độ trễ mạng nội bộ (dưới ngưỡng hòa vốn của Bảng~\ref{tab:rq1-results}). \\
-\addlinespace
-Dữ liệu vượt RAM $1$ nút, tải đọc theo bệnh nhân (\texttt{Q1}) và ghi mới liên tục (\texttt{START = now()}) & \textbf{Hashed Sharding} (\texttt{SH-hash}) & Chia đôi tải RAM/CPU/SSD cho đọc đa luồng (Bảng~\ref{tab:rq1-results}), rải đều dữ liệu và triệt tiêu điểm nóng ghi (Bảng~\ref{tab:rq2-results}), bảo đảm tỉa mảnh $1/2$ cho truy vấn bệnh nhân. \\
-\addlinespace
-Thiên về truy vấn báo cáo theo khung thời gian (\texttt{Q3}, \texttt{Q4}), ít ghi trực tuyến đơn điệu & \textbf{Ranged Sharding} (\texttt{SH-range}) & Tận dụng khả năng tỉa mảnh theo khoảng thời gian (Bảng~\ref{tab:rq3-results}); cần lưu ý chấp nhận điểm nóng ghi trên dải mới nhất khi chèn dữ liệu theo thời gian thực. \\
+Dữ liệu nhỏ nằm gọn trong bộ nhớ đệm 1 nút (\texttt{D100K} với cache $512\text{ MB}$), tải đọc đơn/đa luồng vừa phải & \textbf{1 nút đơn (\texttt{SA})} & Tránh chi phí định tuyến \texttt{mongos} và độ trễ mạng nội bộ: tại \texttt{D100K}, \texttt{SA} nhanh hơn \texttt{SH-hash} gần $2.0\times$ về thông lượng ở 1 luồng ($0.92$ vs $1.70\text{ ms}$; $2{,}376.4$ vs $1{,}198.1\text{ QPS}$) và vẫn dẫn trước ở 4 luồng ($3{,}215.9$ vs $2{,}555.6\text{ QPS}$). \\
+\midrule
+Dữ liệu vượt RAM đệm 1 nút (từ \texttt{D500K} trở lên), tải đọc tra cứu bệnh nhân (\texttt{Q1}) và ghi mới liên tục & \textbf{Hashed Sharding (\texttt{SH-hash})} & Chia đôi tập dữ liệu làm việc và tải CPU: giữ $100\%$ hit cache tại \texttt{D500K} (giảm \texttt{p95} tới $8.66\times$ ở 8 luồng), tăng thông lượng $3.34\times$ tại \texttt{D1M} và $1.29\times$ tại \texttt{D3M} (8 luồng); rải đều dữ liệu ($49.77/50.23\%$), triệt tiêu điểm nóng ghi ($50.31/49.69\%$) và giữ độ trễ ghi ổn định gấp $18\times$ ($12.71 \pm 0.29\text{ ms}$); bảo đảm tỉa mảnh \texttt{1/2} cho \texttt{Q1} (giảm $24.7\%$ độ trễ \texttt{p95} so với \texttt{SH-range}: $3.74$ vs $4.97\text{ ms}$). \\
+\midrule
+Thiên về truy vấn tổng hợp theo khung thời gian (\texttt{Q2}) cần giảm băng thông mạng liên nút và cô lập phân vùng dữ liệu cũ/mới, ít ghi trực tuyến đơn điệu & \textbf{Ranged Sharding (\texttt{SH-range})} & Tỉa mảnh $100\%$ (\texttt{1/2} shard) cho cả \texttt{Q2} và \texttt{Q3}, giúp giảm lưu lượng mạng nội bộ giữa shard và \texttt{mongos} tới \textbf{$10.3\times$} trên truy vấn tổng hợp \texttt{Q2} ($1.71$ vs $17.65\text{ KB/req}$ ở \texttt{D1M}); cần chấp nhận điểm nóng ghi $100\%/0\%$ trên một shard, bất lợi $+32.9\%$ độ trễ \texttt{Q1} và yêu cầu bảo trì thu gọn tệp nếu Balancer di dời nhiều dữ liệu. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\noindent\textbf{Lưu ý đối với tải hỗn hợp trong sản xuất:} Nếu hệ thống vừa phục vụ bác sĩ tra cứu bệnh nhân (\texttt{Q1}) vừa chạy nhiều báo cáo xuyên bệnh nhân trả về tập kết quả lớn (\texttt{Q4}), việc tách tải phân tích sang nút phụ chuyên biệt (\texttt{readPreference: "secondary"} trên Replica Set $3$ thành viên) hoặc kho phân tích riêng là giải pháp phổ biến trong thực tế, song nằm ngoài phạm vi đo đạc trực tiếp của cụm $1$ thành viên mỗi shard trong đề tài này.
+\textbf{Lưu ý đối với tải hỗn hợp trong sản xuất:} Nếu hệ thống vừa phục vụ bác sĩ tra cứu bệnh nhân (\texttt{Q1}) vừa chạy nhiều báo cáo liệt kê kết quả lớn (\texttt{Q3} tiêu thụ $145$\textendash $436\text{ KB/req}$ kể cả khi tỉa mảnh \texttt{1/2} shard), việc tách tải phân tích sang nút phụ chuyên biệt trên Replica Set 3 thành viên hoặc kho phân tích riêng là giải pháp cần thiết để tránh nghẽn băng thông \texttt{mongos}, song nằm ngoài phạm vi đo đạc trực tiếp của cụm 1 thành viên mỗi shard trong đề tài này.
 
-\section{Giới hạn Thực nghiệm (\textit{Threats to Validity})}
+\section{Giới hạn Thực nghiệm}
 
-Để giữ tính khách quan khoa học và làm rõ ranh giới khái quát hóa của kết quả, báo cáo ghi nhận năm giới hạn cốt lõi:
+Để bảo đảm tính khách quan khoa học và làm rõ phạm vi diễn giải số liệu, báo cáo ghi nhận năm giới hạn cốt lõi:
 
-\begin{enumerate}
-  \item \textbf{Chưa đối chứng với phương án nâng cấp dọc (\textit{Scale-up}) trên $1$ nút:} Thực nghiệm \texttt{TN1} so sánh trực tiếp $1$ nút (\texttt{SA}) với cụm $2$ nút (\texttt{SH-hash}, có tổng RAM, CPU và ổ đĩa gấp đôi). Thiết kế này trả lời trực diện ngưỡng quy mô để sharding vượt máy đơn cố định cấu hình, nhưng chưa tách định lượng phần đóng góp riêng của việc gấp đôi RAM cục bộ so với việc thêm nút thứ hai.
-  \item \textbf{Replica Set $1$ thành viên mỗi shard:} Do giới hạn tài nguyên Azure for Students, mỗi shard chỉ gồm $1$ thành viên. Hệ quả là \texttt{writeConcern: \{w: "majority"\}} tương đương ghi xác nhận cục bộ kèm nhật ký đĩa (\texttt{w: 1, j: true}), chưa phản ánh độ trễ mạng đồng bộ \texttt{oplog} sang các nút Secondary như cụm sản xuất $3$ thành viên; đồng thời mức tăng tốc ghi của \texttt{SH-hash} chịu đóng góp lớn từ việc nhân đôi hai ổ đĩa SSD độc lập.
-  \item \textbf{Ngưỡng dừng $96\text{ MB}$ của Balancer trong MongoDB 7.0:} Với $\texttt{chunkSize} = 32\text{ MB}$, Balancer MongoDB 7.0 chỉ kích hoạt di chuyển khi chênh lệch dung lượng giữa hai shard vượt $3 \times 32 = 96\text{ MB}$ ($\sim 7.3\%$ tập \texttt{D1M}). Do đó độ lệch vài phần trăm sau cân bằng là hành vi thiết kế của Balancer chứ không phải lỗi của chiến lược khóa phân mảnh.
-  \item \textbf{Giới hạn bộ nhớ đệm nhân tạo và $3$ lần lặp trên đám mây công cộng:} Mức WiredTiger Cache ($0.50\text{ GB}$) và cgroup ($1\text{ GB}$) được thu nhỏ có chủ đích để kích hoạt tràn RAM ở mốc $1$\textendash $3\text{ triệu}$ tài liệu; giá trị độ trễ tuyệt đối (ms) gắn với cấu hình thử nghiệm cụ thể và số lần lặp $3$ lần trên đám mây có thể chịu dao động nhẹ từ hạ tầng chia sẻ (được giảm thiểu bằng dùng chỉ số \texttt{p95} thay cho \texttt{p99}).
-  \item \textbf{Dữ liệu tổng hợp Synthea và nạp tuần tự không cập nhật:} Dữ liệu Synthea mô phỏng sát lâm sàng nhưng vẫn là dữ liệu tổng hợp; việc nạp nối tiếp theo \texttt{START} tái hiện tốt phân tán trang đĩa theo thời gian nhưng chưa bao gồm thao tác cập nhật/xóa kéo dài vốn gây phân mảnh tệp dữ liệu trong bệnh viện thực tế.
+\begin{enumerate}[leftmargin=0.8cm, itemsep=4pt]
+  \item \textbf{Triển khai container trên cùng một máy chủ dùng chung ổ NVMe SSD và mạng nội bộ cục bộ:} Việc chạy cả ba cấu hình tuần tự trên cùng một máy chủ vật lý đã loại bỏ hoàn toàn sai lệch phần cứng giữa các môi trường, nhưng hai shard vẫn chia sẻ chung băng thông I/O của một ổ NVMe SSD và truyền dữ liệu qua mạng bridge nội bộ gần như không độ trễ. Điều này khiến tốc độ tăng tốc ở vùng tràn đĩa sâu (\texttt{D3M}) thu hẹp xuống $1.29\times$, không tách biệt được lợi ích nhân đôi băng thông ghi của hai ổ đĩa độc lập trong \texttt{TN2}, đồng thời làm chi phí truyền tải $435.8\text{ KB/req}$ của \texttt{Q3} trên \texttt{D3M} nhẹ hơn so với mạng liên máy chủ thực tế.
+  \item \textbf{Chưa đối chứng với phương án nâng cấp dọc trên 1 nút:} Thực nghiệm \texttt{TN1} so sánh 1 nút ($1\text{ GB}$ RAM / $2\text{ vCPU}$) với cụm 2 shard ($2\text{ GB}$ RAM / $4\text{ vCPU}$ tổng), trả lời trực diện ngưỡng quy mô để sharding vượt nút đơn cố định cấu hình nhưng chưa tách riêng phần đóng góp của việc nhân đôi RAM cục bộ so với thêm nút thứ hai.
+  \item \textbf{Replica Set 1 thành viên mỗi shard:} Mỗi shard chỉ gồm 1 thành viên nên chính sách xác nhận ghi đa số thực tế tương đương ghi cục bộ kèm nhật ký đĩa, chưa phản ánh độ trễ mạng đồng bộ nhật ký thao tác sang các nút phụ như cụm sản xuất 3 thành viên.
+  \item \textbf{Giới hạn RAM thu nhỏ, tải \texttt{TN3} đơn luồng và cửa sổ thời gian 3 năm trên cụm 2 shard:} Mức WiredTiger Internal Cache ($512\text{ MB}$) và RAM nút ($1\text{ GB}$) được thu nhỏ để kích hoạt tràn bộ nhớ đệm ngay ở mốc \texttt{500K}\textendash \texttt{3M}; do đó giá trị tuyệt đối (ms) gắn với cấu hình này trong khi xu hướng định tính mang tính khái quát. Ngoài ra, thực nghiệm \texttt{TN3} chỉ đo ở 1 luồng đồng thời nên lợi thế quét song song của \texttt{SH-hash} trên \texttt{Q2}/\texttt{Q3} chưa phản ánh áp lực tranh chấp CPU khi nhiều luồng phân tích và giao dịch chạy đồng thời; đồng thời bộ cửa sổ 3 năm gần nhất trên cụm 2 shard chia theo thời gian luôn rơi trọn vào một shard mới hơn ($100\%$ tỉa mảnh), chưa kiểm chứng trường hợp cửa sổ truy vấn cắt ngang ranh giới chia mảnh.
+  \item \textbf{Dữ liệu tổng hợp Synthea và nạp tuần tự không cập nhật:} Dữ liệu Synthea mô phỏng sát cấu trúc lâm sàng nhưng vẫn là dữ liệu tổng hợp; quy trình nạp nối tiếp theo thời gian không bao gồm chu kỳ cập nhật/xóa kéo dài của bệnh viện thực tế (dù hiện tượng phình tệp lưu trữ do thao tác xóa khi cân bằng dữ liệu đã được quan sát trực tiếp trên \texttt{SH-range} và xử lý bằng bước thu gọn tệp trước khi đo).
 \end{enumerate}
 
 \section{Kết luận và Hướng phát triển}
 
-\resultplaceholder{Hoàn thiện Kết luận (Mục 5.3)}{Sau khi điền số liệu Chương 4, tổng kết ngắn gọn ba phát hiện định lượng tương ứng với \texttt{RQ1}, \texttt{RQ2} và \texttt{RQ3}.}
+Đề tài đã phân tích có hệ thống cơ chế phân mảnh ngang của \textbf{MongoDB 7.0} và kiểm chứng thực nghiệm trên cùng một máy chủ với dữ liệu Synthea EHR từ \texttt{100K} đến \texttt{3M} lượt khám, rút ra ba phát hiện định lượng chính:
 
-\noindent\textbf{Hướng phát triển:}
-\begin{itemize}
-  \item Bổ sung cấu hình đối chứng nâng cấp dọc ($1$ máy gấp đôi RAM) và cụm $3$\textendash $4$ shard với Replica Set $3$ thành viên mỗi shard để đo thêm chi phí đồng bộ \texttt{w: "majority"} qua mạng và hiệu quả cô lập tải phân tích bằng \texttt{readPreference: "secondary"}.
-  \item Khảo sát khóa phân mảnh băm phức hợp (\textit{Compound Hashed Shard Key}, ví dụ \texttt{\{PATIENT: "hashed", START: 1\}}) hoặc phân mảnh theo vùng (\textit{Zone Sharding}) để cân bằng tốt hơn giữa phân tải ghi và tỉa mảnh theo thời gian.
+\begin{itemize}[leftmargin=0.8cm, itemsep=4pt]
+  \item \textbf{Về mở rộng đọc (\texttt{RQ1}):} Sharding bất lợi khi tập dữ liệu làm việc nằm gọn trong bộ nhớ đệm nút đơn (\texttt{D100K}, 1 luồng: \texttt{SA} $0.92\text{ ms}$ vs \texttt{SH-hash} $1.70\text{ ms}$; 4 luồng: \texttt{SA} $3{,}215.9$ vs \texttt{SH-hash} $2{,}555.6\text{ QPS}$). Ngay khi nút đơn chạm ngưỡng tràn bộ nhớ đệm tại \texttt{D500K} (hit $\sim 80\%$), \texttt{SH-hash} giữ tỷ lệ trúng $100\%$, giảm \texttt{p95} tới $8.66\times$ ở 8 luồng ($6.00$ vs $51.93\text{ ms}$) và duy trì lợi thế thông lượng $3.34\times$ tại \texttt{D1M} và $1.29\times$ tại \texttt{D3M} ($468.0$ vs $362.3\text{ QPS}$).
+  \item \textbf{Về phân bố dữ liệu và tải ghi (\texttt{RQ2}):} \texttt{SH-hash} phân bố dữ liệu ($49.77/50.23\%$) và lượt ghi mới ($50.31/49.69\%$) gần như tuyệt đối với độ trễ ghi ổn định hơn $18\times$ ($12.71 \pm 0.29\text{ ms}$), triệt tiêu điểm nóng ghi $100\%/0\%$ trên Shard 1 của \texttt{SH-range} (cấu hình cũng tuân thủ đúng ngưỡng dừng $96\text{ MB}$ của Balancer MongoDB 7.0 với độ lệch $31.92\text{ MB}$). Trên một ổ NVMe dùng chung, độ biến thiên tốc độ ghi giữa các lần lặp lớn nên chưa ghi nhận khác biệt thông lượng trung bình có ý nghĩa thống kê giữa hai chiến lược phân mảnh.
+  \item \textbf{Về tỉa mảnh và chi phí xuyên mảnh (\texttt{RQ3}):} \texttt{SH-hash} và \texttt{SH-range} cho khả năng tỉa mảnh trái ngược nhau theo loại truy vấn (\texttt{Q1} \texttt{1/2} vs \texttt{2/2} shard khiến \texttt{SH-range} chậm hơn $32.9\%$ \texttt{p95} trên \texttt{Q1}; ngược lại \texttt{Q2}/\texttt{Q3} \texttt{2/2} vs \texttt{1/2} shard). Khi đo tách bạch lưu lượng mạng nội bộ, thực nghiệm phát hiện sự đánh đổi bản chất: trên truy vấn tổng hợp \texttt{Q2} ở tải đơn luồng, \texttt{SH-hash} chạy nhanh hơn $45.9\%$ nhờ quét song song ($52.8$ vs $36.2\text{ QPS}$) nhưng phải trả giá bằng \textbf{lưu lượng nội bộ giữa shard và bộ định tuyến cao gấp $10.3\times$} ($17.65$ vs $1.71\text{ KB/req}$, hệ số khuếch đại $17.76\times$), trong khi băng thông lớn của \texttt{Q3} ($145$\textendash $436\text{ KB/req}$) bắt nguồn từ kích thước tập kết quả trả về chứ không phải chi phí xuyên mảnh.
 \end{itemize}
+
+\textbf{Hướng phát triển:}
+\begin{itemize}[leftmargin=0.8cm, itemsep=4pt]
+  \item Triển khai trên cụm đa máy chủ vật lý hoặc đám mây thực (mỗi shard có ổ SSD và mạng riêng) kèm cấu hình đối chứng nâng cấp dọc (1 nút gấp đôi RAM), tải \texttt{TN3} đa luồng và Replica Set 3 thành viên mỗi shard để đo lợi ích băng thông ghi độc lập của \texttt{SH-hash}, độ trễ đồng bộ qua mạng cũng như hiệu quả cô lập tải phân tích sang nút phụ.
+  \item Khảo sát khóa phân mảnh băm phức hợp (kết hợp băm mã bệnh nhân với thời gian khám) hoặc phân mảnh theo vùng (\textit{Zone Sharding}) nhằm cân bằng tốt hơn giữa phân tải ghi và tỉa mảnh theo thời gian.
+\end{itemize}
+\FloatBarrier

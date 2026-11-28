@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="500" viewBox="0 0 1000 500">
+  <defs>
+    <filter id="cardShadow" x="-6%" y="-6%" width="112%" height="114%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrBlue" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#00629B"/>
+    </marker>
+    <marker id="arrTeal" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#007377"/>
+    </marker>
+    <marker id="arrGreen" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#00843D"/>
+    </marker>
+    <marker id="arrOrange" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#D96B16"/>
+    </marker>
+    <marker id="arrGray" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#A7A8AA"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1000" height="500" fill="#FFFFFF"/>
+  <text x="129" y="30" font-family="DejaVu Sans, sans-serif" font-size="13.5" font-weight="bold" font-style="normal" fill="#002855" text-anchor="middle">Đầu vào &amp; Mô hình Tài liệu</text>
+  <text x="484" y="30" font-family="DejaVu Sans, sans-serif" font-size="13.5" font-weight="bold" font-style="normal" fill="#004B4E" text-anchor="middle">Bên trong Nút Lưu trữ (mongod - Primary)</text>
+  <text x="865" y="30" font-family="DejaVu Sans, sans-serif" font-size="13.5" font-weight="bold" font-style="normal" fill="#005A29" text-anchor="middle">Sẵn sàng cao (Replica Set)</text>
+  <g filter="url(#cardShadow)"><rect x="24" y="60" width="210" height="108" rx="10" fill="#FFFFFF"/></g>
+  <rect x="24" y="60" width="210" height="108" rx="10" fill="none" stroke="#7AB2D3" stroke-width="1.5"/>
+  <rect x="37.0" y="77.0" width="34" height="34" rx="8.2" fill="#EBF4FA" stroke="#00629B" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(44.16,84.16) scale(0.82)" fill="none" stroke="#00629B" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+  <circle cx="9" cy="7" r="4"/>
+  <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+
+  </g>
+  <text x="80" y="91" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#002855" text-anchor="start">Truy vấn Đọc / Ghi</text>
+  <text x="80" y="109" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">Từ ứng dụng hoặc</text>
+  <text x="80" y="125" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">bộ định tuyến mongos</text>
+  <text x="129" y="152" font-family="DejaVu Sans, sans-serif" font-size="10.5" font-weight="bold" font-style="normal" fill="#00629B" text-anchor="middle">Xử lý song song qua MVCC</text>
+  <g filter="url(#cardShadow)"><rect x="24" y="200" width="210" height="266" rx="10" fill="#F4F6F8"/></g>
+  <rect x="24" y="200" width="210" height="266" rx="10" fill="none" stroke="#A7A8AA" stroke-width="1.4"/>
+  <rect x="38.0" y="216.0" width="32" height="32" rx="7.7" fill="#FFFFFF" stroke="#53565A" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(44.16,222.16) scale(0.82)" fill="none" stroke="#53565A" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+  <polyline points="14 2 14 8 20 8"/>
+  <line x1="8" y1="13" x2="16" y2="13"/>
+  <line x1="8" y1="17" x2="13" y2="17"/>
+
+  </g>
+  <text x="78" y="229" font-family="DejaVu Sans, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#1A1D20" text-anchor="start">Tài liệu BSON</text>
+  <text x="78" y="245" font-family="DejaVu Sans, sans-serif" font-size="10.5" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">Mã hóa nhị phân</text>
+  <rect x="36" y="266" width="186" height="44" rx="6" fill="#FFFFFF" stroke="#7AB2D3" stroke-width="1.1"/>
+  <text x="46" y="284" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="bold" font-style="normal" fill="#002855" text-anchor="start">Trường thông tin phẳng</text>
+  <text x="46" y="300" font-family="DejaVu Sans, sans-serif" font-size="10" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">Mã lượt khám, bệnh nhân, giờ</text>
+  <rect x="36" y="320" width="186" height="44" rx="6" fill="#FFFFFF" stroke="#66B2B5" stroke-width="1.1"/>
+  <text x="46" y="338" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="bold" font-style="normal" fill="#004B4E" text-anchor="start">Mảng chẩn đoán nhúng</text>
+  <text x="46" y="354" font-family="DejaVu Sans, sans-serif" font-size="10" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">Danh sách mã bệnh đi kèm</text>
+  <rect x="36" y="374" width="186" height="44" rx="6" fill="#FFFFFF" stroke="#66B2B5" stroke-width="1.1"/>
+  <text x="46" y="392" font-family="DejaVu Sans, sans-serif" font-size="11" font-weight="bold" font-style="normal" fill="#004B4E" text-anchor="start">Mảng xét nghiệm nhúng</text>
+  <text x="46" y="408" font-family="DejaVu Sans, sans-serif" font-size="10" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">Chỉ số sinh học &amp; đơn vị đo</text>
+  <text x="129" y="443" font-family="DejaVu Sans, sans-serif" font-size="10.5" font-weight="bold" font-style="normal" fill="#53565A" text-anchor="middle">Gói gọn 1 lượt khám / bản ghi</text>
+  <text x="129" y="458" font-family="DejaVu Sans, sans-serif" font-size="10" font-weight="italic" font-style="normal" fill="#63666A" text-anchor="middle">(không cần phép nối nhiều bảng)</text>
+  <g filter="url(#cardShadow)"><rect x="294" y="50" width="380" height="416" rx="12" fill="#FAFBFD"/></g>
+  <rect x="294" y="50" width="380" height="416" rx="12" fill="none" stroke="#66B2B5" stroke-width="1.8"/>
+  <g filter="url(#cardShadow)"><rect x="314" y="64" width="340" height="66" rx="9" fill="#FFFFFF"/></g>
+  <rect x="314" y="64" width="340" height="66" rx="9" fill="none" stroke="#00629B" stroke-width="1.5"/>
+  <rect x="328.0" y="81.0" width="32" height="32" rx="7.7" fill="#EBF4FA" stroke="#00629B" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(334.88,87.88) scale(0.76)" fill="none" stroke="#00629B" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+  <polyline points="2 17 12 22 22 17"/>
+  <polyline points="2 12 12 17 22 12"/>
+
+  </g>
+  <text x="370" y="91" font-family="DejaVu Sans, sans-serif" font-size="12.0" font-weight="bold" font-style="normal" fill="#002855" text-anchor="start">Chỉ mục B-Tree (Đơn / Phức hợp / Mảng)</text>
+  <text x="370" y="110" font-family="DejaVu Sans, sans-serif" font-size="10.5" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">Định vị nhanh khóa tìm kiếm, tránh quét toàn bộ</text>
+  <line x1="484" y1="130" x2="484" y2="152" stroke="#00629B" stroke-width="1.8" marker-end="url(#arrBlue)"/>
+  <text x="494" y="145" font-family="DejaVu Sans, sans-serif" font-size="10.0" font-weight="normal" font-style="normal" fill="#002855" text-anchor="start">Truy xuất trang chỉ mục &amp; dữ liệu</text>
+  <g filter="url(#cardShadow)"><rect x="314" y="156" width="340" height="102" rx="10" fill="#E6F4F4"/></g>
+  <rect x="314" y="156" width="340" height="102" rx="10" fill="none" stroke="#007377" stroke-width="1.6"/>
+  <text x="326" y="177" font-family="DejaVu Sans, sans-serif" font-size="12.0" font-weight="bold" font-style="normal" fill="#004B4E" text-anchor="start">Bộ máy WiredTiger</text>
+  <rect x="478" y="162" width="164" height="22" rx="11" fill="#FFFFFF" stroke="#66B2B5" stroke-width="1"/>
+  <text x="560" y="177" font-family="DejaVu Sans, sans-serif" font-size="9.8" font-weight="bold" font-style="normal" fill="#004B4E" text-anchor="middle">MVCC &amp; Khóa mức tài liệu</text>
+  <g><rect x="328" y="192" width="312" height="56" rx="8" fill="#FFFFFF"/></g>
+  <rect x="328" y="192" width="312" height="56" rx="8" fill="none" stroke="#007377" stroke-width="1.3"/>
+  <rect x="339.0" y="205.0" width="30" height="30" rx="7.2" fill="#E6F4F4" stroke="#007377" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(345.36,211.36) scale(0.72)" fill="none" stroke="#007377" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <rect x="6" y="6" width="12" height="12" rx="2"/>
+  <rect x="9.5" y="9.5" width="5" height="5" rx="0.8"/>
+  <line x1="9" y1="2" x2="9" y2="6"/><line x1="15" y1="2" x2="15" y2="6"/>
+  <line x1="9" y1="18" x2="9" y2="22"/><line x1="15" y1="18" x2="15" y2="22"/>
+  <line x1="2" y1="9" x2="6" y2="9"/><line x1="2" y1="15" x2="6" y2="15"/>
+  <line x1="18" y1="9" x2="22" y2="9"/><line x1="18" y1="15" x2="22" y2="15"/>
+
+  </g>
+  <text x="378" y="214" font-family="DejaVu Sans, sans-serif" font-size="11.6" font-weight="bold" font-style="normal" fill="#004B4E" text-anchor="start">Tầng 1: WiredTiger Internal Cache</text>
+  <text x="378" y="232" font-family="DejaVu Sans, sans-serif" font-size="10.3" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">Giữ trang dữ liệu &amp; chỉ mục đã giải nén</text>
+  <line x1="484" y1="260" x2="484" y2="286" stroke="#007377" stroke-width="1.8" marker-start="url(#arrTeal)" marker-end="url(#arrTeal)"/>
+  <text x="494" y="277" font-family="DejaVu Sans, sans-serif" font-size="9.8" font-weight="normal" font-style="normal" fill="#004B4E" text-anchor="start">Đọc / ghi khối tệp nén qua nhân OS</text>
+  <g filter="url(#cardShadow)"><rect x="314" y="290" width="340" height="62" rx="9" fill="#EBF4FA"/></g>
+  <rect x="314" y="290" width="340" height="62" rx="9" fill="none" stroke="#00629B" stroke-width="1.5"/>
+  <rect x="328.0" y="305.0" width="32" height="32" rx="7.7" fill="#FFFFFF" stroke="#00629B" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(335.12,312.12) scale(0.74)" fill="none" stroke="#00629B" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <rect x="2" y="2" width="20" height="7" rx="2"/>
+  <rect x="2" y="13" width="20" height="7" rx="2"/>
+  <line x1="6" y1="5.5" x2="6.01" y2="5.5" stroke-width="2.6"/>
+  <line x1="6" y1="16.5" x2="6.01" y2="16.5" stroke-width="2.6"/>
+  <line x1="11" y1="5.5" x2="18" y2="5.5"/>
+  <line x1="11" y1="16.5" x2="18" y2="16.5"/>
+
+  </g>
+  <text x="370" y="314" font-family="DejaVu Sans, sans-serif" font-size="11.8" font-weight="bold" font-style="normal" fill="#002855" text-anchor="start">Tầng 2: OS Page Cache (Nhân OS)</text>
+  <text x="370" y="333" font-family="DejaVu Sans, sans-serif" font-size="10.3" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">Ngoài WiredTiger; đệm khối tệp nén Snappy</text>
+  <line x1="418" y1="354" x2="418" y2="394" stroke="#D96B16" stroke-width="2.0" marker-start="url(#arrOrange)" marker-end="url(#arrOrange)"/>
+  <rect x="430" y="363" width="218" height="22" rx="6" fill="#FDF3E7" stroke="#E8A46B" stroke-width="1"/>
+  <text x="539" y="378" font-family="DejaVu Sans, sans-serif" font-size="10.5" font-weight="bold" font-style="normal" fill="#8F4207" text-anchor="middle">Đọc trang từ đĩa khi tràn RAM (RQ1)</text>
+  <g filter="url(#cardShadow)"><rect x="314" y="398" width="340" height="56" rx="9" fill="#FFFFFF"/></g>
+  <rect x="314" y="398" width="340" height="56" rx="9" fill="none" stroke="#53565A" stroke-width="1.5"/>
+  <rect x="328.0" y="410.0" width="32" height="32" rx="7.7" fill="#F4F6F8" stroke="#53565A" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(334.88,416.88) scale(0.76)" fill="none" stroke="#53565A" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <ellipse cx="12" cy="5" rx="8.5" ry="3"/>
+  <path d="M3.5 5v14c0 1.66 3.8 3 8.5 3s8.5-1.34 8.5-3V5"/>
+  <path d="M3.5 12c0 1.66 3.8 3 8.5 3s8.5-1.34 8.5-3"/>
+
+  </g>
+  <text x="370" y="421" font-family="DejaVu Sans, sans-serif" font-size="12.2" font-weight="bold" font-style="normal" fill="#1A1D20" text-anchor="start">Ổ đĩa SSD (Lưu trữ bền vững)</text>
+  <text x="370" y="439" font-family="DejaVu Sans, sans-serif" font-size="10.5" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">Tệp dữ liệu nén &amp; nhật ký khôi phục</text>
+  <g filter="url(#cardShadow)"><rect x="744" y="60" width="234" height="406" rx="12" fill="#EAF6EF"/></g>
+  <rect x="744" y="60" width="234" height="406" rx="12" fill="none" stroke="#6EC194" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="861" y="86" font-family="DejaVu Sans, sans-serif" font-size="12.5" font-weight="bold" font-style="normal" fill="#005A29" text-anchor="middle">Các nút phụ (Secondary)</text>
+  <g filter="url(#cardShadow)"><rect x="758" y="106" width="206" height="82" rx="9" fill="#FFFFFF"/></g>
+  <rect x="758" y="106" width="206" height="82" rx="9" fill="none" stroke="#00843D" stroke-width="1.4"/>
+  <rect x="767.0" y="132.0" width="30" height="30" rx="7.2" fill="#EAF6EF" stroke="#00843D" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(773.36,138.36) scale(0.72)" fill="none" stroke="#00843D" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <rect x="2" y="2" width="20" height="7" rx="2"/>
+  <rect x="2" y="13" width="20" height="7" rx="2"/>
+  <line x1="6" y1="5.5" x2="6.01" y2="5.5" stroke-width="2.6"/>
+  <line x1="6" y1="16.5" x2="6.01" y2="16.5" stroke-width="2.6"/>
+  <line x1="11" y1="5.5" x2="18" y2="5.5"/>
+  <line x1="11" y1="16.5" x2="18" y2="16.5"/>
+
+  </g>
+  <text x="803" y="141" font-family="DejaVu Sans, sans-serif" font-size="12.0" font-weight="bold" font-style="normal" fill="#005A29" text-anchor="start">Secondary 1</text>
+  <text x="803" y="160" font-family="DejaVu Sans, sans-serif" font-size="9.6" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">Đồng bộ nhật ký từ Primary</text>
+  <g filter="url(#cardShadow)"><rect x="758" y="210" width="206" height="82" rx="9" fill="#FFFFFF"/></g>
+  <rect x="758" y="210" width="206" height="82" rx="9" fill="none" stroke="#00843D" stroke-width="1.4"/>
+  <rect x="767.0" y="236.0" width="30" height="30" rx="7.2" fill="#EAF6EF" stroke="#00843D" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(773.36,242.36) scale(0.72)" fill="none" stroke="#00843D" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <rect x="2" y="2" width="20" height="7" rx="2"/>
+  <rect x="2" y="13" width="20" height="7" rx="2"/>
+  <line x1="6" y1="5.5" x2="6.01" y2="5.5" stroke-width="2.6"/>
+  <line x1="6" y1="16.5" x2="6.01" y2="16.5" stroke-width="2.6"/>
+  <line x1="11" y1="5.5" x2="18" y2="5.5"/>
+  <line x1="11" y1="16.5" x2="18" y2="16.5"/>
+
+  </g>
+  <text x="803" y="245" font-family="DejaVu Sans, sans-serif" font-size="12.0" font-weight="bold" font-style="normal" fill="#005A29" text-anchor="start">Secondary 2</text>
+  <text x="803" y="264" font-family="DejaVu Sans, sans-serif" font-size="9.6" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">Dự phòng, sẵn sàng bầu chọn</text>
+  <g><rect x="758" y="322" width="206" height="124" rx="9" fill="#FFFFFF"/></g>
+  <rect x="758" y="322" width="206" height="124" rx="9" fill="none" stroke="#E8A46B" stroke-width="1.3"/>
+  <text x="861" y="346" font-family="DejaVu Sans, sans-serif" font-size="11.5" font-weight="bold" font-style="normal" fill="#8F4207" text-anchor="middle">Phạm vi thực nghiệm</text>
+  <text x="861" y="368" font-family="DejaVu Sans, sans-serif" font-size="10.5" font-weight="normal" font-style="normal" fill="#1A1D20" text-anchor="middle">Mỗi nút dữ liệu chạy dạng</text>
+  <text x="861" y="385" font-family="DejaVu Sans, sans-serif" font-size="10.8" font-weight="bold" font-style="normal" fill="#1A1D20" text-anchor="middle">Replica Set 1 thành viên</text>
+  <text x="861" y="404" font-family="DejaVu Sans, sans-serif" font-size="10.2" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="middle">(vẫn ghi nhật ký oplog</text>
+  <text x="861" y="420" font-family="DejaVu Sans, sans-serif" font-size="10.2" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="middle">để đối chứng công bằng)</text>
+  <path d="M 234,97 L 310,97" fill="none" stroke="#00629B" stroke-width="2.2" marker-end="url(#arrBlue)"/>
+  <path d="M 234,244 L 256.0,244.0 Q 264.0,244.0 264.0,236.0 L 264.0,228.0 Q 264.0,220.0 272.0,220.0 L 324,220" fill="none" stroke="#53565A" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrTeal)"/>
+  <text x="264" y="208" font-family="DejaVu Sans, sans-serif" font-size="10" font-weight="bold" font-style="normal" fill="#53565A" text-anchor="middle">Nạp</text>
+  <path d="M 674,200 L 706.0,200.0 Q 714.0,200.0 714.0,192.0 L 714.0,155.0 Q 714.0,147.0 722.0,147.0 L 754,147" fill="none" stroke="#00843D" stroke-width="1.9" stroke-dasharray="5,3" marker-end="url(#arrGreen)"/>
+  <path d="M 714,200 L 714.0,243.0 Q 714.0,251.0 722.0,251.0 L 754,251" fill="none" stroke="#00843D" stroke-width="1.9" stroke-dasharray="5,3" marker-end="url(#arrGreen)"/>
+  <rect x="679" y="164" width="60" height="22" rx="6" fill="#FFFFFF" stroke="#6EC194" stroke-width="1"/>
+  <text x="709" y="179" font-family="DejaVu Sans, sans-serif" font-size="10.8" font-weight="bold" font-style="normal" fill="#005A29" text-anchor="middle">oplog</text>
+</svg>

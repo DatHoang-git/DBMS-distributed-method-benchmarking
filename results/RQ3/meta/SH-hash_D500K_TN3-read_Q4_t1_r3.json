@@ -1,0 +1,54 @@
+{
+  "spec_version": 3,
+  "env": "SH-hash",
+  "dataset": "D500K",
+  "scenario": "TN3-read",
+  "query": "Q4",
+  "threads": 1,
+  "rep": 3,
+  "seed": 42,
+  "client_host": "dathoang-NgocTrinh",
+  "mongo_version": "7.0.48",
+  "balancer_preflight": {
+    "checked": true,
+    "mode": "off",
+    "inBalancerRound": false,
+    "active_migrations": 0
+  },
+  "idle_network_baseline": {
+    "idle_seconds": 15.02,
+    "idle_bytes_in_per_s": 112.35,
+    "idle_bytes_out_per_s": 1978.78
+  },
+  "idle_network_baseline_by_node": {
+    "mongos": {
+      "idle_seconds": 15.02,
+      "idle_bytes_in_per_s": 112.35,
+      "idle_bytes_out_per_s": 1978.78
+    },
+    "s1": {
+      "idle_seconds": 15.02,
+      "idle_bytes_in_per_s": 236.68,
+      "idle_bytes_out_per_s": 5745.61
+    },
+    "s2": {
+      "idle_seconds": 15.02,
+      "idle_bytes_in_per_s": 236.68,
+      "idle_bytes_out_per_s": 5739.41
+    }
+  },
+  "elapsed_s": 30.001,
+  "n_requests": 13992,
+  "n_success": 13992,
+  "qps_or_inserts_s": 466.38,
+  "p50_ms": 1.966,
+  "p95_ms": 3.24,
+  "net_kb_per_req": 72.27,
+  "shard_net_kb_per_req": 75.04,
+  "net_amp_ratio": 1.038,
+  "client_cpu_max": 11.08,
+  "client_cpu_avg": 8.52,
+  "client_bound": false,
+  "start_utc": "2026-11-28T03:38:07.625779+00:00",
+  "end_utc": "2026-11-28T03:38:37.654981+00:00"
+}

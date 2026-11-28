@@ -17,19 +17,38 @@
   },
   "idle_network_baseline": {
     "idle_seconds": 15.01,
-    "idle_bytes_in_per_s": 112.43,
-    "idle_bytes_out_per_s": 1982.56
+    "idle_bytes_in_per_s": 112.36,
+    "idle_bytes_out_per_s": 1981.38
   },
-  "elapsed_s": 50.005,
-  "n_requests": 5935,
-  "n_success": 5935,
-  "qps_or_inserts_s": 118.69,
-  "p50_ms": 4.739,
-  "p95_ms": 7.782,
-  "net_kb_per_req": 235.701,
-  "client_cpu_max": 19.59,
-  "client_cpu_avg": 12.49,
+  "idle_network_baseline_by_node": {
+    "mongos": {
+      "idle_seconds": 15.01,
+      "idle_bytes_in_per_s": 112.36,
+      "idle_bytes_out_per_s": 1981.38
+    },
+    "s1": {
+      "idle_seconds": 15.01,
+      "idle_bytes_in_per_s": 1490.25,
+      "idle_bytes_out_per_s": 6575.14
+    },
+    "s2": {
+      "idle_seconds": 15.01,
+      "idle_bytes_in_per_s": 448.71,
+      "idle_bytes_out_per_s": 6178.25
+    }
+  },
+  "elapsed_s": 30.003,
+  "n_requests": 7382,
+  "n_success": 7382,
+  "qps_or_inserts_s": 246.04,
+  "p50_ms": 3.926,
+  "p95_ms": 5.473,
+  "net_kb_per_req": 144.208,
+  "shard_net_kb_per_req": 145.158,
+  "net_amp_ratio": 1.007,
+  "client_cpu_max": 11.41,
+  "client_cpu_avg": 6.83,
   "client_bound": false,
-  "start_utc": "2026-11-27T15:22:04.743750+00:00",
-  "end_utc": "2026-11-27T15:22:54.793210+00:00"
+  "start_utc": "2026-11-28T05:00:01.734042+00:00",
+  "end_utc": "2026-11-28T05:00:31.766276+00:00"
 }

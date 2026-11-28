@@ -7,7 +7,7 @@
   "threads": 4,
   "rep": 3,
   "seed": 42,
-  "client_host": "ubuntu-thinkpade14",
+  "client_host": "dathoang-NgocTrinh",
   "mongo_version": "7.0.48",
   "balancer_preflight": {
     "checked": true,
@@ -16,16 +16,19 @@
     "active_migrations": 0
   },
   "idle_network_baseline": null,
-  "elapsed_s": 60.006,
-  "n_requests": 71516,
-  "n_success": 71516,
-  "qps_or_inserts_s": 1191.81,
-  "p50_ms": 3.019,
-  "p95_ms": 4.717,
+  "idle_network_baseline_by_node": null,
+  "elapsed_s": 60.007,
+  "n_requests": 50205,
+  "n_success": 50205,
+  "qps_or_inserts_s": 836.65,
+  "p50_ms": 3.108,
+  "p95_ms": 13.049,
   "net_kb_per_req": 0.833,
-  "client_cpu_max": 36.04,
-  "client_cpu_avg": 28.71,
+  "shard_net_kb_per_req": 1.49,
+  "net_amp_ratio": 1.789,
+  "client_cpu_max": 13.81,
+  "client_cpu_avg": 6.72,
   "client_bound": false,
-  "start_utc": "2026-11-27T15:22:31.944983+00:00",
-  "end_utc": "2026-11-27T15:23:31.992075+00:00"
+  "start_utc": "2026-11-28T03:56:15.708925+00:00",
+  "end_utc": "2026-11-28T03:57:15.748539+00:00"
 }

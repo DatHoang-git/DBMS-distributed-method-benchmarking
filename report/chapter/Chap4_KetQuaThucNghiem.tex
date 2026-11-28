@@ -1,93 +1,233 @@
 \chapter{Kết quả Thực nghiệm và Phân tích Kỹ thuật}
 \label{chap:results}
 
-Chương này trình bày kết quả thực nghiệm thu thập trên cụm \textbf{MongoDB 7.0} triển khai tại Microsoft Azure theo đúng ba thực nghiệm \texttt{TN1}\textendash \texttt{TN3} của Chương~\ref{chap:methodology}. Mỗi câu hỏi nghiên cứu được gói gọn trong \textbf{đúng một bảng kết quả chính} chỉ chứa các chỉ số lõi, đi kèm biểu đồ trực quan và phân tích kỹ thuật dựa trên dữ liệu tài nguyên hệ thống (\texttt{sar}, \texttt{serverStatus}, \texttt{explain}). Toàn bộ dữ liệu CSV/JSON thô được lưu trữ công khai tại kho GitHub \cite{ProjectRepo}.
-
-\resultplaceholder{Trạng thái chương}{Đây là bộ khung trung lập gồm đúng ba bảng kết quả cho Chương 4 (không điền trước kết quả kỳ vọng). Sau khi hoàn tất chạy $3$ pha trên Azure ($\sim 2$\textendash $2.5$ giờ) và xác nhận CPU máy khách $< 75\%$, thay các ký hiệu \texttt{--} bằng số liệu trung bình qua $3$ lần lặp và chèn biểu đồ tương ứng.}
+Chương này trình bày kết quả thực nghiệm thu thập trên cụm \textbf{MongoDB 7.0} triển khai tuần tự trên cùng một máy chủ vật lý theo đúng ba thực nghiệm \texttt{TN1}\textendash \texttt{TN3} của Chương~\ref{chap:methodology}. Toàn bộ $114$ lượt chạy chính thức ($72$ lượt \texttt{RQ1}, $9$ lượt \texttt{RQ2}, $33$ lượt \texttt{RQ3}) đều vượt qua bước tiền kiểm dừng Balancer trước khi đo, đạt $100\%$ truy vấn thành công, không có container nào bị tràn bộ nhớ và có mức sử dụng CPU máy sinh tải cực đại đạt $37.9\% < 75\%$, bảo đảm không phát sinh nghẽn phía máy khách. Mọi số liệu trong các bảng đều là trung bình cộng qua đủ $3$ lần lặp độc lập, tách biệt hoàn toàn pha làm nóng $20\text{s}$ khỏi cửa sổ đo $30\text{s}$.
 
 \section{Kết quả RQ1: Mở rộng Đọc theo Quy mô và Số luồng (\texttt{TN1})}
 
-Bảng~\ref{tab:rq1-results} đối chiếu trực tiếp độ trễ \texttt{p95} và thông lượng \texttt{QPS} của truy vấn \texttt{Q1} giữa máy đơn (\texttt{SA}) và cụm $2$ máy (\texttt{SH-hash}) qua bốn mốc quy mô $100\text{K} \rightarrow 3\text{M}$ và ba mức luồng $1 / 4 / 8$.
+Bảng~\ref{tab:rq1-results} đối chiếu hiệu năng đọc truy vấn \texttt{Q1} (đọc toàn bộ lịch sử khám của 1 bệnh nhân) giữa nút đơn (\texttt{SA}) và cụm 2 shard chia băm (\texttt{SH-hash}), được \textbf{nhóm theo từng mức tải đồng thời (\texttt{1 / 4 / 8} luồng)} qua bốn mốc quy mô \texttt{100K} $\rightarrow$ \texttt{3M}. Bảng trình bày bốn cặp chỉ số chính:
+\begin{itemize}[leftmargin=0.8cm, itemsep=2pt]
+  \item \textbf{\texttt{p95} (ms):} Ngưỡng độ trễ đuôi mà $95\%$ truy vấn hoàn tất nhanh hơn (càng thấp càng tốt).
+  \item \textbf{\texttt{QPS}:} Thông lượng trung bình tính theo số truy vấn hoàn tất mỗi giây (càng cao càng tốt).
+  \item \textbf{Hit cache (\%):} Tỷ lệ phần trăm trang dữ liệu/chỉ mục tìm thấy sẵn trong WiredTiger Internal Cache mà không cần đọc từ đĩa.
+  \item \textbf{Trang đĩa/req:} Số trang dữ liệu trung bình phải nạp từ ổ đĩa vào bộ nhớ đệm cho mỗi truy vấn \texttt{Q1}.
+\end{itemize}
 
 \begin{table}[!htb]
 \centering
-\caption{So sánh hiệu năng đọc \texttt{Q1} giữa \texttt{SA} và \texttt{SH-hash} qua bốn mốc quy mô và ba mức luồng (\texttt{TN1}).}
+\caption{So sánh hiệu năng đọc \texttt{Q1} và hành vi bộ nhớ đệm giữa \texttt{SA} và \texttt{SH-hash}, nhóm theo số luồng đồng thời (\texttt{TN1}, trung bình 3 lần lặp).}
 \label{tab:rq1-results}
-\renewcommand{\arraystretch}{1.18}
-\begin{tabularx}{\linewidth}{l c C{2.4cm} C{2.6cm} C{2.3cm} C{2.5cm}}
+\renewcommand{\arraystretch}{1.15}
+\setlength{\tabcolsep}{3.5pt}
+\footnotesize
+\begin{tabularx}{\linewidth}{C{1.05cm} l R{1.45cm} R{1.55cm} R{1.5cm} R{1.55cm} C{2.65cm} >{\centering\arraybackslash}X}
 \toprule
-\textbf{Quy mô} & \textbf{Số luồng} & \textbf{\texttt{SA} \texttt{p95} (ms)} & \textbf{\texttt{SH-hash} \texttt{p95} (ms)} & \textbf{\texttt{SA} \texttt{QPS}} & \textbf{\texttt{SH-hash} \texttt{QPS}} \\
+\textbf{Số luồng} & \textbf{Quy mô} & \textbf{\texttt{p95} \texttt{SA} (ms)} & \textbf{\texttt{p95} \texttt{SH} (ms)} & \textbf{\texttt{QPS} \texttt{SA}} & \textbf{\texttt{QPS} \texttt{SH}} & \textbf{Hit cache \texttt{SA / SH} (\%)} & \textbf{Trang đĩa/req \texttt{SA / SH}} \\
 \midrule
-\multirow{3}{*}{\texttt{100K}} & 1 & \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
-                               & 4 & \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
-                               & 8 & \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
+\multirow{4}{*}{\textbf{1}} & \texttt{100K} & 0.92 & 1.70 & 2,376.4 & 1,198.1 & 100.00 / 100.00 & 0.00 / 0.00 \\
+                            & \texttt{500K} & 3.66 & 1.55 & 604.4 & 1,310.0 & 80.66 / 100.00 & 19.21 / 0.00 \\
+                            & \texttt{1M}   & 10.47 & 3.74 & 212.6 & 537.3 & 64.95 / 79.12 & 34.96 / 20.00 \\
+                            & \texttt{3M}   & 22.70 & 18.00 & 97.2 & 120.3 & 54.88 / 59.99 & 46.18 / 39.59 \\
 \midrule
-\multirow{3}{*}{\texttt{500K}} & 1 & \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
-                               & 4 & \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
-                               & 8 & \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
+\multirow{4}{*}{\textbf{4}} & \texttt{100K} & 2.44 & 2.88 & 3,215.9 & 2,555.6 & 100.00 / 100.00 & 0.00 / 0.00 \\
+                            & \texttt{500K} & 8.48 & 2.73 & 1,238.9 & 2,695.8 & 80.85 / 100.00 & 18.92 / 0.00 \\
+                            & \texttt{1M}   & 13.13 & 5.26 & 711.0 & 1,574.4 & 64.80 / 79.47 & 35.10 / 19.69 \\
+                            & \texttt{3M}   & 29.90 & 24.38 & 290.3 & 358.0 & 54.56 / 59.65 & 46.55 / 40.13 \\
 \midrule
-\multirow{3}{*}{\texttt{1M}}   & 1 & \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
-                               & 4 & \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
-                               & 8 & \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
-\midrule
-\multirow{3}{*}{\texttt{3M}}   & 1 & \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
-                               & 4 & \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
-                               & 8 & \textendash{} & \textendash{} & \textendash{} & \textendash{} \\
+\multirow{4}{*}{\textbf{8}} & \texttt{100K} & 6.52 & 6.38 & 2,525.6 & 2,468.6 & 100.00 / 100.00 & 0.00 / 0.00 \\
+                            & \texttt{500K} & 51.93 & 6.00 & 1,133.2 & 2,614.3 & 79.79 / 100.00 & 19.93 / 0.00 \\
+                            & \texttt{1M}   & 47.09 & 8.15 & 664.0 & 2,214.7 & 64.74 / 79.73 & 35.25 / 19.39 \\
+                            & \texttt{3M}   & 48.29 & 37.79 & 362.3 & 468.0 & 54.45 / 59.74 & 47.22 / 40.41 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\resultplaceholder{Biểu đồ Hình 4.1 \& Hình 4.2 (RQ1)}{
-  \begin{enumerate}
-    \item \textbf{Hình 4.1:} Đồ thị đường \texttt{p95} (ms) theo quy mô $100\text{K} \rightarrow 3\text{M}$ so sánh \texttt{SA} với \texttt{SH-hash}, chỉ rõ mốc giao cắt (\textit{break-even point}) kèm trích dẫn số trang đọc đĩa (\texttt{pages\_read\_into\_cache}) và đọc SSD từ \texttt{sar} để giải thích nguyên nhân.
-    \item \textbf{Hình 4.2:} Biểu đồ cột so sánh thông lượng \texttt{QPS} ở $1 / 4 / 8$ luồng tại mốc \texttt{3M} giữa \texttt{SA} và \texttt{SH-hash}.
-  \end{enumerate}
-}
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=\linewidth]{fig4_1_rq1_latency.pdf}
+\caption{Đồ thị độ trễ \texttt{p95} (ms) của truy vấn \texttt{Q1} theo quy mô \texttt{100K} $\rightarrow$ \texttt{3M} so sánh \texttt{SA} (1 nút) với \texttt{SH-hash} (2 shard) ở 1, 4 và 8 luồng đồng thời.}
+\label{fig:rq1-latency}
+\end{figure}
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=\linewidth]{fig4_2_rq1_qps_d3m.pdf}
+\caption{(a) Diễn biến thông lượng đọc \texttt{Q1} (\texttt{QPS} kèm $\pm$ std) ở 8 luồng qua bốn mốc \texttt{100K} $\rightarrow$ \texttt{3M} cho thấy đỉnh tăng tốc $3.34\times$ tại \texttt{D1M} rồi co hẹp còn $1.29\times$ tại \texttt{D3M}; (b) So sánh thông lượng đọc \texttt{Q1} theo 1, 4 và 8 luồng tại mốc lớn nhất \texttt{D3M}.}
+\label{fig:rq1-qps}
+\end{figure}
+
+\subsection*{Phân tích kỹ thuật RQ1}
+
+\begin{enumerate}[leftmargin=0.8cm, itemsep=4pt]
+  \item \textbf{Vùng dưới ngưỡng hòa vốn (\texttt{D100K}) - Chi phí định tuyến \texttt{mongos}:} Như thể hiện ở Bảng~\ref{tab:rq1-results}, tại \texttt{100K} ($130.3\text{ MB}$ BSON), cả \texttt{SA} và \texttt{SH-hash} đều giữ trọn vẹn dữ liệu trong WiredTiger Internal Cache ($\text{Hit cache} = 100.00\%$, $0.00$ trang đĩa/truy vấn). Khi dữ liệu nằm hoàn toàn trong RAM, \texttt{SA} đạt $\texttt{p95} = 0.92\text{ ms}$ ($2{,}376.4\text{ QPS}$) ở 1 luồng và $2.44\text{ ms}$ ($3{,}215.9\text{ QPS}$) ở 4 luồng, vượt trội rõ so với \texttt{SH-hash} ($1.70\text{ ms} / 1{,}198.1\text{ QPS}$ ở 1 luồng; $2.88\text{ ms} / 2{,}555.6\text{ QPS}$ ở 4 luồng) vì \texttt{SH-hash} phải cộng thêm bước băm khóa, định tuyến qua \texttt{mongos} và chuyển tiếp qua mạng nội bộ của cụm. Tới 8 luồng tại \texttt{100K}, hai cấu hình gần như cân bằng ($6.52$ vs $6.38\text{ ms}$; $2{,}525.6$ vs $2{,}468.6\text{ QPS}$) khi \texttt{SA} bắt đầu chạm giới hạn $2\text{ vCPU}$ cục bộ.
+
+  \item \textbf{Mốc giao cắt và bứt phá (\texttt{D500K} $\rightarrow$ \texttt{D1M}) - Tràn bộ nhớ đệm WiredTiger:} Bước ngoặt xảy ra ngay tại \textbf{\texttt{D500K}} ($656.5\text{ MB}$ BSON cộng chỉ mục đã vượt ngưỡng $512\text{ MB}$ bộ nhớ đệm nội bộ của một nút):
+  \begin{itemize}[leftmargin=0.6cm, itemsep=3pt]
+    \item Trên \texttt{SA}, tỷ lệ trúng bộ nhớ đệm (Bảng~\ref{tab:rq1-results}) tụt từ $100\%$ xuống \textbf{$79.79\%$\textendash $80.85\%$}, phát sinh \textbf{$18.92$ đến $19.93$ trang phải đọc từ đĩa trên mỗi truy vấn}. Độ trễ \texttt{p95} của \texttt{SA} tăng vọt từ $2.44 \rightarrow 8.48\text{ ms}$ (4 luồng) và từ $6.52 \rightarrow 51.93\text{ ms}$ (8 luồng).
+    \item Trái lại, \texttt{SH-hash} chia đôi tập dữ liệu ($\sim 328\text{ MB}$ BSON mỗi shard), nên mỗi shard vẫn giữ gọn tập dữ liệu làm việc trong $512\text{ MB}$ bộ nhớ đệm riêng ($\text{Hit cache} = 100.00\%$, $0.00$ trang đĩa/truy vấn). Nhờ vậy \texttt{SH-hash} duy trì \texttt{p95} cực thấp ($1.55\text{ ms}$ ở 1 luồng; $2.73\text{ ms}$ ở 4 luồng; $6.00\text{ ms}$ ở 8 luồng, thấp hơn \texttt{SA} \textbf{$8.66\times$}) và thông lượng đạt $2{,}614.3\text{ QPS}$ (gấp \textbf{$2.31\times$} \texttt{SA}).
+    \item Tại \textbf{\texttt{D1M}}, cả hai cấu hình đều bắt đầu tràn bộ nhớ đệm nội bộ nhưng \texttt{SH-hash} giữ tỷ lệ trúng quanh \textbf{$79.12\%$\textendash $79.73\%$} ($19.39$\textendash $20.00$ trang/truy vấn), còn \texttt{SA} tụt xuống \textbf{$64.74\%$\textendash $64.95\%$} ($34.96$\textendash $35.25$ trang/truy vấn). Ở 8 luồng, \texttt{SH-hash} đạt $2{,}214.7\text{ QPS}$ ($\texttt{p95} = 8.15\text{ ms}$) so với \texttt{SA} chỉ còn $664.0\text{ QPS}$ ($\texttt{p95} = 47.09\text{ ms}$, nhanh hơn \textbf{$5.78\times$} về độ trễ và \textbf{$3.34\times$} về thông lượng - đỉnh tăng tốc cao nhất trên Hình~\ref{fig:rq1-qps}a).
+    \item \textbf{Giải thích việc \texttt{p95} 8 luồng của \texttt{SA} đạt đỉnh sớm tại \texttt{D500K} rồi đi ngang ở \texttt{D1M}\textendash \texttt{D3M}:} Trên Hình~\ref{fig:rq1-latency}(c), dù dữ liệu tăng gấp đôi từ \texttt{D500K} lên \texttt{D1M} và gấp sáu lần lên \texttt{D3M}, \texttt{p95} của \texttt{SA} ở 8 luồng lại đạt đỉnh ngay tại \texttt{D500K} ($51.93\text{ ms}$) rồi hơi hạ xuống $47.09\text{ ms}$ (\texttt{D1M}) và $48.29\text{ ms}$ (\texttt{D3M}), trong khi hiệu năng tổng thể vẫn giảm đều (thông lượng \texttt{QPS} tụt liên tục $1{,}133.2 \rightarrow 664.0 \rightarrow 362.3\text{ QPS}$ và trung vị \texttt{p50} tăng đều $2.93 \rightarrow 6.06 \rightarrow 14.50\text{ ms}$). Nguyên nhân nằm ở đặc tính tải vòng kín 8 luồng: tại \texttt{D500K}, \texttt{SA} vẫn đang xử lý ở tốc độ cao ($1{,}133\text{ QPS}$) ngay vùng vừa chạm ngưỡng đẩy trang (\textit{eviction}), khiến 8 luồng đồng thời tranh chấp mạnh trên 2 vCPU và làm một bộ phận truy vấn bị nghẽn đột ngột phải chờ lâu hơn hẳn mức thông thường (đẩy phân vị \texttt{p95} vọt lên $51.93\text{ ms}$ dù trung vị \texttt{p50} mới là $2.93\text{ ms}$). Khi dữ liệu lên \texttt{D1M} và \texttt{D3M}, việc phải đọc $35$\textendash $47$ trang đĩa trên mỗi truy vấn tự động làm chậm tốc độ vòng lặp gửi yêu cầu của 8 luồng, giảm áp lực tranh chấp đẩy trang tức thời nên \texttt{p95} chững lại quanh $47$\textendash $48\text{ ms}$.
+  \end{itemize}
+
+  \item \textbf{Vùng tràn bộ nhớ đệm sâu (\texttt{D3M}) và ngưỡng bão hòa ổ đĩa dùng chung:} Khi dữ liệu lên chính xác $3{,}000{,}000$ lượt khám ($3.93\text{ GB}$ BSON cộng chỉ mục), số liệu ở Bảng~\ref{tab:rq1-results} cho thấy cả hai cấu hình đều phải đọc đĩa nặng (\texttt{SA} chỉ còn $\text{Hit cache} = 54.45\%$\textendash $54.88\%$ với $46.18$\textendash $47.22$ trang đĩa/truy vấn; \texttt{SH-hash} là $59.65\%$\textendash $59.99\%$ với $39.59$\textendash $40.41$ trang đĩa/truy vấn). \texttt{SH-hash} tiếp tục vượt \texttt{SA} ở cả 3 mức luồng (Hình~\ref{fig:rq1-qps}b): nhanh hơn $1.24\times$ thông lượng ở 1 luồng ($120.3$ vs $97.2\text{ QPS}$), $1.23\times$ ở 4 luồng ($358.0$ vs $290.3\text{ QPS}$) và \textbf{$1.29\times$} ở 8 luồng ($468.0$ vs $362.3\text{ QPS}$; $\texttt{p95} = 37.79$ vs $48.29\text{ ms}$). Biên độ tăng tốc thu hẹp lại so với mốc \texttt{D1M} vì hai container shard trên cùng máy chủ chia sẻ chung băng thông ngẫu nhiên của một ổ NVMe vật lý.
+\end{enumerate}
+\FloatBarrier
 
 \section{Kết quả RQ2: Độ đều Dữ liệu và Tốc độ Ghi mới (\texttt{TN2})}
 
-Bảng~\ref{tab:rq2-results} tổng hợp tỷ lệ phân bố dung lượng dữ liệu sau khi Balancer ổn định (từ \texttt{getShardDistribution()}), tỷ lệ lượt ghi trực tuyến rơi vào từng shard (từ \texttt{opcounters.insert}), tốc độ ghi (\texttt{inserts/s}) và độ trễ ghi \texttt{p95} của ba cấu hình tại mốc \texttt{1M}.
+Bảng~\ref{tab:rq2-results} đánh giá khả năng cân bằng dữ liệu và tốc độ ghi trực tuyến tại mốc chuẩn \texttt{D1M} ($1{,}000{,}000$ lượt khám, 4 luồng ghi đồng thời theo thời gian hiện tại trong 60 giây, lặp 3 lần độc lập và xóa sạch bản ghi thử giữa mỗi lần lặp). Bảng tổng hợp bốn chỉ số chính:
+\begin{itemize}[leftmargin=0.8cm, itemsep=2pt]
+  \item \textbf{Dữ liệu trên Shard 1 / Shard 2 (\% và số bản ghi):} Tỷ trọng dung lượng dữ liệu BSON (kèm số lượng bản ghi thực tế từ tổng $1{,}000{,}000$ lượt khám) lưu trên từng shard sau khi Balancer dừng ổn định.
+  \item \textbf{Lượng ghi mới trên Shard 1 / Shard 2 (\%):} Tỷ lệ thao tác chèn mới thực tế rơi vào từng shard trong 60 giây đo.
+  \item \textbf{Tốc độ ghi (\texttt{inserts/s}, mean $\pm$ std):} Số lượt chèn thành công trung bình mỗi giây kèm độ lệch chuẩn qua 3 lần lặp.
+  \item \textbf{Độ trễ ghi \texttt{p95} (ms, mean $\pm$ std):} Phân vị $95\%$ thời gian hoàn tất một thao tác ghi kèm độ lệch chuẩn qua 3 lần lặp.
+\end{itemize}
 
 \begin{table}[!htb]
 \centering
-\caption{Phân bố dữ liệu và hiệu năng ghi trực tuyến (\texttt{START = now()}, $4$ luồng, $60\text{s}$) tại mốc \texttt{1M} (\texttt{TN2}).}
+\caption{Phân bố dữ liệu và hiệu năng ghi trực tuyến (4 luồng, 60s, trên cùng một ổ NVMe SSD) tại mốc \texttt{D1M} (\texttt{TN2}).}
 \label{tab:rq2-results}
-\renewcommand{\arraystretch}{1.24}
-\resizebox{\linewidth}{!}{%
-\begin{tabular}{l c c r r}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{4pt}
+\footnotesize
+\begin{tabularx}{\linewidth}{L{3.1cm} C{3.45cm} C{2.15cm} R{2.6cm} >{\raggedleft\arraybackslash}X}
 \toprule
-\textbf{Cấu hình} & \textbf{Dữ liệu: Máy 1 / Máy 2 (\%)} & \textbf{Lượng ghi mới: Máy 1 / Máy 2 (\%)} & \textbf{Tốc độ ghi (\texttt{inserts/s})} & \textbf{Độ trễ ghi \texttt{p95} (ms)} \\
+\textbf{Cấu hình} & \textbf{Dữ liệu: S1 / S2 (\% \& số bản ghi)} & \textbf{Ghi mới: S1 / S2 (\%)} & \textbf{Tốc độ ghi (\texttt{ins/s}, mean $\pm$ std)} & \textbf{\texttt{p95} (ms, mean $\pm$ std)} \\
 \midrule
-\texttt{SA} \textit{(1 máy)}                & $100\% / 0\%$ & $100\% / 0\%$ & \textendash{} & \textendash{} \\
-\texttt{SH-hash} \textit{(băm \texttt{PATIENT})}  & \textendash{}\% / \textendash{}\% & \textendash{}\% / \textendash{}\% & \textendash{} & \textendash{} \\
-\texttt{SH-range} \textit{(khoảng \texttt{START})} & \textendash{}\% / \textendash{}\% & \textendash{}\% / \textendash{}\% & \textendash{} & \textendash{} \\
+\texttt{SA} (\textit{1 nút}) & 100.0\% / 0.0\% \newline (\textit{1,000,000 / 0}) & 100.0 / 0.0 & 787.2 $\pm$ 218.3 & 16.09 $\pm$ 5.24 \\
+\midrule
+\texttt{SH-hash} (\textit{băm \texttt{PATIENT}}) & 49.77\% / 50.23\% \newline (\textit{500,182 / 499,818}) & 50.31 / 49.69 & 910.2 $\pm$ 80.5 & 12.71 $\pm$ 0.29 \\
+\midrule
+\texttt{SH-range} (\textit{khoảng \texttt{START}}) & 51.22\% / 48.78\% \newline (\textit{489,352 / 510,648}) & 100.00 / 0.00 & 1,032.2 $\pm$ 316.8 & 10.20 $\pm$ 5.36 \\
 \bottomrule
-\end{tabular}%
-}
+\end{tabularx}
 \end{table}
 
-\resultplaceholder{Biểu đồ Hình 4.3 (RQ2)}{Chèn biểu đồ so sánh trực quan tỷ lệ phân bổ lượt ghi giữa Máy 1 và Máy 2 cùng tốc độ ghi \texttt{inserts/s} của \texttt{SA}, \texttt{SH-hash} và \texttt{SH-range}. Phân tích hiện tượng điểm nóng ghi (\textit{Write Hotspot}) của \texttt{SH-range}, vai trò của hai ổ SSD độc lập đối với tăng tốc ghi của \texttt{SH-hash} và ngưỡng dừng $96\text{ MB}$ của Balancer MongoDB 7.0.}
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=\linewidth]{fig4_3_rq2_write_dist.pdf}
+\caption{(a) Tỷ trọng dữ liệu lưu trữ và lượng ghi mới rơi vào Shard 1 vs Shard 2 tại mốc \texttt{D1M}; (b) So sánh tốc độ ghi (\texttt{inserts/s}, kèm thanh sai số $\pm$ std) và độ trễ \texttt{p95} của \texttt{SA}, \texttt{SH-hash} và \texttt{SH-range} trên cùng một ổ NVMe SSD.}
+\label{fig:rq2-write}
+\end{figure}
+
+\subsection*{Phân tích kỹ thuật RQ2}
+
+\begin{enumerate}[leftmargin=0.8cm, itemsep=4pt]
+  \item \textbf{Độ đều dữ liệu, ngưỡng dừng $96\text{ MB}$ của Balancer và chi phí vận hành sau di dời chunk:}
+  \begin{itemize}[leftmargin=0.6cm, itemsep=3pt]
+    \item Với \texttt{SH-hash} (đã chia sẵn dải băm ban đầu), hàm băm 64-bit rải đều bản ghi ngay trong lúc nạp: trong tổng số $1{,}000{,}000$ lượt khám của $18{,}443$ bệnh nhân tại mốc \texttt{D1M}, Shard 1 nhận $500{,}182$ bản ghi ($651.80\text{ MB}$, $49.77\%$) và Shard 2 nhận $499{,}818$ bản ghi ($657.87\text{ MB}$, $50.23\%$) - độ chênh lệch chỉ là $364$ bản ghi ($0.46\%$ dung lượng, tức $6.07\text{ MB}$), hoàn toàn là dao động ngẫu nhiên tự nhiên của phép băm theo mã bệnh nhân có số lượt khám khác nhau.
+    \item Trái lại, với \texttt{SH-range}, vì toàn bộ dữ liệu nạp tăng dần theo thời gian \texttt{START} nên ban đầu cả $1{,}000{,}000$ lượt khám đều đi vào Shard 1; sau đó tiến trình Balancer mới sao chép $510{,}648$ bản ghi thuộc các khoảng thời gian cũ hơn sang Shard 2 ($638.87\text{ MB}$, $48.78\%$) và giữ lại $489{,}352$ bản ghi mới hơn trên Shard 1 ($670.79\text{ MB}$, $51.22\%$). Độ chênh dung lượng cuối cùng giữa hai shard là \textbf{$31.92\text{ MB}$}, nằm dưới ngưỡng kích hoạt di chuyển $3 \times 32\text{ MB} = \mathbf{96\text{ MB}}$ của MongoDB 7.0 nên Balancer tự dừng.
+    \item Đáng chú ý, cách cân bằng ``nạp dồn rồi di dời'' của \texttt{SH-range} kéo theo một \textbf{chi phí vận hành thực tế mà \texttt{SH-hash} không gặp phải}: sau khi Balancer sao chép $510{,}648$ bản ghi cũ sang Shard 2, MongoDB phải xóa toàn bộ $510{,}648$ bản sao cũ đó trên Shard 1 (\textit{orphan cleanup}). Do bộ máy WiredTiger giữ lại không gian trống sau xóa bên trong tệp dữ liệu mà chưa trả ngay cho hệ điều hành, dung lượng tệp nén trên đĩa của Shard 1 bị phình tới $603.99\text{ MB}$ dữ liệu $+ 362.97\text{ MB}$ chỉ mục (gấp gần $2.9\times$ Shard 2 vốn chỉ tốn $217.76\text{ MB} + 149.29\text{ MB}$). Cụm \texttt{SH-range} buộc phải chạy thêm thao tác thu gọn tệp (\texttt{compact}) để giải phóng $584.4\text{ MB}$ trên Shard 1 (tổng $630.2\text{ MB}$ cả cụm theo thống kê tệp), đưa Shard 1 về $264.62\text{ MB}$ dữ liệu $+ 117.98\text{ MB}$ chỉ mục trước khi bước vào đo đọc và ghi.
+  \end{itemize}
+
+  \item \textbf{Điểm nóng ghi tuyệt đối (\textit{Write Hotspot}) trên \texttt{SH-range}:} Như phân tích ở trên, sau khi Balancer chia khoảng xong, \textbf{Shard 2 giữ các khoảng thời gian cũ hơn}, còn \textbf{Shard 1 giữ khoảng thời gian mới nhất chứa biên trên vô cực (\texttt{MaxKey})}. Khi ứng dụng chạy tải ghi trực tuyến với mốc thời gian hiện tại tăng đơn điệu (mọi bản ghi mới đều lớn hơn toàn bộ dữ liệu lịch sử), \textbf{$100.00\%$ thao tác chèn mới trên \texttt{SH-range} đều dồn vào Shard 1} và $0.00\%$ vào Shard 2, tạo ra điểm nóng ghi tuyệt đối. Ngược lại, \texttt{SH-hash} phân tán gần như cân bằng tuyệt đối \textbf{$50.31\% / 49.69\%$} sang cả hai shard (Hình~\ref{fig:rq2-write}a).
+
+  \item \textbf{Phân tích độ biến thiên về tốc độ ghi khi các container dùng chung một ổ NVMe SSD:}
+  \begin{itemize}[leftmargin=0.6cm, itemsep=3pt]
+    \item \textit{Nhận xét về tốc độ ghi trung bình:} Xét riêng giá trị trung bình ở Bảng~\ref{tab:rq2-results}, \texttt{SH-range} ($1{,}032.2\text{ ins/s}$) và \texttt{SH-hash} ($910.2\text{ ins/s}$) đều nhỉnh hơn \texttt{SA} ($787.2\text{ ins/s}$), nhưng do độ lệch chuẩn của \texttt{SA} ($\pm 218.3\text{ ins/s}$) và \texttt{SH-range} ($\pm 316.8\text{ ins/s}$) rất lớn, khoảng biến động của cả ba cấu hình chồng lấp nhau mạnh (Hình~\ref{fig:rq2-write}b). Do đó, không có cơ sở thống kê để kết luận cấu hình nào đạt thông lượng ghi trung bình cao hơn tuyệt đối trong điều kiện dùng chung một ổ đĩa.
+    \item \textit{Nguyên nhân gây độ lệch chuẩn lớn khi dùng chung một ổ NVMe SSD:} Mỗi lượt chạy ghi kéo dài đúng $60\text{s}$, trùng khớp với chu kỳ ghi đĩa định kỳ (\textit{checkpoint} 60 giây) của WiredTiger kết hợp thao tác đồng bộ nhật ký bền vững (\texttt{fsync}) xuống cùng một ổ NVMe vật lý. Ở cả \texttt{SA} và \texttt{SH-range}, $100\%$ lưu lượng ghi dồn vào \textbf{một tiến trình WiredTiger duy nhất}: khi chu kỳ xả checkpoint và bộ đệm ghi nhanh (SLC cache) của NVMe đang thuận lợi (như lần lặp 3 của \texttt{SH-range}), tốc độ vọt lên $1{,}389.3\text{ ins/s}$ ($\texttt{p95} = 4.06\text{ ms}$); ngược lại khi đợt xả checkpoint và đồng bộ nhật ký chồng lên nhau trên cùng một nút, hàng đợi ghi đĩa bị nghẽn cục bộ khiến tốc độ tụt xuống $600$\textendash $785\text{ ins/s}$ ($\texttt{p95} = 13.9$\textendash $22.0\text{ ms}$).
+    \item \textit{Kết luận chắc chắn rút ra được từ \texttt{TN2}:} Dù giới hạn một ổ SSD vật lý chưa cho phép đo trọn lợi thế nhân đôi băng thông ghi tối đa của \texttt{SH-hash}, thực nghiệm vẫn chứng minh chắc chắn \textbf{hai lợi thế thực chất của \texttt{SH-hash}}: (a) triệt tiêu hoàn toàn điểm nóng ghi ($50.31\%/49.69\%$ thay vì $100\%/0\%$), và (b) \textbf{giảm mạnh độ biến thiên hiệu năng ghi} - độ lệch chuẩn tốc độ ghi thu hẹp gần $4\times$ ($\pm 80.5$ vs $\pm 316.8\text{ ins/s}$ của \texttt{SH-range}) và độ lệch chuẩn độ trễ đuôi \texttt{p95} ổn định hơn tới \textbf{$18\times$} ($12.71 \pm 0.29\text{ ms}$ so với $10.20 \pm 5.36\text{ ms}$ của \texttt{SH-range} và $16.09 \pm 5.24\text{ ms}$ của \texttt{SA}) nhờ chia đôi áp lực ghi và hàng đợi trang bẩn sang hai bộ nhớ đệm độc lập.
+  \end{itemize}
+\end{enumerate}
+\FloatBarrier
 
 \section{Kết quả RQ3: Tỉa mảnh và Chi phí Truy vấn Xuyên mảnh (\texttt{TN3})}
 
-Bảng~\ref{tab:rq3-results} đối chiếu trực tiếp số máy bị hỏi (đọc từ \texttt{explain("executionStats")}), độ trễ \texttt{p95} và lưu lượng mạng thực qua \texttt{mongos} (đã trừ nền $15\text{s}$ nhàn rỗi) của ba truy vấn \texttt{Q1}, \texttt{Q3}, \texttt{Q4} giữa \texttt{SH-hash} và \texttt{SH-range} tại mốc chuẩn \texttt{1M}.
+Phần này trả lời câu hỏi \texttt{RQ3} theo hai mục tiêu tách bạch: (1) \textbf{đối chiếu trực tiếp \texttt{SH-hash} và \texttt{SH-range} tại mốc chuẩn \texttt{D1M}} trên cả ba truy vấn \texttt{Q1}, \texttt{Q2}, \texttt{Q3} (Bảng~\ref{tab:rq3-results} và Hình~\ref{fig:rq3-slope}a); và (2) \textbf{khảo sát độ dốc hiệu năng và lưu lượng mạng khi quy mô tăng $30\times$ (\texttt{100K} $\rightarrow$ \texttt{3M}) trên \texttt{SH-hash}} (Bảng~\ref{tab:rq3-slope} và Hình~\ref{fig:rq3-slope}b). Toàn bộ lượt đo chạy ở 1 luồng đồng thời, trung bình 3 lần lặp đã trừ pha làm nóng và trừ lưu lượng nền 15 giây nhàn rỗi trên tất cả các nút.
+
+Trước khi đọc số liệu ở Bảng~\ref{tab:rq3-results}, ý nghĩa của các chỉ số đo đạc được định nghĩa như sau:
+\begin{itemize}[leftmargin=0.8cm, itemsep=2pt]
+  \item \textbf{Shard hỏi:} Số shard thực sự tham gia thực thi truy vấn theo kế hoạch thực thi (\texttt{explain}): \texttt{1 / 2} là truy vấn được tỉa mảnh (định tuyến mục tiêu), còn \texttt{2 / 2} là truy vấn phải phát tán xuyên mảnh. Để dễ so sánh, mỗi cặp truy vấn trong Bảng~\ref{tab:rq3-results} đều xếp cấu hình tỉa mảnh (\texttt{1 / 2}) ở dòng trên và cấu hình xuyên mảnh (\texttt{2 / 2}) ở dòng dưới.
+  \item \textbf{\texttt{p95} (ms) \& \texttt{QPS}:} Độ trễ đuôi phân vị $95\%$ và thông lượng truy vấn mỗi giây đo phía máy khách.
+  \item \textbf{Mạng máy khách (KB/req):} Lưu lượng mạng trung bình trao đổi giữa ứng dụng sinh tải và bộ định tuyến \texttt{mongos} cho mỗi truy vấn (phản ánh kích thước yêu cầu và kết quả cuối cùng trả về ứng dụng).
+  \item \textbf{Mạng nội bộ shard (KB/req):} Tổng lưu lượng mạng trung bình mà cả hai shard trao đổi với \texttt{mongos} cho mỗi truy vấn (phản ánh lượng dữ liệu trung gian truyền trong nội bộ cụm trước khi \texttt{mongos} trộn kết quả).
+  \item \textbf{Hệ số khuếch đại mạng:} Tỷ số $\text{Mạng nội bộ shard} / \text{Mạng máy khách}$. Giá trị càng gần $1.0\times$ chứng tỏ dữ liệu chuyển trong nội bộ cụm gần bằng đúng kết quả trả về máy khách; giá trị càng lớn cho thấy chi phí truyền dữ liệu trung gian ẩn bên trong cụm càng cao.
+\end{itemize}
 
 \begin{table}[!htb]
 \centering
-\caption{Đối chiếu số máy bị hỏi, độ trễ \texttt{p95} và lưu lượng mạng qua \texttt{mongos} tại mốc \texttt{1M} (\texttt{TN3}).}
+\caption{Đối chiếu khả năng tỉa mảnh, hiệu năng và chi phí mạng nội bộ giữa \texttt{SH-hash} và \texttt{SH-range} tại mốc \texttt{D1M} (\texttt{TN3}, 1 luồng, trung bình 3 lần lặp; xếp \texttt{1 / 2} trên, \texttt{2 / 2} dưới cho từng truy vấn).}
 \label{tab:rq3-results}
-\renewcommand{\arraystretch}{1.24}
-\resizebox{\linewidth}{!}{%
-\begin{tabular}{l c r r c r}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{4pt}
+\footnotesize
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}X l C{1.2cm} R{1.35cm} R{1.2cm} R{1.95cm} R{1.95cm} C{1.35cm}}
 \toprule
-\textbf{Truy vấn} & \textbf{\texttt{SH-hash}: Máy hỏi} & \textbf{\texttt{SH-hash}: \texttt{p95} (ms)} & \textbf{\texttt{SH-hash}: Mạng (KB/req)} & \textbf{\texttt{SH-range}: Máy hỏi} & \textbf{\texttt{SH-range}: \texttt{p95} (ms)} \\
+\textbf{Truy vấn} & \textbf{Cấu hình} & \textbf{Shard hỏi} & \textbf{\texttt{p95} (ms)} & \textbf{\texttt{QPS}} & \textbf{Mạng client (KB/req)} & \textbf{Mạng nội bộ (KB/req)} & \textbf{Khuếch đại} \\
 \midrule
-\texttt{Q1} \textit{(1 bệnh nhân \textemdash  từ \texttt{TN1})} & \textendash{} / 2 & \textendash{} & \textendash{} & \textemdash{} & \textemdash{} \\
-\texttt{Q3} \textit{(Xuyên BN, kết quả nhỏ)}                     & \textendash{} / 2 & \textendash{} & \textendash{} & \textendash{} / 2 & \textendash{} \\
-\texttt{Q4} \textit{(Xuyên BN, kết quả lớn)}                     & \textendash{} / 2 & \textendash{} & \textendash{} & \textendash{} / 2 & \textendash{} \\
+\texttt{Q1} (\textit{1 BN}) & \texttt{SH-hash} & 1 / 2 & 3.74 & 537.3 & 12.23 & 12.78 & 1.05$\times$ \\
+\texttt{Q1} (\textit{1 BN}) & \texttt{SH-range} & 2 / 2 & 4.97 & 412.4 & 12.20 & 15.33 & 1.26$\times$ \\
+\midrule
+\texttt{Q2} (\textit{Top-10/quý}) & \texttt{SH-range} & 1 / 2 & 31.53 & 36.2 & 0.99 & 1.71 & 1.74$\times$ \\
+\texttt{Q2} (\textit{Top-10/quý}) & \texttt{SH-hash} & 2 / 2 & 23.18 & 52.8 & 0.99 & 17.65 & 17.76$\times$ \\
+\midrule
+\texttt{Q3} (\textit{$\sim 834$ docs/th}) & \texttt{SH-range} & 1 / 2 & 5.66 & 238.3 & 144.21 & 145.16 & 1.01$\times$ \\
+\texttt{Q3} (\textit{$\sim 834$ docs/th}) & \texttt{SH-hash} & 2 / 2 & 4.74 & 298.0 & 144.21 & 146.96 & 1.02$\times$ \\
 \bottomrule
-\end{tabular}%
-}
+\end{tabularx}
 \end{table}
 
-\resultplaceholder{Biểu đồ Hình 4.4 (RQ3 \textemdash  Độ dốc 100K $\rightarrow$ 3M trên \texttt{SH-hash})}{Chèn đồ thị đường biểu diễn tốc độ tăng độ trễ \texttt{p95} của \texttt{Q1} (1 máy), \texttt{Q3} (2 máy, kết quả nhỏ) và \texttt{Q4} (2 máy, kết quả lớn) trên \texttt{SH-hash} qua bốn mốc $100\text{K} \rightarrow 500\text{K} \rightarrow 1\text{M} \rightarrow 3\text{M}$. Kết hợp phân tích \texttt{mergeType} của \texttt{Q3}, sự đánh đổi \textit{Shard Pruning} vs \textit{Parallel Scan} giữa \texttt{SH-hash} và \texttt{SH-range}, và khác biệt băng thông mạng giữa \texttt{Q3} với \texttt{Q4}.}
+\begin{table}[!htb]
+\centering
+\caption{Diễn biến hiệu năng, mạng nội bộ và đọc đĩa của \texttt{Q1}, \texttt{Q2}, \texttt{Q3} trên \texttt{SH-hash} qua bốn mốc quy mô \texttt{100K} $\rightarrow$ \texttt{3M} (1 luồng, trung bình 3 lần lặp).}
+\label{tab:rq3-slope}
+\renewcommand{\arraystretch}{1.15}
+\setlength{\tabcolsep}{4.5pt}
+\footnotesize
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}X l R{1.65cm} R{1.55cm} R{2.4cm} R{1.95cm} R{2.1cm}}
+\toprule
+\textbf{Truy vấn} & \textbf{Quy mô} & \textbf{\texttt{p95} (ms)} & \textbf{\texttt{QPS}} & \textbf{Mạng nội bộ (KB/req)} & \textbf{Hit cache (\%)} & \textbf{Trang đĩa/req} \\
+\midrule
+\multirow{4}{*}{\texttt{Q1} (\textit{1/2 shard})} & \texttt{100K} & 1.70 & 1,198.1 & 12.93 & 100.00 & 0.00 \\
+                                                  & \texttt{500K} & 1.55 & 1,310.0 & 12.89 & 100.00 & 0.00 \\
+                                                  & \texttt{1M}   & 3.74 & 537.3   & 12.78 & 79.12  & 20.00 \\
+                                                  & \texttt{3M}   & 18.00 & 120.3  & 12.71 & 59.99  & 39.59 \\
+\midrule
+\multirow{4}{*}{\texttt{Q2} (\textit{2/2 shard})} & \texttt{100K} & 4.92 & 301.9   & 14.01 & 100.00 & 0.00 \\
+                                                  & \texttt{500K} & 13.66 & 101.8  & 17.32 & 100.00 & 0.00 \\
+                                                  & \texttt{1M}   & 23.18 & 52.8   & 17.65 & 100.00 & 0.00 \\
+                                                  & \texttt{3M}   & 238.73 & 10.7  & 17.46 & 97.63  & 1,928.64 \\
+\midrule
+\multirow{4}{*}{\texttt{Q3} (\textit{2/2 shard})} & \texttt{100K} & 1.28 & 1,271.8 & 16.67 & 100.00 & 0.00 \\
+                                                  & \texttt{500K} & 3.26 & 466.6   & 75.04 & 100.00 & 0.00 \\
+                                                  & \texttt{1M}   & 4.74 & 298.0   & 146.96 & 100.00 & 0.00 \\
+                                                  & \texttt{3M}   & 23.58 & 83.5   & 435.82 & 94.59 & 207.90 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=\linewidth]{fig4_4_rq3_slope_network.pdf}
+\caption{(a) Đối chiếu trực tiếp lưu lượng mạng nội bộ (\texttt{shard <-> mongos}, thang logarit) giữa \texttt{SH-hash} và \texttt{SH-range} trên cả ba truy vấn \texttt{Q1}, \texttt{Q2}, \texttt{Q3} tại mốc chuẩn \texttt{D1M}; (b) Độ dốc độ trễ \texttt{p95} (thang logarit, ms) của \texttt{Q1}, \texttt{Q2} và \texttt{Q3} trên \texttt{SH-hash} qua bốn mốc \texttt{100K} $\rightarrow$ \texttt{3M} (1 luồng).}
+\label{fig:rq3-slope}
+\end{figure}
+
+\subsection*{Phân tích kỹ thuật RQ3}
+
+\begin{enumerate}[leftmargin=0.8cm, itemsep=4pt]
+  \item \textbf{Khả năng tỉa mảnh trái ngược giữa hai chiến lược và cái giá trên \texttt{Q1} của \texttt{SH-range}:} Hai chiến lược phân mảnh cho hiệu quả tỉa mảnh hoàn toàn ngược nhau theo loại truy vấn: chiến lược nào tỉa mảnh tốt cho truy vấn theo bệnh nhân (\texttt{Q1}) thì bắt buộc phải quét cả hai shard cho truy vấn theo khoảng thời gian (\texttt{Q2}, \texttt{Q3}), và ngược lại:
+  \begin{itemize}[leftmargin=0.6cm, itemsep=3pt]
+    \item \texttt{SH-hash} tỉa mảnh \textbf{100\%} cho truy vấn bệnh nhân \texttt{Q1} (\texttt{1/2} shard, không cần trộn), nhưng buộc phải phát tán \textbf{100\%} (\texttt{2/2} shard) cho mọi cửa sổ \texttt{Q2} ($12/12$ quý) và \texttt{Q3} ($36/36$ tháng).
+    \item Ngược lại, \texttt{SH-range} mất tỉa mảnh hoàn toàn cho \texttt{Q1} ($5/5$ mẫu kiểm tra đều phải phát tán và sắp xếp trộn trên \texttt{2/2} shard), làm \texttt{p95} tăng \textbf{$+32.9\%$} ($4.97$ vs $3.74\text{ ms}$), thông lượng giảm \textbf{$23.2\%$} ($412.4$ vs $537.3\text{ QPS}$) và lưu lượng mạng nội bộ tăng thêm $20.0\%$ ($15.33$ vs $12.78\text{ KB/req}$, hệ số khuếch đại $1.26\times$ so với $1.05\times$). Đổi lại, \texttt{SH-range} đạt tỷ lệ tỉa mảnh \textbf{100\%} trên cả $12/12$ quý của \texttt{Q2} và $36/36$ tháng của \texttt{Q3} (\texttt{1/2} shard) vì 3 năm dữ liệu gần nhất nằm trọn trên Shard 1.
+  \end{itemize}
+
+  \item \textbf{Đánh đổi cốt lõi của \texttt{Q2}: Tốc độ quét song song ($+45.9\%$ \texttt{QPS}) đối lấy khuếch đại mạng nội bộ ($10.3\times$):}
+  \begin{itemize}[leftmargin=0.6cm, itemsep=3pt]
+    \item Nhờ tách pipeline tổng hợp để chạy song song phần lọc, bung mảng và gom nhóm sơ bộ trên cả hai shard ($2\text{ vCPU}$ mỗi shard), ở tải 1 luồng \texttt{SH-hash} đạt độ trễ \texttt{p95} thấp hơn ($23.18$ vs $31.53\text{ ms}$) và thông lượng cao hơn \textbf{$45.9\%$} ($52.8$ vs $36.2\text{ QPS}$) so với \texttt{SH-range} vốn dồn toàn bộ việc quét $\sim 18{,}300$ bản ghi/quý lên một shard duy nhất. Cần lưu ý rằng lợi thế quét song song này chỉ phát huy trọn vẹn khi cụm còn dư CPU trên shard còn lại (tải 1 luồng); dưới tải đồng thời cao hoặc hỗn hợp \texttt{Q1} + \texttt{Q2}, cơ chế phát tán \texttt{2/2} shard của \texttt{SH-hash} sẽ tiêu thụ CPU trên cả hai shard cho mỗi truy vấn tổng hợp.
+    \item Quan trọng hơn, nếu chỉ nhìn lưu lượng phía máy khách ($0.99\text{ KB/req}$ ở cả hai cấu hình), ta sẽ bỏ sót hoàn toàn cái giá phân tán ẩn: trong pipeline của \texttt{Q2}, bước giới hạn Top 10 không thể đẩy xuống trước bước gom nhóm cuối cùng ở \texttt{mongos}, buộc mỗi shard của \texttt{SH-hash} phải truyền toàn bộ bảng gom nhóm mã bệnh trung gian về \texttt{mongos}. Kết quả là lưu lượng mạng nội bộ giữa shard và \texttt{mongos} của \texttt{SH-hash} vọt lên \textbf{$17.65\text{ KB/req}$} (hệ số khuếch đại \textbf{$17.76\times$}), \textbf{cao gấp $10.3\times$} so với \texttt{SH-range} ($1.71\text{ KB/req}$, hệ số $1.74\times$, Hình~\ref{fig:rq3-slope}a). Trong cụm sản xuất đa máy chủ với nhiều truy vấn OLAP chạy đồng thời, chính lưu lượng trung gian này sẽ tiêu hao băng thông mạng cụm và CPU trộn của \texttt{mongos}.
+  \end{itemize}
+
+  \item \textbf{Phân biệt bản chất chi phí mạng của \texttt{Q3} (kết quả lớn):}
+  \begin{itemize}[leftmargin=0.6cm, itemsep=3pt]
+    \item Ở \texttt{Q3} (liệt kê $\sim 834$ lượt khám/tháng tại \texttt{1M} mà không cần sắp xếp toàn cục), ở tải 1 luồng \texttt{SH-hash} (\texttt{2/2} shard) đạt thông lượng nhỉnh hơn \texttt{SH-range} ($298.0$ vs $238.3\text{ QPS}$, $\texttt{p95} = 4.74$ vs $5.66\text{ ms}$) do tận dụng được song song 2 shard và chỉ truyền thẳng luồng tài liệu không qua bước sắp xếp trộn.
+    \item Quan trọng hơn, Hình~\ref{fig:rq3-slope}(a) và Bảng~\ref{tab:rq3-results} cho thấy lưu lượng mạng nội bộ của \texttt{SH-hash} và \texttt{SH-range} trên \texttt{Q3} \textbf{gần như đồng nhất} ($146.96$ vs $145.16\text{ KB/req}$, hệ số khuếch đại chỉ $1.01\times$\textendash $1.02\times$). Điều này chứng minh rõ rằng sự bùng nổ băng thông của \texttt{Q3} qua các mốc quy mô trong Bảng~\ref{tab:rq3-slope} ($16.67\text{ KB/req}$ ở \texttt{100K} $\rightarrow$ $75.04\text{ KB/req}$ ở \texttt{500K} $\rightarrow$ $146.96\text{ KB/req}$ ở \texttt{1M} $\rightarrow$ \textbf{$435.82\text{ KB/req}$} ở \texttt{3M}) là \textbf{chi phí kích thước tập kết quả trả về ($O(\text{result size})$)}, hoàn toàn không phải chi phí khuếch đại do phát tán xuyên mảnh.
+  \end{itemize}
+
+  \item \textbf{Lý giải độ dốc \texttt{p95} của \texttt{Q1}, \texttt{Q2}, \texttt{Q3} từ \texttt{100K} đến \texttt{3M} trên \texttt{SH-hash}:}
+  \begin{itemize}[leftmargin=0.6cm, itemsep=3pt]
+    \item Từ Bảng~\ref{tab:rq3-slope} và Hình~\ref{fig:rq3-slope}(b), khi dữ liệu tăng $30\times$ (\texttt{100K} $\rightarrow$ \texttt{3M}), \texttt{Q2} có độ dốc dốc nhất ($4.92 \rightarrow 13.66 \rightarrow 23.18 \rightarrow 238.73\text{ ms}$, tăng \textbf{$48.5\times$}) vì số lượt khám trong mỗi quý tăng tuyến tính theo quy mô và tới mốc \texttt{D3M} phải đọc trung bình \textbf{$1{,}928.64$ trang đĩa trên mỗi truy vấn} (tỷ lệ trúng bộ nhớ đệm giảm còn $97.63\%$), dù lưu lượng mạng nội bộ đi ngang quanh $14.0$\textendash $17.6\text{ KB/req}$ do số lượng mã bệnh phân biệt trong bảng gom nhóm tăng chậm.
+    \item Tại mốc \texttt{D3M}, \texttt{Q3} có $\texttt{p95} = 23.58\text{ ms}$ ($83.5\text{ QPS}$) gần với \texttt{Q1} ($18.00\text{ ms}$, $120.3\text{ QPS}$) dù \texttt{Q3} đọc trung bình \textbf{$207.90$ trang đĩa/truy vấn} (nhiều gấp $5.3\times$ so với $39.59$ trang đĩa/truy vấn của \texttt{Q1}, Bảng~\ref{tab:rq3-slope}). Lý do \texttt{Q3} vẫn giữ được độ trễ tương đương nằm ở hai cơ chế: thứ nhất, chỉ mục phức hợp của \texttt{Q3} tập trung trong $36$ cửa sổ tháng gần nhất nên các trang đọc đĩa mang \textbf{tính cục bộ và tuần tự cao} (đồng thời tái sử dụng nóng giữa 36 cửa sổ); thứ hai, \texttt{Q3} chạy song song trên hai shard trong khi \texttt{Q1} truy cập ngẫu nhiên rải rác trên toàn bộ $55{,}448$ bệnh nhân qua nhiều thập kỷ ($\text{Hit cache} = 59.99\%$), gây đọc đĩa ngẫu nhiên tốn kém hơn trên mỗi trang. Tuy vậy, trên mạng Docker nội bộ tốc độ cao, việc truyền $435.8\text{ KB/req}$ của \texttt{Q3} mới chỉ tiêu tốn vài mili-giây; trong cụm liên máy chủ thực tế qua mạng TCP/Ethernet, băng thông mạng lớn của \texttt{Q3} sẽ khuếch đại độ trễ đáng kể hơn.
+  \end{itemize}
+\end{enumerate}
+\FloatBarrier

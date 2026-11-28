@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="500" viewBox="0 0 1000 500">
+  <defs>
+    <filter id="cardShadow" x="-6%" y="-6%" width="112%" height="114%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrBlue" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#00629B"/>
+    </marker>
+    <marker id="arrTeal" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#007377"/>
+    </marker>
+    <marker id="arrGreen" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#00843D"/>
+    </marker>
+    <marker id="arrOrange" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#D96B16"/>
+    </marker>
+    <marker id="arrGray" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#A7A8AA"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1000" height="500" fill="#FFFFFF"/>
+  <line x1="500" y1="22" x2="500" y2="482" stroke="#A7A8AA" stroke-width="1.2" stroke-dasharray="5,5"/>
+  <text x="250" y="32" font-family="DejaVu Sans, sans-serif" font-size="13.5" font-weight="bold" font-style="normal" fill="#005A29" text-anchor="middle">Chế độ 1: Định tuyến mục tiêu (Shard Pruning - 1/2 shard)</text>
+  <g filter="url(#cardShadow)"><rect x="42" y="52" width="416" height="60" rx="9" fill="#FFFFFF"/></g>
+  <rect x="42" y="52" width="416" height="60" rx="9" fill="none" stroke="#00843D" stroke-width="1.6"/>
+  <rect x="58.0" y="67.0" width="30" height="30" rx="7.2" fill="#EAF6EF" stroke="#00843D" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(64.36,73.36) scale(0.72)" fill="none" stroke="#00843D" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+  <polyline points="14 2 14 8 20 8"/>
+  <line x1="8" y1="13" x2="16" y2="13"/>
+  <line x1="8" y1="17" x2="13" y2="17"/>
+
+  </g>
+  <text x="98" y="77" font-family="DejaVu Sans, sans-serif" font-size="12.2" font-weight="bold" font-style="normal" fill="#005A29" text-anchor="start">Truy vấn chứa khóa phân mảnh</text>
+  <text x="98" y="96" font-family="DejaVu Sans, sans-serif" font-size="10.0" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">VD: Q1 theo bệnh nhân (băm), Q2/Q3 theo ngày (khoảng)</text>
+  <line x1="250" y1="112" x2="250" y2="142" stroke="#00843D" stroke-width="2" marker-end="url(#arrGreen)"/>
+  <g filter="url(#cardShadow)"><rect x="105" y="146" width="290" height="56" rx="9" fill="#EBF4FA"/></g>
+  <rect x="105" y="146" width="290" height="56" rx="9" fill="none" stroke="#00629B" stroke-width="1.6"/>
+  <rect x="120.0" y="159.0" width="30" height="30" rx="7.2" fill="#FFFFFF" stroke="#00629B" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(126.36,165.36) scale(0.72)" fill="none" stroke="#00629B" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <circle cx="12" cy="5" r="2.7"/>
+  <circle cx="5.5" cy="18" r="2.7"/>
+  <circle cx="18.5" cy="18" r="2.7"/>
+  <line x1="10.8" y1="7.4" x2="6.7" y2="15.6"/>
+  <line x1="13.2" y1="7.4" x2="17.3" y2="15.6"/>
+  <line x1="8.2" y1="18" x2="15.8" y2="18"/>
+
+  </g>
+  <text x="160" y="169" font-family="DejaVu Sans, sans-serif" font-size="12.2" font-weight="bold" font-style="normal" fill="#002855" text-anchor="start">Bộ định tuyến mongos</text>
+  <text x="160" y="187" font-family="DejaVu Sans, sans-serif" font-size="10.3" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">Tra bảng ánh xạ metadata → chốt 1 shard</text>
+  <path d="M 195,202 L 195.0,216.0 Q 195.0,224.0 187.0,224.0 L 146.0,224.0 Q 138.0,224.0 138.0,232.0 L 138,250" fill="none" stroke="#00843D" stroke-width="2.4" marker-end="url(#arrGreen)"/>
+  <path d="M 305,202 L 305.0,216.0 Q 305.0,224.0 313.0,224.0 L 354.0,224.0 Q 362.0,224.0 362.0,232.0 L 362,250" fill="none" stroke="#A7A8AA" stroke-width="1.6" stroke-dasharray="4,3" marker-end="url(#arrGray)"/>
+  <circle cx="362" cy="224" r="9" fill="#FFFFFF" stroke="#D96B16" stroke-width="1.5"/>
+  <text x="362" y="228" font-family="DejaVu Sans, sans-serif" font-size="11.5" font-weight="bold" font-style="normal" fill="#8F4207" text-anchor="middle">x</text>
+  <g filter="url(#cardShadow)"><rect x="42" y="254" width="192" height="92" rx="9" fill="#FFFFFF"/></g>
+  <rect x="42" y="254" width="192" height="92" rx="9" fill="none" stroke="#00843D" stroke-width="2.0"/>
+  <rect x="55.0" y="271.0" width="30" height="30" rx="7.2" fill="#EAF6EF" stroke="#00843D" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(61.36,277.36) scale(0.72)" fill="none" stroke="#00843D" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <ellipse cx="12" cy="5" rx="8.5" ry="3"/>
+  <path d="M3.5 5v14c0 1.66 3.8 3 8.5 3s8.5-1.34 8.5-3V5"/>
+  <path d="M3.5 12c0 1.66 3.8 3 8.5 3s8.5-1.34 8.5-3"/>
+
+  </g>
+  <text x="94" y="282" font-family="DejaVu Sans, sans-serif" font-size="12.5" font-weight="bold" font-style="normal" fill="#005A29" text-anchor="start">Shard 1</text>
+  <text x="94" y="299" font-family="DejaVu Sans, sans-serif" font-size="10.3" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">Chứa dải khóa khớp</text>
+  <rect x="56" y="314" width="164" height="22" rx="5" fill="#EAF6EF"/>
+  <text x="138" y="329" font-family="DejaVu Sans, sans-serif" font-size="10.5" font-weight="bold" font-style="normal" fill="#005A29" text-anchor="middle">Thực thi đơn mảnh (1/2)</text>
+  <g><rect x="266" y="254" width="192" height="92" rx="9" fill="#F4F6F8"/></g>
+  <rect x="266" y="254" width="192" height="92" rx="9" fill="none" stroke="#A7A8AA" stroke-width="1.4" stroke-dasharray="5,3"/>
+  <rect x="279.0" y="271.0" width="30" height="30" rx="7.2" fill="#FFFFFF" stroke="#A7A8AA" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(285.36,277.36) scale(0.72)" fill="none" stroke="#A7A8AA" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <ellipse cx="12" cy="5" rx="8.5" ry="3"/>
+  <path d="M3.5 5v14c0 1.66 3.8 3 8.5 3s8.5-1.34 8.5-3V5"/>
+  <path d="M3.5 12c0 1.66 3.8 3 8.5 3s8.5-1.34 8.5-3"/>
+
+  </g>
+  <text x="318" y="282" font-family="DejaVu Sans, sans-serif" font-size="12.5" font-weight="bold" font-style="normal" fill="#63666A" text-anchor="start">Shard 2</text>
+  <text x="318" y="299" font-family="DejaVu Sans, sans-serif" font-size="10.3" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">Không khớp điều kiện</text>
+  <rect x="280" y="314" width="164" height="22" rx="5" fill="#E8ECEF"/>
+  <text x="362" y="329" font-family="DejaVu Sans, sans-serif" font-size="10.5" font-weight="bold" font-style="normal" fill="#53565A" text-anchor="middle">Bỏ qua (Tỉa mảnh)</text>
+  <path d="M 138,346 L 138.0,370.0 Q 138.0,378.0 146.0,378.0 L 242.0,378.0 Q 250.0,378.0 250.0,386.0 L 250,412" fill="none" stroke="#00843D" stroke-width="2.2" marker-end="url(#arrGreen)"/>
+  <text x="255" y="396" font-family="DejaVu Sans, sans-serif" font-size="10.5" font-weight="bold" font-style="normal" fill="#005A29" text-anchor="start">Trả thẳng kết quả</text>
+  <g filter="url(#cardShadow)"><rect x="65" y="416" width="370" height="58" rx="9" fill="#EAF6EF"/></g>
+  <rect x="65" y="416" width="370" height="58" rx="9" fill="none" stroke="#00843D" stroke-width="1.6"/>
+  <rect x="82.0" y="431.0" width="28" height="28" rx="6.7" fill="#FFFFFF" stroke="#00843D" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(87.84,436.84) scale(0.68)" fill="none" stroke="#00843D" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+  <polyline points="22 4 12 14.01 9 11.01"/>
+
+  </g>
+  <text x="122" y="440" font-family="DejaVu Sans, sans-serif" font-size="12" font-weight="bold" font-style="normal" fill="#005A29" text-anchor="start">Kết quả cuối cùng (Không cần trộn)</text>
+  <text x="122" y="458" font-family="DejaVu Sans, sans-serif" font-size="10.3" font-weight="normal" font-style="normal" fill="#53565A" text-anchor="start">Tiết kiệm CPU, băng thông mạng và độ trễ điều phối</text>
+  <text x="750" y="32" font-family="DejaVu Sans, sans-serif" font-size="13.5" font-weight="bold" font-style="normal" fill="#002855" text-anchor="middle">Chế độ 2: Phát tán - Thu gom (Scatter-Gather - 2/2 shard)</text>
+  <g filter="url(#cardShadow)"><rect x="542" y="52" width="416" height="60" rx="9" fill="#FFFFFF"/></g>
+  <rect x="542" y="52" width="416" height="60" rx="9" fill="none" stroke="#D96B16" stroke-width="1.6"/>
+  <rect x="558.0" y="67.0" width="30" height="30" rx="7.2" fill="#FDF3E7" stroke="#D96B16" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(564.36,73.36) scale(0.72)" fill="none" stroke="#D96B16" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+  <polyline points="14 2 14 8 20 8"/>
+  <line x1="8" y1="13" x2="16" y2="13"/>
+  <line x1="8" y1="17" x2="13" y2="17"/>
+
+  </g>
+  <text x="598" y="77" font-family="DejaVu Sans, sans-serif" font-size="12.2" font-weight="bold" font-style="normal" fill="#8F4207" text-anchor="start">Truy vấn không khớp khóa phân mảnh</text>
+  <text x="598" y="96" font-family="DejaVu Sans, sans-serif" font-size="10.0" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">VD: Q2, Q3 lọc thời gian trên SH-hash; Q1 trên SH-range</text>
+  <line x1="750" y1="112" x2="750" y2="142" stroke="#00629B" stroke-width="2" marker-end="url(#arrBlue)"/>
+  <g filter="url(#cardShadow)"><rect x="605" y="146" width="290" height="56" rx="9" fill="#EBF4FA"/></g>
+  <rect x="605" y="146" width="290" height="56" rx="9" fill="none" stroke="#00629B" stroke-width="1.6"/>
+  <rect x="620.0" y="159.0" width="30" height="30" rx="7.2" fill="#FFFFFF" stroke="#00629B" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(626.36,165.36) scale(0.72)" fill="none" stroke="#00629B" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <circle cx="12" cy="5" r="2.7"/>
+  <circle cx="5.5" cy="18" r="2.7"/>
+  <circle cx="18.5" cy="18" r="2.7"/>
+  <line x1="10.8" y1="7.4" x2="6.7" y2="15.6"/>
+  <line x1="13.2" y1="7.4" x2="17.3" y2="15.6"/>
+  <line x1="8.2" y1="18" x2="15.8" y2="18"/>
+
+  </g>
+  <text x="660" y="169" font-family="DejaVu Sans, sans-serif" font-size="12.2" font-weight="bold" font-style="normal" fill="#002855" text-anchor="start">Bộ định tuyến mongos</text>
+  <text x="660" y="187" font-family="DejaVu Sans, sans-serif" font-size="10.3" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">Phát tán đồng thời tới toàn bộ 2 shard</text>
+  <path d="M 695,202 L 695.0,216.0 Q 695.0,224.0 687.0,224.0 L 646.0,224.0 Q 638.0,224.0 638.0,232.0 L 638,246" fill="none" stroke="#00629B" stroke-width="2.2" marker-end="url(#arrBlue)"/>
+  <path d="M 805,202 L 805.0,216.0 Q 805.0,224.0 813.0,224.0 L 854.0,224.0 Q 862.0,224.0 862.0,232.0 L 862,246" fill="none" stroke="#00629B" stroke-width="2.2" marker-end="url(#arrBlue)"/>
+  <g filter="url(#cardShadow)"><rect x="542" y="250" width="192" height="78" rx="9" fill="#FFFFFF"/></g>
+  <rect x="542" y="250" width="192" height="78" rx="9" fill="none" stroke="#00629B" stroke-width="1.6"/>
+  <rect x="556.0" y="266.0" width="28" height="28" rx="6.7" fill="#EBF4FA" stroke="#00629B" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(561.84,271.84) scale(0.68)" fill="none" stroke="#00629B" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <ellipse cx="12" cy="5" rx="8.5" ry="3"/>
+  <path d="M3.5 5v14c0 1.66 3.8 3 8.5 3s8.5-1.34 8.5-3V5"/>
+  <path d="M3.5 12c0 1.66 3.8 3 8.5 3s8.5-1.34 8.5-3"/>
+
+  </g>
+  <text x="592" y="276" font-family="DejaVu Sans, sans-serif" font-size="12.2" font-weight="bold" font-style="normal" fill="#002855" text-anchor="start">Shard 1</text>
+  <text x="592" y="293" font-family="DejaVu Sans, sans-serif" font-size="10.2" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">Quét song song (~50%)</text>
+  <text x="638" y="317" font-family="DejaVu Sans, sans-serif" font-size="10" font-weight="bold" font-style="normal" fill="#00629B" text-anchor="middle">Trả tập kết quả trung gian</text>
+  <g filter="url(#cardShadow)"><rect x="766" y="250" width="192" height="78" rx="9" fill="#FFFFFF"/></g>
+  <rect x="766" y="250" width="192" height="78" rx="9" fill="none" stroke="#00629B" stroke-width="1.6"/>
+  <rect x="780.0" y="266.0" width="28" height="28" rx="6.7" fill="#EBF4FA" stroke="#00629B" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(785.84,271.84) scale(0.68)" fill="none" stroke="#00629B" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <ellipse cx="12" cy="5" rx="8.5" ry="3"/>
+  <path d="M3.5 5v14c0 1.66 3.8 3 8.5 3s8.5-1.34 8.5-3V5"/>
+  <path d="M3.5 12c0 1.66 3.8 3 8.5 3s8.5-1.34 8.5-3"/>
+
+  </g>
+  <text x="816" y="276" font-family="DejaVu Sans, sans-serif" font-size="12.2" font-weight="bold" font-style="normal" fill="#002855" text-anchor="start">Shard 2</text>
+  <text x="816" y="293" font-family="DejaVu Sans, sans-serif" font-size="10.2" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">Quét song song (~50%)</text>
+  <text x="862" y="317" font-family="DejaVu Sans, sans-serif" font-size="10" font-weight="bold" font-style="normal" fill="#00629B" text-anchor="middle">Trả tập kết quả trung gian</text>
+  <path d="M 638,328 L 638.0,338.0 Q 638.0,346.0 646.0,346.0 L 688.0,346.0 Q 695.0,346.0 695.0,353.0 L 695,360" fill="none" stroke="#D96B16" stroke-width="2.0" marker-end="url(#arrOrange)"/>
+  <path d="M 862,328 L 862.0,338.0 Q 862.0,346.0 854.0,346.0 L 812.0,346.0 Q 805.0,346.0 805.0,353.0 L 805,360" fill="none" stroke="#D96B16" stroke-width="2.0" marker-end="url(#arrOrange)"/>
+  <g filter="url(#cardShadow)"><rect x="545" y="364" width="410" height="74" rx="9" fill="#FDF3E7"/></g>
+  <rect x="545" y="364" width="410" height="74" rx="9" fill="none" stroke="#D96B16" stroke-width="1.6"/>
+  <text x="750" y="386" font-family="DejaVu Sans, sans-serif" font-size="11.6" font-weight="bold" font-style="normal" fill="#8F4207" text-anchor="middle">Gom &amp; Trộn kết quả (Chờ nút chậm nhất + Chi phí mạng)</text>
+  <text x="750" y="407" font-family="DejaVu Sans, sans-serif" font-size="10.2" font-weight="normal" font-style="normal" fill="#1A1D20" text-anchor="middle">- Truy vấn liệt kê: Trộn luồng tài liệu lớn tại mongos (Q3)</text>
+  <text x="750" y="424" font-family="DejaVu Sans, sans-serif" font-size="10.1" font-weight="normal" font-style="normal" fill="#1A1D20" text-anchor="middle">- Truy vấn tổng hợp: Gom cục bộ trên shard rồi trộn bảng trung gian (Q2)</text>
+  <line x1="750" y1="438" x2="750" y2="454" stroke="#00629B" stroke-width="2" marker-end="url(#arrBlue)"/>
+  <rect x="615" y="456" width="270" height="28" rx="7" fill="#EBF4FA" stroke="#7AB2D3" stroke-width="1.2"/>
+  <text x="750" y="474" font-family="DejaVu Sans, sans-serif" font-size="11.2" font-weight="bold" font-style="normal" fill="#002855" text-anchor="middle">Kết quả tổng hợp trả về Client</text>
+</svg>

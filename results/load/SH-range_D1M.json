@@ -1,0 +1,104 @@
+{
+  "env": "SH-range",
+  "dataset_dir": "/mnt/lamviec/keepskyclear.Obsidian/9_Projects/DBMS/data/load_v2/D1M_sorted",
+  "batch_size": 1000,
+  "write_concern_w": "majority",
+  "start_utc": "2026-11-28T04:19:37.254873+00:00",
+  "server_version": "7.0.48",
+  "patients": {
+    "docs": 18443,
+    "seconds": 0.22
+  },
+  "encounters": {
+    "docs": 1000000,
+    "seconds": 112.56,
+    "docs_per_s": 8884.0,
+    "timeline": [
+      {
+        "elapsed_s": 1.48,
+        "docs": 50000
+      },
+      {
+        "elapsed_s": 3.05,
+        "docs": 100000
+      },
+      {
+        "elapsed_s": 5.22,
+        "docs": 150000
+      },
+      {
+        "elapsed_s": 8.48,
+        "docs": 200000
+      },
+      {
+        "elapsed_s": 10.38,
+        "docs": 250000
+      },
+      {
+        "elapsed_s": 12.51,
+        "docs": 300000
+      },
+      {
+        "elapsed_s": 14.92,
+        "docs": 350000
+      },
+      {
+        "elapsed_s": 17.61,
+        "docs": 400000
+      },
+      {
+        "elapsed_s": 20.43,
+        "docs": 450000
+      },
+      {
+        "elapsed_s": 23.27,
+        "docs": 500000
+      },
+      {
+        "elapsed_s": 26.62,
+        "docs": 550000
+      },
+      {
+        "elapsed_s": 29.57,
+        "docs": 600000
+      },
+      {
+        "elapsed_s": 41.68,
+        "docs": 650000
+      },
+      {
+        "elapsed_s": 46.96,
+        "docs": 700000
+      },
+      {
+        "elapsed_s": 56.13,
+        "docs": 750000
+      },
+      {
+        "elapsed_s": 62.06,
+        "docs": 800000
+      },
+      {
+        "elapsed_s": 76.4,
+        "docs": 850000
+      },
+      {
+        "elapsed_s": 83.47,
+        "docs": 900000
+      },
+      {
+        "elapsed_s": 87.03,
+        "docs": 950000
+      },
+      {
+        "elapsed_s": 112.56,
+        "docs": 1000000
+      },
+      {
+        "elapsed_s": 112.56,
+        "docs": 1000000
+      }
+    ]
+  },
+  "end_utc": "2026-11-28T04:21:30.041023+00:00"
+}

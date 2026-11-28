@@ -8,7 +8,7 @@
   "totalDocsExamined": 18109,
   "raw": {
     "serverInfo": {
-      "host": "2170f03492ea",
+      "host": "3c42333ee6fc",
       "port": 27017,
       "version": "7.0.48",
       "gitVersion": "6937736f0539a5d4c8edb2970255b9369cb385a5"
@@ -63,7 +63,7 @@
         {
           "$mergeCursors": {
             "lsid": {
-              "id": "b'\\xf0y\\x87\\x19\\x14\\xdbDi\\xb3\\xc8^]t:\\xca\\xf9'",
+              "id": "b'/\\x02\\x9c#\\xd2\\xd1Aa\\xb4\\x1a\\x8c\\x88w\\xfd\\xc5\\x15'",
               "uid": "b\"\\xe3\\xb0\\xc4B\\x98\\xfc\\x1c\\x14\\x9a\\xfb\\xf4\\xc8\\x99o\\xb9$'\\xaeA\\xe4d\\x9b\\x93L\\xa4\\x95\\x99\\x1bxR\\xb8U\""
             },
             "compareWholeSortKey": false,
@@ -160,13 +160,13 @@
               "executionStats": {
                 "executionSuccess": true,
                 "nReturned": 8803,
-                "executionTimeMillis": 49,
+                "executionTimeMillis": 15,
                 "totalKeysExamined": 8803,
                 "totalDocsExamined": 8803,
                 "executionStages": {
                   "stage": "PROJECTION_SIMPLE",
                   "nReturned": 8803,
-                  "executionTimeMillisEstimate": 7,
+                  "executionTimeMillisEstimate": 0,
                   "works": 8804,
                   "advanced": 8803,
                   "needTime": 0,
@@ -181,7 +181,7 @@
                   "inputStage": {
                     "stage": "SHARDING_FILTER",
                     "nReturned": 8803,
-                    "executionTimeMillisEstimate": 7,
+                    "executionTimeMillisEstimate": 0,
                     "works": 8804,
                     "advanced": 8803,
                     "needTime": 0,
@@ -193,7 +193,7 @@
                     "inputStage": {
                       "stage": "FETCH",
                       "nReturned": 8803,
-                      "executionTimeMillisEstimate": 6,
+                      "executionTimeMillisEstimate": 0,
                       "works": 8804,
                       "advanced": 8803,
                       "needTime": 0,
@@ -206,7 +206,7 @@
                       "inputStage": {
                         "stage": "IXSCAN",
                         "nReturned": 8803,
-                        "executionTimeMillisEstimate": 1,
+                        "executionTimeMillisEstimate": 0,
                         "works": 8804,
                         "advanced": 8803,
                         "needTime": 0,
@@ -243,14 +243,14 @@
               }
             },
             "nReturned": 8803,
-            "executionTimeMillisEstimate": 40
+            "executionTimeMillisEstimate": 12
           },
           {
             "$unwind": {
               "path": "$conditions"
             },
             "nReturned": 5171,
-            "executionTimeMillisEstimate": 49
+            "executionTimeMillisEstimate": 12
           },
           {
             "$group": {
@@ -271,7 +271,7 @@
             "numBytesSpilledEstimate": 0,
             "spilledRecords": 0,
             "nReturned": 110,
-            "executionTimeMillisEstimate": 49
+            "executionTimeMillisEstimate": 12
           }
         ]
       },
@@ -342,19 +342,19 @@
               "executionStats": {
                 "executionSuccess": true,
                 "nReturned": 9306,
-                "executionTimeMillis": 136,
+                "executionTimeMillis": 29,
                 "totalKeysExamined": 9306,
                 "totalDocsExamined": 9306,
                 "executionStages": {
                   "stage": "PROJECTION_SIMPLE",
                   "nReturned": 9306,
-                  "executionTimeMillisEstimate": 107,
+                  "executionTimeMillisEstimate": 9,
                   "works": 9307,
                   "advanced": 9306,
                   "needTime": 0,
                   "needYield": 0,
-                  "saveState": 11,
-                  "restoreState": 11,
+                  "saveState": 10,
+                  "restoreState": 10,
                   "isEOF": 1,
                   "transformBy": {
                     "conditions": 1,
@@ -363,38 +363,38 @@
                   "inputStage": {
                     "stage": "SHARDING_FILTER",
                     "nReturned": 9306,
-                    "executionTimeMillisEstimate": 107,
+                    "executionTimeMillisEstimate": 9,
                     "works": 9307,
                     "advanced": 9306,
                     "needTime": 0,
                     "needYield": 0,
-                    "saveState": 11,
-                    "restoreState": 11,
+                    "saveState": 10,
+                    "restoreState": 10,
                     "isEOF": 1,
                     "chunkSkips": 0,
                     "inputStage": {
                       "stage": "FETCH",
                       "nReturned": 9306,
-                      "executionTimeMillisEstimate": 93,
+                      "executionTimeMillisEstimate": 9,
                       "works": 9307,
                       "advanced": 9306,
                       "needTime": 0,
                       "needYield": 0,
-                      "saveState": 11,
-                      "restoreState": 11,
+                      "saveState": 10,
+                      "restoreState": 10,
                       "isEOF": 1,
                       "docsExamined": 9306,
                       "alreadyHasObj": 0,
                       "inputStage": {
                         "stage": "IXSCAN",
                         "nReturned": 9306,
-                        "executionTimeMillisEstimate": 20,
+                        "executionTimeMillisEstimate": 3,
                         "works": 9307,
                         "advanced": 9306,
                         "needTime": 0,
                         "needYield": 0,
-                        "saveState": 11,
-                        "restoreState": 11,
+                        "saveState": 10,
+                        "restoreState": 10,
                         "isEOF": 1,
                         "keyPattern": {
                           "START": 1
@@ -425,14 +425,14 @@
               }
             },
             "nReturned": 9306,
-            "executionTimeMillisEstimate": 130
+            "executionTimeMillisEstimate": 26
           },
           {
             "$unwind": {
               "path": "$conditions"
             },
             "nReturned": 5344,
-            "executionTimeMillisEstimate": 130
+            "executionTimeMillisEstimate": 26
           },
           {
             "$group": {
@@ -453,7 +453,7 @@
             "numBytesSpilledEstimate": 0,
             "spilledRecords": 0,
             "nReturned": 111,
-            "executionTimeMillisEstimate": 130
+            "executionTimeMillisEstimate": 26
           }
         ]
       }
@@ -493,12 +493,12 @@
     },
     "ok": 1.0,
     "$clusterTime": {
-      "clusterTime": "Timestamp(1795792435, 1)",
+      "clusterTime": "Timestamp(1795837656, 1)",
       "signature": {
         "hash": "b'\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00'",
         "keyId": 0
       }
     },
-    "operationTime": "Timestamp(1795792430, 1)"
+    "operationTime": "Timestamp(1795837654, 2)"
   }
 }

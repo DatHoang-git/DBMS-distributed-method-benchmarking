@@ -1,24 +1,24 @@
 {
-  "timestamp_utc": "2026-11-27T15:06:03.180414+00:00",
+  "timestamp_utc": "2026-11-28T03:39:15.217739+00:00",
   "env": "SH-hash",
   "total_count": 1000000,
   "total_size_mb": 1309.66,
-  "total_storage_mb": 450.43,
-  "total_index_mb": 234.63,
+  "total_storage_mb": 444.12,
+  "total_index_mb": 225.92,
   "shards": {
     "shard1RS": {
       "count": 500182,
       "size_mb": 651.8,
       "size_pct": 49.77,
-      "storage_mb": 224.91,
-      "index_mb": 117.06
+      "storage_mb": 222.43,
+      "index_mb": 112.45
     },
     "shard2RS": {
       "count": 499818,
       "size_mb": 657.87,
       "size_pct": 50.23,
-      "storage_mb": 225.52,
-      "index_mb": 117.57
+      "storage_mb": 221.69,
+      "index_mb": 113.46
     }
   }
 }

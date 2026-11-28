@@ -247,6 +247,22 @@ def measure_idle_network_bps(uri: str, seconds: int = 15) -> dict[str, float]:
     }
 
 
+def measure_idle_network_all(node_uris: dict[str, str], seconds: int = 15) -> dict[str, dict[str, float]]:
+    s0 = {k: snapshot_server_status(u) for k, u in node_uris.items()}
+    t0 = time.monotonic()
+    time.sleep(seconds)
+    s1 = {k: snapshot_server_status(u) for k, u in node_uris.items()}
+    dt = max(1e-3, time.monotonic() - t0)
+    return {
+        k: {
+            "idle_seconds": round(dt, 2),
+            "idle_bytes_in_per_s": round((s1[k]["network"]["bytesIn"] - s0[k]["network"]["bytesIn"]) / dt, 2),
+            "idle_bytes_out_per_s": round((s1[k]["network"]["bytesOut"] - s0[k]["network"]["bytesOut"]) / dt, 2),
+        }
+        for k in node_uris
+    }
+
+
 def snapshot_distribution(client: Any, db_name: str, col_name: str, env: str) -> dict[str, Any]:
     stats = client[db_name].command({"collStats": col_name})
     out: dict[str, Any] = {
@@ -305,23 +321,22 @@ def make_param_generator(wl: dict[str, Any], patient_ids: list[str], seed: int):
     return next_params
 
 
-def run_read_benchmark(
-    col: Any,
-    qid: str,
-    next_params: Any,
-    threads: int,
-    warmup_s: int,
-    min_reqs: int,
-    min_seconds: int,
-    max_seconds: int,
-    seed: int,
-) -> list[dict[str, Any]]:
-    # Warm-up
+def run_read_warmup(col: Any, qid: str, next_params: Any, warmup_s: int) -> None:
     if warmup_s > 0:
         w_end = time.monotonic() + warmup_s
         while time.monotonic() < w_end:
             run_query(col, qid, next_params(qid))
 
+
+def run_read_benchmark(
+    col: Any,
+    qid: str,
+    next_params: Any,
+    threads: int,
+    min_reqs: int,
+    min_seconds: int,
+    max_seconds: int,
+) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     lock = threading.Lock()
     counter = {"n": 0}
@@ -505,7 +520,14 @@ def main() -> None:
     bal_info = preflight_balancer_stopped(client, args.env)
     stream_seed = args.seed * 1000 + args.rep
     next_params = make_param_generator(wl, patient_ids, stream_seed)
-    idle_net = measure_idle_network_bps(args.uri, args.idle_net_s) if args.idle_net_s > 0 else None
+    idle_net_by_node: dict[str, dict[str, float]] = (
+        measure_idle_network_all(node_uris, args.idle_net_s) if args.idle_net_s > 0 else {}
+    )
+    idle_net = idle_net_by_node.get("mongos") or idle_net_by_node.get("entry")
+
+    if args.scenario in ("TN1", "TN3-read"):
+        warmup_params = make_param_generator(wl, patient_ids, stream_seed + 99999)
+        run_read_warmup(col, args.query, warmup_params, args.warmup_s)
 
     start_utc = utc_now_iso()
     st0 = {k: snapshot_server_status(u) for k, u in node_uris.items()}
@@ -516,8 +538,8 @@ def main() -> None:
     if args.scenario in ("TN1", "TN3-read"):
         min_reqs = args.min_reqs or (2000 if args.query == "Q1" else 300)
         tag = f"{args.env}_{args.dataset}_{args.scenario}_{args.query}_t{args.threads}_r{args.rep}"
-        rows = run_read_benchmark(col, args.query, next_params, args.threads, args.warmup_s,
-                                  min_reqs, args.min_seconds, args.max_seconds, stream_seed)
+        rows = run_read_benchmark(col, args.query, next_params, args.threads,
+                                  min_reqs, args.min_seconds, args.max_seconds)
     else:  # TN2-write
         tag = f"{args.env}_{args.dataset}_TN2-write_t{args.threads}_r{args.rep}"
         rows = run_write_benchmark(col, patient_ids, args.threads, args.duration, stream_seed)
@@ -536,16 +558,34 @@ def main() -> None:
         (status_dir / f"{tag}_{k}.json").write_text(json.dumps(deltas[k], indent=2), encoding="utf-8")
 
     ok_lats = [r["latency_ms"] for r in rows if r["success"] == 1]
-    # Compute net network KB/req on entry/mongos if available
+    # Compute net network KB/req on entry/mongos and internal shard <-> mongos if available
     net_kb_per_req = None
     entry_key = "mongos" if "mongos" in deltas else "entry"
     if entry_key in deltas and ok_lats:
         nd = deltas[entry_key]["network_delta"]
         tot_b = nd.get("bytesIn", 0) + nd.get("bytesOut", 0)
-        if idle_net:
-            idle_b = (idle_net["idle_bytes_in_per_s"] + idle_net["idle_bytes_out_per_s"]) * elapsed_s
+        entry_idle = idle_net_by_node.get(entry_key)
+        if entry_idle:
+            idle_b = (entry_idle["idle_bytes_in_per_s"] + entry_idle["idle_bytes_out_per_s"]) * elapsed_s
             tot_b = max(0.0, tot_b - idle_b)
         net_kb_per_req = round(tot_b / (1024.0 * len(ok_lats)), 3)
+
+    shard_keys = [k for k in deltas if k not in ("mongos", "entry")]
+    shard_net_kb_per_req = None
+    if shard_keys and ok_lats:
+        tot_sh_b = 0.0
+        for sk in shard_keys:
+            snd = deltas[sk]["network_delta"]
+            sb = float(snd.get("bytesIn", 0) + snd.get("bytesOut", 0))
+            s_idle = idle_net_by_node.get(sk)
+            if s_idle:
+                sb = max(0.0, sb - (s_idle["idle_bytes_in_per_s"] + s_idle["idle_bytes_out_per_s"]) * elapsed_s)
+            tot_sh_b += sb
+        shard_net_kb_per_req = round(tot_sh_b / (1024.0 * len(ok_lats)), 3)
+
+    net_amp_ratio = None
+    if shard_net_kb_per_req is not None and net_kb_per_req is not None and net_kb_per_req > 0:
+        net_amp_ratio = round(shard_net_kb_per_req / net_kb_per_req, 3)
 
     meta = {
         "spec_version": 3,
@@ -560,6 +600,7 @@ def main() -> None:
         "mongo_version": client.server_info().get("version"),
         "balancer_preflight": bal_info,
         "idle_network_baseline": idle_net,
+        "idle_network_baseline_by_node": idle_net_by_node or None,
         "elapsed_s": elapsed_s,
         "n_requests": len(rows),
         "n_success": len(ok_lats),
@@ -567,6 +608,8 @@ def main() -> None:
         "p50_ms": round(percentile(ok_lats, 50), 3),
         "p95_ms": round(percentile(ok_lats, 95), 3),
         "net_kb_per_req": net_kb_per_req,
+        "shard_net_kb_per_req": shard_net_kb_per_req,
+        "net_amp_ratio": net_amp_ratio,
         "client_cpu_max": client_cpu_max,
         "client_cpu_avg": client_cpu_avg,
         "client_bound": client_cpu_max >= args.client_cpu_limit,
@@ -577,7 +620,8 @@ def main() -> None:
     meta_path.parent.mkdir(parents=True, exist_ok=True)
     meta_path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
     print(f"DONE {tag}: n={len(ok_lats)}, rate={meta['qps_or_inserts_s']}/s, p95={meta['p95_ms']}ms, "
-          f"net={net_kb_per_req}KB/req, client_cpu_max={client_cpu_max}% (bound={meta['client_bound']})")
+          f"net={net_kb_per_req}KB/req, shard_net={shard_net_kb_per_req}KB/req (amp={net_amp_ratio}), "
+          f"client_cpu_max={client_cpu_max}% (bound={meta['client_bound']})")
 
 
 if __name__ == "__main__":

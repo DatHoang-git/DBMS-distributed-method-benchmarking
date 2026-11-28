@@ -1,56 +1,56 @@
 {
   "env": "SH-hash",
-  "dataset_dir": "data/load_v2/S2",
+  "dataset_dir": "/mnt/lamviec/keepskyclear.Obsidian/9_Projects/DBMS/data/load_v2/S2",
   "batch_size": 1000,
   "write_concern_w": "majority",
-  "start_utc": "2026-11-27T14:55:47.496060+00:00",
+  "start_utc": "2026-11-28T03:23:25.674199+00:00",
   "server_version": "7.0.48",
   "patients": {
     "docs": 7380,
-    "seconds": 0.14
+    "seconds": 0.1
   },
   "encounters": {
     "docs": 400000,
-    "seconds": 23.62,
-    "docs_per_s": 16935.1,
+    "seconds": 15.47,
+    "docs_per_s": 25855.0,
     "timeline": [
       {
-        "elapsed_s": 2.26,
+        "elapsed_s": 1.46,
         "docs": 50000
       },
       {
-        "elapsed_s": 4.99,
+        "elapsed_s": 3.24,
         "docs": 100000
       },
       {
-        "elapsed_s": 7.68,
+        "elapsed_s": 5.14,
         "docs": 150000
       },
       {
-        "elapsed_s": 10.6,
+        "elapsed_s": 7.19,
         "docs": 200000
       },
       {
-        "elapsed_s": 13.54,
+        "elapsed_s": 9.17,
         "docs": 250000
       },
       {
-        "elapsed_s": 16.75,
+        "elapsed_s": 11.25,
         "docs": 300000
       },
       {
-        "elapsed_s": 19.99,
+        "elapsed_s": 13.26,
         "docs": 350000
       },
       {
-        "elapsed_s": 23.62,
+        "elapsed_s": 15.47,
         "docs": 400000
       },
       {
-        "elapsed_s": 23.62,
+        "elapsed_s": 15.47,
         "docs": 400000
       }
     ]
   },
-  "end_utc": "2026-11-27T14:56:11.259412+00:00"
+  "end_utc": "2026-11-28T03:23:41.250564+00:00"
 }

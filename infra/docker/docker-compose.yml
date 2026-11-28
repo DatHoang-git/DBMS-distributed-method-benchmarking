@@ -10,22 +10,25 @@ services:
     container_name: mdb-cfgsvr
     command: ["mongod", "--configsvr", "--replSet", "cfgRS", "--port", "27019", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.25"]
     mem_limit: 512m
+    cpus: 1
     ports: ["27019:27019"]
     networks: [mdb-net]
 
   shard1:
     image: mongo:7.0
     container_name: mdb-shard1
-    command: ["mongod", "--shardsvr", "--replSet", "shard1RS", "--port", "27018", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.25"]
-    mem_limit: 512m
+    command: ["mongod", "--shardsvr", "--replSet", "shard1RS", "--port", "27018", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.50"]
+    mem_limit: 1g
+    cpus: 2
     ports: ["27118:27018"]
     networks: [mdb-net]
 
   shard2:
     image: mongo:7.0
     container_name: mdb-shard2
-    command: ["mongod", "--shardsvr", "--replSet", "shard2RS", "--port", "27018", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.25"]
-    mem_limit: 512m
+    command: ["mongod", "--shardsvr", "--replSet", "shard2RS", "--port", "27018", "--bind_ip_all", "--wiredTigerCacheSizeGB", "0.50"]
+    mem_limit: 1g
+    cpus: 2
     ports: ["27218:27018"]
     networks: [mdb-net]
 
@@ -35,6 +38,7 @@ services:
     depends_on: [cfgsvr, shard1, shard2]
     command: ["mongos", "--configdb", "cfgRS/cfgsvr:27019", "--port", "27017", "--bind_ip_all"]
     mem_limit: 512m
+    cpus: 2
     ports: ["27017:27017"]
     networks: [mdb-net]
 

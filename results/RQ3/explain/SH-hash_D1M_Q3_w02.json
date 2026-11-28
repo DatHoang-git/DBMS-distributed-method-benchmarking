@@ -8,7 +8,7 @@
   "totalDocsExamined": 18016,
   "raw": {
     "serverInfo": {
-      "host": "2170f03492ea",
+      "host": "3c42333ee6fc",
       "port": 27017,
       "version": "7.0.48",
       "gitVersion": "6937736f0539a5d4c8edb2970255b9369cb385a5"
@@ -63,7 +63,7 @@
         {
           "$mergeCursors": {
             "lsid": {
-              "id": "b'\\xf0y\\x87\\x19\\x14\\xdbDi\\xb3\\xc8^]t:\\xca\\xf9'",
+              "id": "b'/\\x02\\x9c#\\xd2\\xd1Aa\\xb4\\x1a\\x8c\\x88w\\xfd\\xc5\\x15'",
               "uid": "b\"\\xe3\\xb0\\xc4B\\x98\\xfc\\x1c\\x14\\x9a\\xfb\\xf4\\xc8\\x99o\\xb9$'\\xaeA\\xe4d\\x9b\\x93L\\xa4\\x95\\x99\\x1bxR\\xb8U\""
             },
             "compareWholeSortKey": false,
@@ -93,188 +93,6 @@
       ]
     },
     "shards": {
-      "shard2RS": {
-        "host": "mdb-shard2:27018",
-        "stages": [
-          {
-            "$cursor": {
-              "queryPlanner": {
-                "namespace": "ehr.encounters",
-                "indexFilterSet": false,
-                "parsedQuery": {
-                  "$and": [
-                    {
-                      "START": {
-                        "$lt": "2024-05-01 00:00:00"
-                      }
-                    },
-                    {
-                      "START": {
-                        "$gte": "2024-02-01 00:00:00"
-                      }
-                    }
-                  ]
-                },
-                "queryHash": "B5488127",
-                "planCacheKey": "80E7206D",
-                "optimizationTimeMillis": 0,
-                "maxIndexedOrSolutionsReached": false,
-                "maxIndexedAndSolutionsReached": false,
-                "maxScansToExplodeReached": false,
-                "winningPlan": {
-                  "stage": "PROJECTION_SIMPLE",
-                  "transformBy": {
-                    "conditions": 1,
-                    "_id": 0
-                  },
-                  "inputStage": {
-                    "stage": "SHARDING_FILTER",
-                    "inputStage": {
-                      "stage": "FETCH",
-                      "inputStage": {
-                        "stage": "IXSCAN",
-                        "keyPattern": {
-                          "START": 1
-                        },
-                        "indexName": "START_1",
-                        "isMultiKey": false,
-                        "multiKeyPaths": {
-                          "START": []
-                        },
-                        "isUnique": false,
-                        "isSparse": false,
-                        "isPartial": false,
-                        "indexVersion": 2,
-                        "direction": "forward",
-                        "indexBounds": {
-                          "START": [
-                            "[new Date(1706745600000), new Date(1714521600000))"
-                          ]
-                        }
-                      }
-                    }
-                  }
-                },
-                "rejectedPlans": []
-              },
-              "executionStats": {
-                "executionSuccess": true,
-                "nReturned": 9316,
-                "executionTimeMillis": 25,
-                "totalKeysExamined": 9316,
-                "totalDocsExamined": 9316,
-                "executionStages": {
-                  "stage": "PROJECTION_SIMPLE",
-                  "nReturned": 9316,
-                  "executionTimeMillisEstimate": 3,
-                  "works": 9317,
-                  "advanced": 9316,
-                  "needTime": 0,
-                  "needYield": 0,
-                  "saveState": 10,
-                  "restoreState": 10,
-                  "isEOF": 1,
-                  "transformBy": {
-                    "conditions": 1,
-                    "_id": 0
-                  },
-                  "inputStage": {
-                    "stage": "SHARDING_FILTER",
-                    "nReturned": 9316,
-                    "executionTimeMillisEstimate": 3,
-                    "works": 9317,
-                    "advanced": 9316,
-                    "needTime": 0,
-                    "needYield": 0,
-                    "saveState": 10,
-                    "restoreState": 10,
-                    "isEOF": 1,
-                    "chunkSkips": 0,
-                    "inputStage": {
-                      "stage": "FETCH",
-                      "nReturned": 9316,
-                      "executionTimeMillisEstimate": 3,
-                      "works": 9317,
-                      "advanced": 9316,
-                      "needTime": 0,
-                      "needYield": 0,
-                      "saveState": 10,
-                      "restoreState": 10,
-                      "isEOF": 1,
-                      "docsExamined": 9316,
-                      "alreadyHasObj": 0,
-                      "inputStage": {
-                        "stage": "IXSCAN",
-                        "nReturned": 9316,
-                        "executionTimeMillisEstimate": 0,
-                        "works": 9317,
-                        "advanced": 9316,
-                        "needTime": 0,
-                        "needYield": 0,
-                        "saveState": 10,
-                        "restoreState": 10,
-                        "isEOF": 1,
-                        "keyPattern": {
-                          "START": 1
-                        },
-                        "indexName": "START_1",
-                        "isMultiKey": false,
-                        "multiKeyPaths": {
-                          "START": []
-                        },
-                        "isUnique": false,
-                        "isSparse": false,
-                        "isPartial": false,
-                        "indexVersion": 2,
-                        "direction": "forward",
-                        "indexBounds": {
-                          "START": [
-                            "[new Date(1706745600000), new Date(1714521600000))"
-                          ]
-                        },
-                        "keysExamined": 9316,
-                        "seeks": 1,
-                        "dupsTested": 0,
-                        "dupsDropped": 0
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "nReturned": 9316,
-            "executionTimeMillisEstimate": 21
-          },
-          {
-            "$unwind": {
-              "path": "$conditions"
-            },
-            "nReturned": 5345,
-            "executionTimeMillisEstimate": 21
-          },
-          {
-            "$group": {
-              "_id": "$conditions.CODE",
-              "n": {
-                "$sum": {
-                  "$const": 1
-                }
-              }
-            },
-            "maxAccumulatorMemoryUsageBytes": {
-              "n": 8928
-            },
-            "totalOutputDataSizeBytes": 31093,
-            "usedDisk": false,
-            "spills": 0,
-            "spilledDataStorageSize": 0,
-            "numBytesSpilledEstimate": 0,
-            "spilledRecords": 0,
-            "nReturned": 93,
-            "executionTimeMillisEstimate": 21
-          }
-        ]
-      },
       "shard1RS": {
         "host": "mdb-shard1:27018",
         "stages": [
@@ -342,7 +160,7 @@
               "executionStats": {
                 "executionSuccess": true,
                 "nReturned": 8700,
-                "executionTimeMillis": 36,
+                "executionTimeMillis": 16,
                 "totalKeysExamined": 8700,
                 "totalDocsExamined": 8700,
                 "executionStages": {
@@ -363,7 +181,7 @@
                   "inputStage": {
                     "stage": "SHARDING_FILTER",
                     "nReturned": 8700,
-                    "executionTimeMillisEstimate": 3,
+                    "executionTimeMillisEstimate": 5,
                     "works": 8701,
                     "advanced": 8700,
                     "needTime": 0,
@@ -375,7 +193,7 @@
                     "inputStage": {
                       "stage": "FETCH",
                       "nReturned": 8700,
-                      "executionTimeMillisEstimate": 3,
+                      "executionTimeMillisEstimate": 4,
                       "works": 8701,
                       "advanced": 8700,
                       "needTime": 0,
@@ -388,7 +206,7 @@
                       "inputStage": {
                         "stage": "IXSCAN",
                         "nReturned": 8700,
-                        "executionTimeMillisEstimate": 0,
+                        "executionTimeMillisEstimate": 3,
                         "works": 8701,
                         "advanced": 8700,
                         "needTime": 0,
@@ -425,14 +243,14 @@
               }
             },
             "nReturned": 8700,
-            "executionTimeMillisEstimate": 32
+            "executionTimeMillisEstimate": 12
           },
           {
             "$unwind": {
               "path": "$conditions"
             },
             "nReturned": 5263,
-            "executionTimeMillisEstimate": 32
+            "executionTimeMillisEstimate": 12
           },
           {
             "$group": {
@@ -453,7 +271,189 @@
             "numBytesSpilledEstimate": 0,
             "spilledRecords": 0,
             "nReturned": 96,
-            "executionTimeMillisEstimate": 32
+            "executionTimeMillisEstimate": 12
+          }
+        ]
+      },
+      "shard2RS": {
+        "host": "mdb-shard2:27018",
+        "stages": [
+          {
+            "$cursor": {
+              "queryPlanner": {
+                "namespace": "ehr.encounters",
+                "indexFilterSet": false,
+                "parsedQuery": {
+                  "$and": [
+                    {
+                      "START": {
+                        "$lt": "2024-05-01 00:00:00"
+                      }
+                    },
+                    {
+                      "START": {
+                        "$gte": "2024-02-01 00:00:00"
+                      }
+                    }
+                  ]
+                },
+                "queryHash": "B5488127",
+                "planCacheKey": "80E7206D",
+                "optimizationTimeMillis": 0,
+                "maxIndexedOrSolutionsReached": false,
+                "maxIndexedAndSolutionsReached": false,
+                "maxScansToExplodeReached": false,
+                "winningPlan": {
+                  "stage": "PROJECTION_SIMPLE",
+                  "transformBy": {
+                    "conditions": 1,
+                    "_id": 0
+                  },
+                  "inputStage": {
+                    "stage": "SHARDING_FILTER",
+                    "inputStage": {
+                      "stage": "FETCH",
+                      "inputStage": {
+                        "stage": "IXSCAN",
+                        "keyPattern": {
+                          "START": 1
+                        },
+                        "indexName": "START_1",
+                        "isMultiKey": false,
+                        "multiKeyPaths": {
+                          "START": []
+                        },
+                        "isUnique": false,
+                        "isSparse": false,
+                        "isPartial": false,
+                        "indexVersion": 2,
+                        "direction": "forward",
+                        "indexBounds": {
+                          "START": [
+                            "[new Date(1706745600000), new Date(1714521600000))"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "rejectedPlans": []
+              },
+              "executionStats": {
+                "executionSuccess": true,
+                "nReturned": 9316,
+                "executionTimeMillis": 23,
+                "totalKeysExamined": 9316,
+                "totalDocsExamined": 9316,
+                "executionStages": {
+                  "stage": "PROJECTION_SIMPLE",
+                  "nReturned": 9316,
+                  "executionTimeMillisEstimate": 3,
+                  "works": 9317,
+                  "advanced": 9316,
+                  "needTime": 0,
+                  "needYield": 0,
+                  "saveState": 10,
+                  "restoreState": 10,
+                  "isEOF": 1,
+                  "transformBy": {
+                    "conditions": 1,
+                    "_id": 0
+                  },
+                  "inputStage": {
+                    "stage": "SHARDING_FILTER",
+                    "nReturned": 9316,
+                    "executionTimeMillisEstimate": 1,
+                    "works": 9317,
+                    "advanced": 9316,
+                    "needTime": 0,
+                    "needYield": 0,
+                    "saveState": 10,
+                    "restoreState": 10,
+                    "isEOF": 1,
+                    "chunkSkips": 0,
+                    "inputStage": {
+                      "stage": "FETCH",
+                      "nReturned": 9316,
+                      "executionTimeMillisEstimate": 1,
+                      "works": 9317,
+                      "advanced": 9316,
+                      "needTime": 0,
+                      "needYield": 0,
+                      "saveState": 10,
+                      "restoreState": 10,
+                      "isEOF": 1,
+                      "docsExamined": 9316,
+                      "alreadyHasObj": 0,
+                      "inputStage": {
+                        "stage": "IXSCAN",
+                        "nReturned": 9316,
+                        "executionTimeMillisEstimate": 0,
+                        "works": 9317,
+                        "advanced": 9316,
+                        "needTime": 0,
+                        "needYield": 0,
+                        "saveState": 10,
+                        "restoreState": 10,
+                        "isEOF": 1,
+                        "keyPattern": {
+                          "START": 1
+                        },
+                        "indexName": "START_1",
+                        "isMultiKey": false,
+                        "multiKeyPaths": {
+                          "START": []
+                        },
+                        "isUnique": false,
+                        "isSparse": false,
+                        "isPartial": false,
+                        "indexVersion": 2,
+                        "direction": "forward",
+                        "indexBounds": {
+                          "START": [
+                            "[new Date(1706745600000), new Date(1714521600000))"
+                          ]
+                        },
+                        "keysExamined": 9316,
+                        "seeks": 1,
+                        "dupsTested": 0,
+                        "dupsDropped": 0
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "nReturned": 9316,
+            "executionTimeMillisEstimate": 20
+          },
+          {
+            "$unwind": {
+              "path": "$conditions"
+            },
+            "nReturned": 5345,
+            "executionTimeMillisEstimate": 22
+          },
+          {
+            "$group": {
+              "_id": "$conditions.CODE",
+              "n": {
+                "$sum": {
+                  "$const": 1
+                }
+              }
+            },
+            "maxAccumulatorMemoryUsageBytes": {
+              "n": 8928
+            },
+            "totalOutputDataSizeBytes": 31093,
+            "usedDisk": false,
+            "spills": 0,
+            "spilledDataStorageSize": 0,
+            "numBytesSpilledEstimate": 0,
+            "spilledRecords": 0,
+            "nReturned": 93,
+            "executionTimeMillisEstimate": 22
           }
         ]
       }
@@ -493,12 +493,12 @@
     },
     "ok": 1.0,
     "$clusterTime": {
-      "clusterTime": "Timestamp(1795792435, 1)",
+      "clusterTime": "Timestamp(1795837656, 1)",
       "signature": {
         "hash": "b'\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00'",
         "keyId": 0
       }
     },
-    "operationTime": "Timestamp(1795792430, 1)"
+    "operationTime": "Timestamp(1795837654, 2)"
   }
 }

@@ -4,7 +4,7 @@
   "winning_stage": "SINGLE_SHARD",
   "shards_targeted": 1,
   "merge_type": "none",
-  "total_exec_ms": 10,
+  "total_exec_ms": 1,
   "nReturned": 837,
   "totalKeysExamined": 837,
   "totalDocsExamined": 837,
@@ -18,7 +18,7 @@
             "shardName": "shard1RS",
             "connectionString": "shard1RS/mdb-shard1:27018",
             "serverInfo": {
-              "host": "cba08973947a",
+              "host": "5e4b8e9d29b4",
               "port": 27018,
               "version": "7.0.48",
               "gitVersion": "6937736f0539a5d4c8edb2970255b9369cb385a5"
@@ -46,7 +46,7 @@
             },
             "queryHash": "053EF629",
             "planCacheKey": "579A316E",
-            "optimizationTimeMillis": 1,
+            "optimizationTimeMillis": 0,
             "maxIndexedOrSolutionsReached": false,
             "maxIndexedAndSolutionsReached": false,
             "maxScansToExplodeReached": false,
@@ -185,28 +185,28 @@
     },
     "executionStats": {
       "nReturned": 837,
-      "executionTimeMillis": 10,
+      "executionTimeMillis": 1,
       "totalKeysExamined": 837,
       "totalDocsExamined": 837,
       "executionStages": {
         "stage": "SINGLE_SHARD",
         "nReturned": 837,
-        "executionTimeMillis": 10,
+        "executionTimeMillis": 1,
         "totalKeysExamined": 837,
         "totalDocsExamined": 837,
-        "totalChildMillis": 10,
+        "totalChildMillis": 1,
         "shards": [
           {
             "shardName": "shard1RS",
             "executionSuccess": true,
             "nReturned": 837,
-            "executionTimeMillis": 10,
+            "executionTimeMillis": 1,
             "totalKeysExamined": 837,
             "totalDocsExamined": 837,
             "executionStages": {
               "stage": "PROJECTION_SIMPLE",
               "nReturned": 837,
-              "executionTimeMillisEstimate": 4,
+              "executionTimeMillisEstimate": 0,
               "works": 838,
               "advanced": 837,
               "needTime": 0,
@@ -293,7 +293,7 @@
       }
     },
     "serverInfo": {
-      "host": "34876f4b8471",
+      "host": "8cb635e5a99f",
       "port": 27017,
       "version": "7.0.48",
       "gitVersion": "6937736f0539a5d4c8edb2970255b9369cb385a5"
@@ -324,10 +324,10 @@
         "ORGANIZATION": 1
       },
       "lsid": {
-        "id": "b'\"\\xb5\\x03X\\x99\\xbbE\\xa5\\x82\\xb0_?6\\xb0N\\xc8'"
+        "id": "b'\\x87\\x19\\x8a\\xc4\\x00\\x13@@\\x8d\\x81\\x13\\x0b(\\nJA'"
       },
       "$clusterTime": {
-        "clusterTime": "Timestamp(1795792428, 2)",
+        "clusterTime": "Timestamp(1795841439, 1)",
         "signature": {
           "hash": "b'\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00'",
           "keyId": 0
@@ -337,12 +337,12 @@
     },
     "ok": 1.0,
     "$clusterTime": {
-      "clusterTime": "Timestamp(1795792428, 2)",
+      "clusterTime": "Timestamp(1795841439, 1)",
       "signature": {
         "hash": "b'\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00'",
         "keyId": 0
       }
     },
-    "operationTime": "Timestamp(1795792420, 1)"
+    "operationTime": "Timestamp(1795841427, 15283)"
   }
 }

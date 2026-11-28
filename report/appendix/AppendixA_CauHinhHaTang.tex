@@ -1,58 +1,102 @@
-\chapter{Chi tiết Cấu hình Hạ tầng và Tham số Triển khai MongoDB 7.0}
-\label{app:infra-config}
+\chapter{Chi tiết Cấu hình Hạ tầng, Lệnh Triển khai và Telemetry}
+\label{app:infra}
 
-Phụ lục này tổng hợp thông số phần cứng trên Microsoft Azure for Students, vai trò và cổng dịch vụ của từng máy ảo, bộ tham số cố định của \textbf{MongoDB 7.0 Community LTS} và lịch trình chạy ba pha phục vụ khả năng tái lập thực nghiệm.
+Phụ lục này tập trung toàn bộ chi tiết kỹ thuật triển khai đã được lược gọn khỏi phần thân báo cáo nhằm phục vụ tái lập thực nghiệm~\cite{ProjectRepo}.
 
-\section{Thông số Hạ tầng Chuẩn hóa trên Microsoft Azure}
+\section{Thông số Container Docker và Máy chủ Thực thi}
 
-Bảng~\ref{tab:app-azure-profiles} tổng hợp cấu hình máy ảo, ổ đĩa và giới hạn bộ nhớ áp dụng đồng nhất cho các nút dữ liệu (ưu tiên dòng \texttt{Standard\_D2s\_v5} không giới hạn CPU credit cho \texttt{vm-w1}, \texttt{vm-w2}; tổng chi phí ước tính dưới $4$\textendash $6\text{ USD}$ cho khoảng $2$\textendash $2.5$ giờ chạy thực nghiệm).
+Toàn bộ cả ba cấu hình được thực thi tuần tự trên cùng một máy chủ vật lý để loại bỏ sai lệch phần cứng; kịch bản điều phối tự động được đặt tại \texttt{scripts/run\_all\_local.py} (kèm hướng dẫn tham khảo trong \texttt{docs/local/}). Bảng~\ref{tab:app-infra} tổng hợp đầy đủ cấu hình phần cứng và container áp dụng.
 
 \begin{table}[!htb]
 \centering
-\caption{Thông số phần cứng, lưu trữ và giới hạn bộ nhớ trên Microsoft Azure.}
-\label{tab:app-azure-profiles}
-\renewcommand{\arraystretch}{1.24}
-\begin{tabularx}{\linewidth}{L{3.6cm} X}
+\caption{Thông số kỹ thuật phần cứng máy chủ thực thi và container Docker.}
+\label{tab:app-infra}
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{tabularx}{\linewidth}{L{4.0cm} X}
 \toprule
 \textbf{Hạng mục} & \textbf{Cấu hình áp dụng} \\
 \midrule
-Nút dữ liệu (\texttt{vm-w1}, \texttt{vm-w2}) & $2 \times \texttt{Standard\_D2s\_v5}$ ($2\text{ vCPU}$, $8\text{ GB RAM}$/VM, không giới hạn CPU credit). \\
-Nút điều phối (\texttt{vm-coord}) \& Client (\texttt{vm-client}) & Đặt trong cùng mạng ảo nội bộ (\textit{VNet}); kiểm soát CPU máy khách luôn $< 75\%$ (nếu ở $8$ luồng vượt $75\%$ thì hạ đồng nhất dải luồng \texttt{TN1} xuống $1 / 2 / 4$). \\
-Ổ đĩa dữ liệu & Managed Disk \textbf{Standard SSD \texttt{E4}} ($32\text{ GB}$) gắn riêng cho \texttt{/var/lib/mongodb}, tắt Availability Zones, \textbf{đặt \texttt{Host Caching = None}}. \\
-Giới hạn bộ nhớ mỗi nút dữ liệu & \texttt{wiredTigerCacheSizeGB = 0.50} ($512\text{ MB}$) và systemd cgroup v2 \texttt{MemoryMax = 1G}. \\
+\textbf{Phiên bản DBMS} & \textbf{MongoDB 7.0 Community LTS (\texttt{mongo:7.0.48})} đồng nhất trên mọi container. \\
+\midrule
+\textbf{Container nút dữ liệu} (\texttt{mdb-sa}, \texttt{mdb-shard1}, \texttt{mdb-shard2}) & Giới hạn cgroup v2 \texttt{--memory=1g --cpus=2}, \texttt{--wiredTigerCacheSizeGB 0.50} ($512\text{ MB}$), Replica Set 1 thành viên (\texttt{rs0}, \texttt{shard1RS}, \texttt{shard2RS}). \\
+\midrule
+\textbf{Container điều phối} (\texttt{mdb-cfgsvr}, \texttt{mdb-mongos}) & \texttt{mdb-cfgsvr}: \texttt{--memory=512m --cpus=1}, \texttt{--wiredTigerCacheSizeGB 0.25} (cổng \texttt{27019}); \texttt{mdb-mongos}: \texttt{--memory=512m --cpus=2} (cổng \texttt{27017}); kết nối nội bộ qua mạng Docker bridge \texttt{mdb-net}. \\
+\midrule
+\textbf{Máy host thực thi duy nhất} & \texttt{dathoang-NgocTrinh} (EndeavourOS Linux, kernel \texttt{7.2.14-arch1-1}, 12th Gen Intel Core i7-12700H 20 CPU logic, 15 GiB RAM, Micron NVMe SSD \texttt{MTFDKBA512QFM-1BD1AABGB} 476.9 GB, chạy chế độ nguồn AC ổn định). \\
+\midrule
+\textbf{Kịch bản chuẩn bị, nạp, chạy \& vẽ} & Chuẩn bị dữ liệu sắp theo \texttt{START} (\texttt{S1..S5}, \texttt{D1M\_sorted}) trong \texttt{data/load\_v2/}; nạp nối tiếp bằng \texttt{scripts/load\_dataset.py}; điều phối tự động sạch 3 pha bằng \texttt{scripts/run\_all\_local.py}; đo bằng \texttt{scripts/bench\_v2.py} (tách riêng pha làm nóng 20s trước khi lấy mẫu \texttt{t0}/\texttt{st0}); tổng hợp bảng và hình bằng \texttt{analysis/generate\_report\_artifacts.py}. \\
+\midrule
+\textbf{Giám sát máy khách \& container} & \texttt{bench\_v2.py} đọc \texttt{/proc/stat} giám sát CPU client luôn $< 75\%$ (thực tế \texttt{client\_cpu\_max = 37.9\%}, \texttt{client\_bound: false} trên cả 114 lượt đo); kiểm tra \texttt{docker inspect} bảo đảm \texttt{OOMKilled: false}, \texttt{RestartCount: 0}. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\section{Phân công Vai trò và Cổng Dịch vụ theo Máy ảo}
+\section{Phân công Container và Cổng Dịch vụ}
+
+Bảng~\ref{tab:app-ports} liệt kê ánh xạ cổng và vai trò của từng container trong ba môi trường thực nghiệm.
 
 \begin{table}[!htb]
 \centering
-\caption{Vai trò tiến trình và cổng dịch vụ của các máy ảo trong cụm thực nghiệm.}
-\label{tab:app-node-roles}
-\renewcommand{\arraystretch}{1.24}
-\begin{tabularx}{\linewidth}{l X L{4.2cm}}
+\caption{Phân công container Docker và cổng dịch vụ.}
+\label{tab:app-ports}
+\renewcommand{\arraystretch}{1.18}
+\small
+\begin{tabularx}{\linewidth}{l c X L{4.2cm}}
 \toprule
-\textbf{Hostname} & \textbf{Vai trò trong cụm Sharded (\texttt{SH-hash}, \texttt{SH-range})} & \textbf{Vai trò trong \texttt{SA}} \\
+\textbf{Container} & \textbf{Cổng (Host:Cont)} & \textbf{Vai trò cụm Sharded (\texttt{SH-hash}, \texttt{SH-range})} & \textbf{Vai trò trong \texttt{SA}} \\
 \midrule
-\texttt{vm-client} & Chạy \texttt{bench\_v2.py}, thu CSV độ trễ, \texttt{explain} và \texttt{meta/*.json}; gắn cờ \texttt{client\_bound} nếu CPU $\ge 75\%$. & Kết nối trực tiếp tới \texttt{vm-w1:27017}. \\
-\texttt{vm-coord} & Chạy \texttt{mongos} (cổng \texttt{27017}) và Config Server (\texttt{--configsvr --replSet cfgRS}, cổng \texttt{27019}). & Tắt / Deallocate. \\
-\texttt{vm-w1} & Chạy Shard 1 (\texttt{--shardsvr --replSet shard1RS}, cổng \texttt{27018}). & Chạy 1-node RS (\texttt{rs0}, cổng \texttt{27017}). \\
-\texttt{vm-w2} & Chạy Shard 2 (\texttt{--shardsvr --replSet shard2RS}, cổng \texttt{27018}). & Tắt / Deallocate. \\
+\texttt{mdb-sa} & \texttt{27017:27017} & Không sử dụng. & Chạy 1-node RS (\texttt{rs0}), \texttt{bench\_v2.py} kết nối trực tiếp. \\
+\texttt{mdb-mongos} & \texttt{27017:27017} & Query Router tiếp nhận mọi truy vấn từ \texttt{bench\_v2.py}. & Không sử dụng. \\
+\texttt{mdb-cfgsvr} & \texttt{27019:27019} & Config Server (\texttt{--configsvr --replSet cfgRS}). & Không sử dụng. \\
+\texttt{mdb-shard1} & \texttt{27118:27018} & Shard 1 (\texttt{--shardsvr --replSet shard1RS}). & Không sử dụng. \\
+\texttt{mdb-shard2} & \texttt{27218:27018} & Shard 2 (\texttt{--shardsvr --replSet shard2RS}). & Không sử dụng. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\section{Tham số MongoDB 7.0 Cố định và Lịch chạy Ba Pha}
+\section{Tham số MongoDB 7.0 Cố định và Quy trình Chạy Ba Pha}
 
-\begin{itemize}
-  \item \textbf{Phiên bản DBMS:} Cố định \textbf{MongoDB 7.0 Community LTS} trên mọi máy ảo.
+\begin{itemize}[leftmargin=0.8cm, itemsep=4pt]
+  \item \textbf{Khóa phân mảnh và khởi tạo:} \texttt{SH-hash} dùng \texttt{\{PATIENT: "hashed"\}} kèm \texttt{\{numInitialChunks: 16\}}; \texttt{SH-range} dùng \texttt{\{START: 1, PATIENT: 1\}}. Collection phụ \texttt{patients} phân mảnh theo \texttt{\{\_id: "hashed"\}} trên cụm sharded (không sharding ở \texttt{SA}).
   \item \textbf{Kích thước Chunk (\texttt{rangeSize}):} Cố định $32\text{ MB}$ qua \texttt{\{\_id: "chunksize", value: 32\}} trong \texttt{config.settings}.
-  \item \textbf{Chính sách đọc/ghi:} Cố định \texttt{writeConcern: \{w: "majority"\}} và \texttt{readConcern: \{level: "local"\}}.
-  \item \textbf{Tiền kiểm Balancer chuẩn MongoDB 7.0:} Trước mọi bài đo đọc và ghi trực tuyến, gọi \texttt{sh.stopBalancer()} và xác minh qua lệnh \texttt{balancerStatus} rằng đồng thời \texttt{mode == "off"}, \texttt{inBalancerRound == false}, và \texttt{config.migrations} không còn bản ghi đang chạy.
-  \item \textbf{Lịch chạy gọn $3$ pha ($\sim 2$\textendash $2.5$ giờ Azure):} (1) \textbf{Pha 1 (\texttt{SA})}: nạp nối tiếp $100\text{K}\rightarrow 3\text{M}$, chạy \texttt{TN1} tại $4$ mốc và \texttt{TN2} tại \texttt{1M}; (2) \textbf{Pha 2 (\texttt{SH-hash})}: nạp nối tiếp $100\text{K}\rightarrow 3\text{M}$, chạy \texttt{TN1} tại $4$ mốc, đo \texttt{Q3/Q4} độ dốc $100\text{K}\rightarrow 3\text{M}$, và chạy \texttt{TN2}, \texttt{TN3} tại \texttt{1M}; (3) \textbf{Pha 3 (\texttt{SH-range})}: nạp duy nhất mốc \texttt{1M}, chờ Balancer ổn định rồi chạy \texttt{TN2} và \texttt{TN3}.
-  \item \textbf{Cấu hình Docker Dry-run (Pha 0 cục bộ):} Dựng $4$ container MongoDB 7.0 (\texttt{infra/docker/}) với \texttt{mem\_limit: 512m} và \texttt{--wiredTigerCacheSizeGB 0.25} để kiểm thử toàn bộ quy trình nạp và đo trên mốc \texttt{100K}.
-  \item \textbf{Quản trị chi phí Azure:} Sau khi sao lưu đầy đủ thư mục \texttt{results/} về máy cá nhân, \textbf{xóa toàn bộ Resource Group} (gồm cả Managed Disk và Public IP) để tránh phát sinh phí lưu trữ.
+  \item \textbf{Chính sách đọc/ghi:} Cố định \texttt{writeConcern: \{w: "majority"\}} (trên RS 1 thành viên tương đương \texttt{w: 1, j: true}) và \texttt{readConcern: \{level: "local"\}}.
+  \item \textbf{Tiền kiểm Balancer chuẩn MongoDB 7.0:} Trước mọi bài đo đọc và ghi trực tuyến, gọi \texttt{sh.stopBalancer()} và xác minh qua \texttt{db.adminCommand("balancerStatus")} rằng \texttt{mode == "off"}, \texttt{inBalancerRound == false}, và \texttt{config.migrations} rỗng.
+  \item \textbf{Dọn sạch bản ghi thử và thu gọn tệp:} Sau mỗi lần lặp \texttt{TN2-write}, xóa toàn bộ tài liệu tổng hợp có \texttt{\_id} khớp \texttt{\^{}bench-} để mỗi lần lặp ghi và mốc \texttt{D3M} kế tiếp bắt đầu trên chính xác $1{,}000{,}000$ và $3{,}000{,}000$ bản ghi sạch; chạy \texttt{\{compact: "encounters", force: true\}} trên các shard trước khi nạp \texttt{S4+S5} và sau khi \texttt{cleanupOrphaned} hoàn tất trên \texttt{SH-range} (giảm tổng dung lượng dữ liệu + chỉ mục theo \texttt{collStats} đi $584.4\text{ MB}$ trên \texttt{shard1RS} và $45.8\text{ MB}$ trên \texttt{shard2RS}, tổng $630.2\text{ MB}$ như nêu ở Chương~\ref{chap:results}; chỉ số \texttt{bytesFreed} do lệnh \texttt{compact} trả về gồm cả không gian quản trị nội bộ WiredTiger là $612.7\text{ MB}$ và $48.0\text{ MB}$).
+  \item \textbf{Lịch chạy 3 pha trên \texttt{dathoang-NgocTrinh}:} (1) \textbf{Pha 1 (\texttt{SA})}: nạp nối tiếp \texttt{S1} $\rightarrow$ \texttt{S3}, đo \texttt{TN1} và \texttt{TN2-write} (\texttt{1M}), dọn sạch và thu gọn tệp rồi nạp \texttt{S4} $\rightarrow$ \texttt{S5} ($3{,}000{,}000$ bản ghi) đo \texttt{TN1} (\texttt{D3M}); (2) \textbf{Pha 2 (\texttt{SH-hash})}: nạp nối tiếp \texttt{S1} $\rightarrow$ \texttt{S5}, chạy \texttt{TN1}, \texttt{TN2}, \texttt{TN3} (đủ 3 lần lặp + trừ nền 15s idle cho cả \texttt{Q1}, \texttt{Q2}, \texttt{Q3} qua mọi mốc); (3) \textbf{Pha 3 (\texttt{SH-range})}: nạp \texttt{D1M\_sorted}, chờ Balancer ổn định dưới ngưỡng $96\text{ MB}$, dừng Balancer, chạy \texttt{cleanupOrphaned} và \texttt{compact}, chụp \texttt{dist} trước/sau thu gọn tệp rồi đo đầy đủ \texttt{TN3} (\texttt{Q1}, \texttt{Q2}, \texttt{Q3}) và \texttt{TN2-write}. (\textit{Ghi chú ánh xạ tệp gốc: trong thư mục \texttt{results/RQ3/} và \texttt{scripts/bench\_v2.py}, hai truy vấn \texttt{Q2} và \texttt{Q3} của báo cáo tương ứng với khóa tệp gốc \texttt{Q3} và \texttt{Q4}.})
 \end{itemize}
 
-Toàn bộ mã nguồn chuẩn bị dữ liệu (\texttt{prepare\_v2.py}), nạp nối tiếp (\texttt{load\_dataset.py}), đo đạc (\texttt{bench\_v2.py}) và cấu hình Docker Pha 0 được lưu trữ công khai tại kho GitHub của nhóm \cite{ProjectRepo}.
+\section{Bảng Ánh xạ Chỉ số Báo cáo sang Lệnh \& Trường Telemetry}
+
+Bảng~\ref{tab:app-telemetry} ánh xạ từng chỉ số phân tích trong thân báo cáo về đúng câu lệnh MongoDB và tên trường telemetry trong thư mục \texttt{results/}.
+
+\begin{table}[!htb]
+\centering
+\caption{Ánh xạ chỉ số trong báo cáo sang nguồn lệnh và trường telemetry gốc.}
+\label{tab:app-telemetry}
+\renewcommand{\arraystretch}{1.18}
+\setlength{\tabcolsep}{4pt}
+\footnotesize
+\begin{tabularx}{\linewidth}{L{3.2cm} L{3.8cm} >{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Chỉ số trong báo cáo} & \textbf{Nguồn lệnh / Tệp} & \textbf{Trường dữ liệu / Công thức kỹ thuật} \\
+\midrule
+Tỷ lệ trúng bộ nhớ đệm WiredTiger & \texttt{db.serverStatus()} (\texttt{results/*/status/}) & Tính có trọng số trên tổng \texttt{pages\_requested} và \texttt{pages\_read\_into\_cache} cộng dồn qua các shard và các lần lặp (\texttt{wt\_hit\_ratio\_mean}). \\
+\midrule
+Số trang đọc đĩa trên mỗi truy vấn & \texttt{db.serverStatus()} & \texttt{pages\_read\_per\_req = sum(wt\_cache\_delta.\allowbreak pages\_read\_into\_cache) / sum(n\_success)}. \\
+\midrule
+Lưu lượng ghi rơi vào từng shard & \texttt{db.serverStatus()} & \texttt{opcounters\_delta.insert} trên \texttt{shard1RS}, \texttt{shard2RS}. \\
+\midrule
+Dung lượng BSON, nén đĩa \& chỉ mục & \texttt{db.encounters.stats()} / \texttt{collStats} & \texttt{size}, \texttt{storageSize}, \texttt{totalIndexSize}, \texttt{shards.<rs>} (lưu cả \texttt{SH-range\_D1M\_dist.json} và \texttt{SH-range\_D1M\_dist\_\allowbreak post\_compact.json}). \\
+\midrule
+Mạng máy khách qua \texttt{mongos} & \texttt{db.serverStatus()} trên \texttt{mongos} & \texttt{network\_delta} (trừ nền 15s idle, chỉ tính trong cửa sổ đo) $\rightarrow$ \texttt{net\_kb\_per\_req}. \\
+\midrule
+Mạng nội bộ \texttt{shard <-> mongos} \& Hệ số khuếch đại & \texttt{db.serverStatus()} trên \texttt{shard1RS} \& \texttt{shard2RS} & Tổng \texttt{network\_delta} của \texttt{s1 + s2} (đã trừ nền 15s idle trên từng shard) chia cho \texttt{n\_success} $\rightarrow$ \texttt{shard\_net\_kb\_per\_req}; \texttt{net\_amp\_ratio = shard\_net\_kb\_per\_req / net\_kb\_per\_req}. \\
+\midrule
+Kế hoạch thực thi \& tỉa mảnh & \texttt{explain(\allowbreak"executionStats")} (\texttt{results/RQ3/explain/}) & \texttt{shards\_targeted}, \texttt{winning\_stage} (\texttt{SINGLE\_SHARD}, \texttt{SINGLE\_SHARD\_AGG}, \texttt{SPLIT\_PIPELINE}, \texttt{SHARD\_MERGE}, \texttt{SHARD\_MERGE\_SORT}), \texttt{merge\_type} (\texttt{none}, \texttt{mongos}). \\
+\midrule
+Kiểm tra CPU máy khách không bị nghẽn & \texttt{/proc/stat} trong \texttt{bench\_v2.py} (\texttt{results/*/meta/}) & \texttt{client\_cpu\_max < 75\%}, \texttt{client\_bound: false}. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+\FloatBarrier

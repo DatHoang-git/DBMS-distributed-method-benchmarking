@@ -21,8 +21,9 @@
 \usepackage[left=3cm,right=2cm,top=2.5cm,bottom=3cm,footskip=40pt]{geometry}
 \usepackage{pdflscape}
 \usepackage{array}
-\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
-\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
 \usepackage{tabularx}
 \usepackage{multirow}
 \usepackage{longtable}
@@ -93,7 +94,8 @@
 \renewcommand{\baselinestretch}{1.35}
 \emergencystretch=2em
 \flushbottom
-\renewcommand*{\bibfont}{\fontsize{12}{15}\selectfont}
+\renewcommand*{\bibfont}{\fontsize{11.5}{14}\selectfont\raggedright}
+\setlength{\bibsep}{4pt}
 
 % Code listing style for MongoDB JS / JSON / Bash
 \definecolor{codebg}{RGB}{247,248,250}
@@ -130,18 +132,6 @@
   xrightmargin=0.4cm,
   aboveskip=8pt,
   belowskip=8pt
-}
-
-% Placeholder box for upcoming experimental results / figures
-\newcommand{\resultplaceholder}[2]{%
-  \vspace{6pt}%
-  \noindent\fcolorbox{todoborder}{todobg}{%
-    \parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
-      \textbf{\textcolor{todoborder}{[CHỜ KẾT QUẢ THỰC NGHIỆM \textemdash  #1]}} \\[3pt]
-      \small #2
-    }%
-  }%
-  \vspace{6pt}%
 }
 
 \usepackage[hidelinks, unicode]{hyperref}
@@ -225,25 +215,31 @@
 \begin{thebibliography}{99}
 
 \bibitem{MongoDBSharding}
-MongoDB, Inc., \textquotedblleft Sharding \textemdash  MongoDB Manual (v7.0 LTS),\textquotedblright  [Online]. Available: \url{https://www.mongodb.com/docs/v7.0/sharding/}
+MongoDB, Inc., “Sharding - MongoDB Manual (v7.0 LTS),” [Online]. Available: \url{https://www.mongodb.com/docs/v7.0/sharding/}
 
 \bibitem{MongoDBWiredTiger}
-MongoDB, Inc., \textquotedblleft WiredTiger Storage Engine \textemdash  MongoDB Manual,\textquotedblright  [Online]. Available: \url{https://www.mongodb.com/docs/manual/core/wiredtiger/}
+MongoDB, Inc., “WiredTiger Storage Engine - MongoDB Manual,” [Online]. Available: \url{https://www.mongodb.com/docs/manual/core/wiredtiger/}
 
 \bibitem{MongoDBExplain}
-MongoDB, Inc., \textquotedblleft Explain Results and Query Plans in Sharded Clusters \textemdash  MongoDB Manual,\textquotedblright  [Online]. Available: \url{https://www.mongodb.com/docs/manual/reference/explain-results/}
+MongoDB, Inc., “Explain Results and Query Plans in Sharded Clusters - MongoDB Manual,” [Online]. Available: \url{https://www.mongodb.com/docs/manual/reference/explain-results/}
 
 \bibitem{Walonoski2018}
-J. Walonoski, M. Kramer, J. Nichols, A. Quina, C. Moesel, D. Hall, C. Duffett, K. Dube, T. Gallagher, and S. McLachlan, \textquotedblleft Synthea: An approach, method, and software mechanism for generating synthetic patients and the synthetic electronic health care record,\textquotedblright  {\em Journal of the American Medical Informatics Association (JAMIA)}, vol. 25, no. 3, pp. 230\textendash 238, 2018.
+J. Walonoski, M. Kramer, J. Nichols, A. Quina, C. Moesel, D. Hall, C. Duffett, K. Dube, T. Gallagher, and S. McLachlan, “Synthea: An approach, method, and software mechanism for generating synthetic patients and the synthetic electronic health care record,” {\em Journal of the American Medical Informatics Association (JAMIA)}, vol. 25, no. 3, pp. 230\textendash 238, 2018.
 
 \bibitem{Kleppmann2017}
 M. Kleppmann, {\em Designing Data-Intensive Applications: The Big Ideas Behind Reliable, Scalable, and Maintainable Systems}, O'Reilly Media, 2017.
 
-\bibitem{AzureStudents}
-Microsoft Azure, \textquotedblleft Azure for Students \textemdash  Virtual Machine Sizes and Quota Limits,\textquotedblright  [Online]. Available: \url{https://learn.microsoft.com/en-us/azure/virtual-machines/sizes}
+\bibitem{Cattell2011}
+R. Cattell, “Scalable SQL and NoSQL Data Stores,” {\em ACM SIGMOD Record}, vol. 39, no. 4, pp. 12\textendash 27, Dec. 2010.
+
+\bibitem{Liu2012}
+Y. Liu, Y. Wang, and Y. Jin, “Research on the improvement of MongoDB Auto-Sharding in cloud environment,” {\em 2012 7th International Conference on Computer Science \& Education (ICCSE)}, IEEE, pp. 851\textendash 854, 2012.
+
+\bibitem{Freire2016}
+S. M. Freire, D. Teodoro, F. Wei-Kleiner, E. Sundvall, D. Karlsson, and P. Lambrix, “Comparing the Performance of NoSQL Approaches for Managing Archetype-Based Electronic Health Record Data,” {\em PLOS ONE}, vol. 11, no. 3, e0150069, 2016. DOI: 10.1371/journal.pone.0150069.
 
 \bibitem{ProjectRepo}
-Nhóm thực hiện, \textquotedblleft DBMS-distributed-method-benchmarking: Mã nguồn triển khai, pipeline Synthea, script benchmark và dữ liệu thực nghiệm,\textquotedblright  GitHub Repository, 2026. [Online]. Available: \url{https://github.com/DatHoang-git/DBMS-distributed-method-benchmarking}
+Nhóm thực hiện, “DBMS-distributed-method-benchmarking: Mã nguồn triển khai, pipeline Synthea, script benchmark và dữ liệu thực nghiệm,” GitHub Repository, 2026. [Online]. Available: \url{https://github.com/DatHoang-git/DBMS-distributed-method-benchmarking}
 
 \end{thebibliography}
 

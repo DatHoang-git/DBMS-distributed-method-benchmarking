@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="480" viewBox="0 0 1000 480">
+  <defs>
+    <filter id="cardShadow" x="-6%" y="-6%" width="112%" height="114%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrBlue" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#00629B"/>
+    </marker>
+    <marker id="arrTeal" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#007377"/>
+    </marker>
+    <marker id="arrGreen" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#00843D"/>
+    </marker>
+    <marker id="arrOrange" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#D96B16"/>
+    </marker>
+    <marker id="arrGray" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#A7A8AA"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1000" height="480" fill="#FFFFFF"/>
+  <text x="500" y="30" font-family="DejaVu Sans, sans-serif" font-size="14.5" font-weight="bold" font-style="normal" fill="#002855" text-anchor="middle">Kiến trúc Tổng thể Cụm MongoDB Sharded (2 Shard)</text>
+  <g filter="url(#cardShadow)"><rect x="24" y="148" width="194" height="148" rx="12" fill="#FFFFFF"/></g>
+  <rect x="24" y="148" width="194" height="148" rx="12" fill="none" stroke="#53565A" stroke-width="1.7"/>
+  <rect x="101.0" y="168.0" width="40" height="40" rx="9.6" fill="#F4F6F8" stroke="#53565A" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(109.96,176.96) scale(0.92)" fill="none" stroke="#53565A" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+  <circle cx="9" cy="7" r="4"/>
+  <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+
+  </g>
+  <text x="121" y="230" font-family="DejaVu Sans, sans-serif" font-size="13.5" font-weight="bold" font-style="normal" fill="#1A1D20" text-anchor="middle">Ứng dụng khách</text>
+  <text x="121" y="249" font-family="DejaVu Sans, sans-serif" font-size="11.2" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="middle">(Client / Sinh tải)</text>
+  <text x="121" y="274" font-family="DejaVu Sans, sans-serif" font-size="10.2" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="middle">Kết nối duy nhất qua mongos</text>
+  <path d="M 218,222 L 250.0,222.0 Q 258.0,222.0 258.0,214.0 L 258.0,142.0 Q 258.0,134.0 266.0,134.0 L 296,134" fill="none" stroke="#00629B" stroke-width="2.4" marker-end="url(#arrBlue)"/>
+  <text x="255" y="118" font-family="DejaVu Sans, sans-serif" font-size="11.0" font-weight="bold" font-style="normal" fill="#002855" text-anchor="middle">Đọc / Ghi</text>
+  <g filter="url(#cardShadow)"><rect x="300" y="72" width="254" height="124" rx="12" fill="#EBF4FA"/></g>
+  <rect x="300" y="72" width="254" height="124" rx="12" fill="none" stroke="#00629B" stroke-width="2.0"/>
+  <rect x="315.0" y="95.0" width="38" height="38" rx="9.1" fill="#FFFFFF" stroke="#00629B" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(323.44,103.44) scale(0.88)" fill="none" stroke="#00629B" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <circle cx="12" cy="5" r="2.7"/>
+  <circle cx="5.5" cy="18" r="2.7"/>
+  <circle cx="18.5" cy="18" r="2.7"/>
+  <line x1="10.8" y1="7.4" x2="6.7" y2="15.6"/>
+  <line x1="13.2" y1="7.4" x2="17.3" y2="15.6"/>
+  <line x1="8.2" y1="18" x2="15.8" y2="18"/>
+
+  </g>
+  <text x="364" y="108" font-family="DejaVu Sans, sans-serif" font-size="13.8" font-weight="bold" font-style="normal" fill="#002855" text-anchor="start">Query Router</text>
+  <text x="364" y="128" font-family="DejaVu Sans, sans-serif" font-size="11.2" font-weight="bold" font-style="normal" fill="#00629B" text-anchor="start">(Tiến trình mongos)</text>
+  <text x="427" y="158" font-family="DejaVu Sans, sans-serif" font-size="10.2" font-weight="normal" font-style="normal" fill="#1A1D20" text-anchor="middle">- Định tuyến phi trạng thái (1 hoặc nhiều shard)</text>
+  <text x="427" y="177" font-family="DejaVu Sans, sans-serif" font-size="10.2" font-weight="normal" font-style="normal" fill="#1A1D20" text-anchor="middle">- Tách pipeline &amp; trộn kết quả trả về client</text>
+  <line x1="427" y1="196" x2="427" y2="274" stroke="#007377" stroke-width="2.0" stroke-dasharray="5,3" marker-start="url(#arrTeal)" marker-end="url(#arrTeal)"/>
+  <rect x="439" y="222" width="132" height="24" rx="6" fill="#FFFFFF" stroke="#66B2B5" stroke-width="1"/>
+  <text x="505" y="238" font-family="DejaVu Sans, sans-serif" font-size="10.8" font-weight="bold" font-style="normal" fill="#004B4E" text-anchor="middle">Đồng bộ metadata</text>
+  <g filter="url(#cardShadow)"><rect x="300" y="278" width="254" height="136" rx="12" fill="#E6F4F4"/></g>
+  <rect x="300" y="278" width="254" height="136" rx="12" fill="none" stroke="#007377" stroke-width="1.8"/>
+  <rect x="315.0" y="301.0" width="38" height="38" rx="9.1" fill="#FFFFFF" stroke="#007377" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(323.44,309.44) scale(0.88)" fill="none" stroke="#007377" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <circle cx="12" cy="12" r="3"/>
+  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 0 1 0 4h-.09c-.66 0-1.25.4-1.51 1z"/>
+
+  </g>
+  <text x="364" y="314" font-family="DejaVu Sans, sans-serif" font-size="13.8" font-weight="bold" font-style="normal" fill="#004B4E" text-anchor="start">Config Server</text>
+  <text x="364" y="334" font-family="DejaVu Sans, sans-serif" font-size="11.2" font-weight="bold" font-style="normal" fill="#007377" text-anchor="start">(Replica Set cấu hình)</text>
+  <text x="427" y="366" font-family="DejaVu Sans, sans-serif" font-size="10.2" font-weight="normal" font-style="normal" fill="#1A1D20" text-anchor="middle">- Lưu bản đồ dải khóa &amp; vị trí chunk (metadata)</text>
+  <text x="427" y="385" font-family="DejaVu Sans, sans-serif" font-size="10.2" font-weight="normal" font-style="normal" fill="#1A1D20" text-anchor="middle">- Chạy tiến trình nền Balancer điều phối tải</text>
+  <path d="M 554,118 L 682,118" fill="none" stroke="#00629B" stroke-width="2.3" marker-end="url(#arrBlue)"/>
+  <path d="M 554,152 L 612.0,152.0 Q 620.0,152.0 620.0,160.0 L 620.0,336.0 Q 620.0,344.0 628.0,344.0 L 682,344" fill="none" stroke="#00629B" stroke-width="2.3" marker-end="url(#arrBlue)"/>
+  <text x="620" y="92" font-family="DejaVu Sans, sans-serif" font-size="10.8" font-weight="bold" font-style="normal" fill="#002855" text-anchor="middle">Chuyển tiếp</text>
+  <text x="620" y="107" font-family="DejaVu Sans, sans-serif" font-size="10.8" font-weight="bold" font-style="normal" fill="#002855" text-anchor="middle">truy vấn</text>
+  <g filter="url(#cardShadow)"><rect x="686" y="60" width="290" height="146" rx="12" fill="#FFFFFF"/></g>
+  <rect x="686" y="60" width="290" height="146" rx="12" fill="none" stroke="#00843D" stroke-width="1.9"/>
+  <rect x="703.0" y="79.0" width="34" height="34" rx="8.2" fill="#EAF6EF" stroke="#00843D" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(710.40,86.40) scale(0.8)" fill="none" stroke="#00843D" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <ellipse cx="12" cy="5" rx="8.5" ry="3"/>
+  <path d="M3.5 5v14c0 1.66 3.8 3 8.5 3s8.5-1.34 8.5-3V5"/>
+  <path d="M3.5 12c0 1.66 3.8 3 8.5 3s8.5-1.34 8.5-3"/>
+
+  </g>
+  <text x="746" y="93" font-family="DejaVu Sans, sans-serif" font-size="13.5" font-weight="bold" font-style="normal" fill="#1A1D20" text-anchor="start">Shard 1 (Replica Set)</text>
+  <text x="746" y="111" font-family="DejaVu Sans, sans-serif" font-size="10.8" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">WiredTiger Cache + Ổ đĩa riêng</text>
+  <rect x="706" y="132" width="78" height="30" rx="6" fill="#EAF6EF" stroke="#6EC194" stroke-width="1.2"/>
+  <text x="745" y="151" font-family="DejaVu Sans, sans-serif" font-size="10.8" font-weight="bold" font-style="normal" fill="#1A1D20" text-anchor="middle">Chunk A</text>
+  <rect x="792" y="132" width="78" height="30" rx="6" fill="#EAF6EF" stroke="#6EC194" stroke-width="1.2"/>
+  <text x="831" y="151" font-family="DejaVu Sans, sans-serif" font-size="10.8" font-weight="bold" font-style="normal" fill="#1A1D20" text-anchor="middle">Chunk B</text>
+  <rect x="878" y="132" width="78" height="30" rx="6" fill="#EAF6EF" stroke="#6EC194" stroke-width="1.2"/>
+  <text x="917" y="151" font-family="DejaVu Sans, sans-serif" font-size="10.8" font-weight="bold" font-style="normal" fill="#1A1D20" text-anchor="middle">Chunk ...</text>
+  <text x="831" y="186" font-family="DejaVu Sans, sans-serif" font-size="10.5" font-weight="italic" font-style="normal" fill="#63666A" text-anchor="middle">Dải dữ liệu mục tiêu 32 MB / chunk</text>
+  <g filter="url(#cardShadow)"><rect x="686" y="278" width="290" height="146" rx="12" fill="#FFFFFF"/></g>
+  <rect x="686" y="278" width="290" height="146" rx="12" fill="none" stroke="#00629B" stroke-width="1.9"/>
+  <rect x="703.0" y="297.0" width="34" height="34" rx="8.2" fill="#EBF4FA" stroke="#00629B" stroke-opacity="0.3" stroke-width="1.2"/>
+  <g transform="translate(710.40,304.40) scale(0.8)" fill="none" stroke="#00629B" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round">
+    
+  <ellipse cx="12" cy="5" rx="8.5" ry="3"/>
+  <path d="M3.5 5v14c0 1.66 3.8 3 8.5 3s8.5-1.34 8.5-3V5"/>
+  <path d="M3.5 12c0 1.66 3.8 3 8.5 3s8.5-1.34 8.5-3"/>
+
+  </g>
+  <text x="746" y="311" font-family="DejaVu Sans, sans-serif" font-size="13.5" font-weight="bold" font-style="normal" fill="#1A1D20" text-anchor="start">Shard 2 (Replica Set)</text>
+  <text x="746" y="329" font-family="DejaVu Sans, sans-serif" font-size="10.8" font-weight="normal" font-style="normal" fill="#63666A" text-anchor="start">WiredTiger Cache + Ổ đĩa riêng</text>
+  <rect x="706" y="350" width="78" height="30" rx="6" fill="#EBF4FA" stroke="#7AB2D3" stroke-width="1.2"/>
+  <text x="745" y="369" font-family="DejaVu Sans, sans-serif" font-size="10.8" font-weight="bold" font-style="normal" fill="#1A1D20" text-anchor="middle">Chunk C</text>
+  <rect x="792" y="350" width="78" height="30" rx="6" fill="#EBF4FA" stroke="#7AB2D3" stroke-width="1.2"/>
+  <text x="831" y="369" font-family="DejaVu Sans, sans-serif" font-size="10.8" font-weight="bold" font-style="normal" fill="#1A1D20" text-anchor="middle">Chunk D</text>
+  <rect x="878" y="350" width="78" height="30" rx="6" fill="#EBF4FA" stroke="#7AB2D3" stroke-width="1.2"/>
+  <text x="917" y="369" font-family="DejaVu Sans, sans-serif" font-size="10.8" font-weight="bold" font-style="normal" fill="#1A1D20" text-anchor="middle">Chunk ...</text>
+  <text x="831" y="404" font-family="DejaVu Sans, sans-serif" font-size="10.5" font-weight="italic" font-style="normal" fill="#63666A" text-anchor="middle">Dải dữ liệu mục tiêu 32 MB / chunk</text>
+  <line x1="831" y1="208" x2="831" y2="274" stroke="#D96B16" stroke-width="2.0" stroke-dasharray="5,3" marker-start="url(#arrOrange)" marker-end="url(#arrOrange)"/>
+  <rect x="694" y="229" width="274" height="24" rx="7" fill="#FDF3E7" stroke="#E8A46B" stroke-width="1.1"/>
+  <text x="831" y="245" font-family="DejaVu Sans, sans-serif" font-size="10.2" font-weight="bold" font-style="normal" fill="#8F4207" text-anchor="middle">Di chuyển chunk (Balancer, lệch &gt; 96 MB)</text>
+</svg>

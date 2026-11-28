@@ -1,20 +1,18 @@
 \chapter{Đặc tả Schema Thực tế và Mã Ba Truy vấn Thực nghiệm}
-\label{app:schema-queries}
-
-Phụ lục này cung cấp cấu trúc JSON mẫu khớp chính xác với các tệp dữ liệu \texttt{encounters.jsonl.gz} thực tế đã sinh (gồm $9$ trường gốc) và mã truy vấn MongoDB hoàn chỉnh của ba truy vấn đọc đại diện \texttt{Q1}, \texttt{Q3}, \texttt{Q4}.
+\label{app:schema}
 
 \section{Cấu trúc JSON Thực tế của Tài liệu \texttt{encounters}}
 
-Kịch bản \texttt{build\_datasets.py} chuyển đổi dữ liệu gốc từ Synthea CSV sang cấu trúc $9$ trường minh họa tại Đoạn mã~\ref{lst:encounter-schema} (trung bình $1{,}273.6\text{ B}$ JSON và $1{,}374.3\text{ B}$ BSON trên \texttt{D3M}). Khi nạp bằng \texttt{load\_dataset.py}, hai trường \texttt{START} và \texttt{STOP} được chuyển đổi sang kiểu ngày giờ nhị phân \texttt{ISODate}. Trước khi nạp, \texttt{prepare\_v2.py} sắp xếp tăng dần các tài liệu theo \texttt{START} trong từng gói tăng dần (\texttt{data/load\_v2/}) để mô phỏng thứ tự ghi thời gian thực.
+Kịch bản \texttt{scripts/build\_datasets.py} chuyển đổi dữ liệu gốc từ Synthea CSV sang cấu trúc 9 trường (trung bình $1{,}273.6\text{ B}$ JSON và $1{,}374.3\text{ B}$ BSON trên \texttt{D3M}). Khi nạp bằng \texttt{scripts/load\_dataset.py}, hai trường \texttt{START} và \texttt{STOP} được chuyển đổi sang kiểu ngày giờ nhị phân \texttt{ISODate}.
 
-\begin{lstlisting}[language=MongoJS, caption={Schema JSON thực tế ($9$ trường) của mỗi tài liệu trong collection \texttt{encounters}.}, label={lst:encounter-schema}]
+\begin{lstlisting}[language=MongoJS, caption={Cấu trúc JSON mẫu thực tế của một tài liệu trong collection \texttt{encounters}.}, label={lst:encounter-doc}]
 {
   "_id": "b116b69b-478a-d7a1-82cf-d9440c7c0c5f",
   "PATIENT": "b116b69b-478a-d7a1-b732-6d03d35d7388",
   "ORGANIZATION": "bce5b907-584b-345d-bbcf-912cf56cb6c3",
   "ENCOUNTERCLASS": "wellness",
-  "START": "2011-04-02T21:13:28Z",          // luu kieu ISODate (BSON datetime)
-  "STOP": "2011-04-02T21:28:28Z",           // luu kieu ISODate (BSON datetime)
+  "START": "2011-04-02T21:13:28Z",
+  "STOP": "2011-04-02T21:28:28Z",
   "TOTAL_CLAIM_COST": 136.8,
   "conditions": [
     { "CODE": "314529007", "DESCRIPTION": "Medication review due (situation)" }
@@ -25,18 +23,18 @@ Kịch bản \texttt{build\_datasets.py} chuyển đổi dữ liệu gốc từ 
 }
 \end{lstlisting}
 
-\section{Mã Truy vấn MongoDB cho Bộ Ba Truy vấn (\texttt{Q1}, \texttt{Q3}, \texttt{Q4})}
+\section{Mã Truy vấn MongoDB cho Bộ Ba Truy vấn (\texttt{Q1}, \texttt{Q2}, \texttt{Q3})}
 
-Đoạn mã~\ref{lst:queries-q1-q4} trình bày cú pháp MongoDB chính xác của ba truy vấn đọc được thực thi đồng nhất bởi \texttt{bench\_v2.py}.
+Đoạn mã~\ref{lst:queries} trình bày cú pháp đầy đủ của ba truy vấn đọc đại diện được thực thi bởi \texttt{scripts/bench\_v2.py} trong \texttt{TN1} và \texttt{TN3} (trong tệp script và thư mục \texttt{results/RQ3/}, hai truy vấn \texttt{Q2} và \texttt{Q3} được lưu dưới khóa tệp gốc \texttt{Q3} và \texttt{Q4}).
 
-\begin{lstlisting}[language=MongoJS, caption={Định nghĩa mã MongoDB của ba truy vấn đọc đại diện (\texttt{Q1}, \texttt{Q3}, \texttt{Q4}).}, label={lst:queries-q1-q4}]
+\begin{lstlisting}[language=MongoJS, caption={Mã truy vấn MongoDB cho \texttt{Q1}, \texttt{Q2} và \texttt{Q3}.}, label={lst:queries}]
 // Q1: Toan bo lich su kham cua 1 benh nhan (dung cho RQ1 va tai su dung cho RQ3)
 db.encounters.find(
   { PATIENT: pid },
   { START: 1, ENCOUNTERCLASS: 1, ORGANIZATION: 1, conditions: 1 }
 ).sort({ START: -1 })
 
-// Q3: Top 10 ma benh pho bien trong 1 quy (xuyen benh nhan, ket qua nho = 10 dong)
+// Q2 (ma tep goc Q3): Top 10 ma benh pho bien trong 1 quy (ket qua nho = 10 dong)
 db.encounters.aggregate([
   { $match: { START: { $gte: qStart, $lt: qEnd } } },
   { $unwind: "$conditions" },
@@ -45,9 +43,10 @@ db.encounters.aggregate([
   { $limit: 10 }
 ])
 
-// Q4: Luot kham danh gia thuoc (ma 314529007) trong 1 thang (xuyen benh nhan, ket qua lon)
+// Q3 (ma tep goc Q4): Luot kham danh gia thuoc (ma 314529007) trong 1 thang (ket qua lon)
 db.encounters.find(
   { "conditions.CODE": "314529007", START: { $gte: mStart, $lt: mEnd } },
   { PATIENT: 1, START: 1, ORGANIZATION: 1 }
 )
 \end{lstlisting}
+\FloatBarrier

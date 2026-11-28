@@ -1,32 +1,32 @@
 {
   "env": "SH-hash",
-  "dataset_dir": "data/load_v2/S1",
+  "dataset_dir": "/mnt/lamviec/keepskyclear.Obsidian/9_Projects/DBMS/data/load_v2/S1",
   "batch_size": 1000,
   "write_concern_w": "majority",
-  "start_utc": "2026-11-27T14:46:24.151401+00:00",
+  "start_utc": "2026-11-28T03:08:26.119932+00:00",
   "server_version": "7.0.48",
   "patients": {
     "docs": 1822,
-    "seconds": 0.04
+    "seconds": 0.03
   },
   "encounters": {
     "docs": 100000,
-    "seconds": 5.06,
-    "docs_per_s": 19776.9,
+    "seconds": 3.66,
+    "docs_per_s": 27324.4,
     "timeline": [
       {
-        "elapsed_s": 2.39,
+        "elapsed_s": 1.79,
         "docs": 50000
       },
       {
-        "elapsed_s": 5.06,
+        "elapsed_s": 3.66,
         "docs": 100000
       },
       {
-        "elapsed_s": 5.06,
+        "elapsed_s": 3.66,
         "docs": 100000
       }
     ]
   },
-  "end_utc": "2026-11-27T14:46:29.253879+00:00"
+  "end_utc": "2026-11-28T03:08:29.813075+00:00"
 }

@@ -1,44 +1,61 @@
 \chapter{Giới thiệu và Triển khai MongoDB}
-\label{chap:intro-mongodb}
-
-Chương này trình bày nền tảng kiến trúc của MongoDB theo trình tự từ mô hình lưu trữ tài liệu, bộ máy lưu trữ WiredTiger, chỉ mục B-Tree cho đến tập bản sao Replica Set. Phần cuối chương giới thiệu tổng quan mô hình triển khai cụm thử nghiệm \textbf{MongoDB 7.0 Community LTS} trên Microsoft Azure, còn bảng thông số phần cứng và lệnh cấu hình chi tiết được tách sang Phụ lục~\ref{app:infra-config}.
+\label{chap:mongodb-intro}
 
 \section{Tổng quan kiến trúc nền tảng của MongoDB}
 
 \subsection{Mô hình dữ liệu hướng tài liệu}
 
-MongoDB là hệ quản trị cơ sở dữ liệu NoSQL hướng tài liệu (\textit{document-oriented DBMS}), phù hợp với dữ liệu bán cấu trúc như hồ sơ bệnh án điện tử \cite{MongoDBSharding}. Đơn vị lưu trữ cơ bản là \textbf{tài liệu} (\textit{document}) \textemdash  cấu trúc khóa\textendash giá trị tương tự JSON, cho phép nhúng trực tiếp mảng hoặc tài liệu con bên trong một bản ghi. MongoDB mã hóa tài liệu dưới dạng nhị phân \textbf{BSON} (\textit{Binary JSON}) để hỗ trợ các kiểu chuyên biệt (như \texttt{ISODate}, số nguyên 64-bit) và tăng tốc phân tích khi đọc ghi.
+MongoDB là hệ quản trị cơ sở dữ liệu NoSQL hướng tài liệu (\textit{document-oriented DBMS}), phù hợp với dữ liệu bán cấu trúc như hồ sơ bệnh án điện tử~\cite{MongoDBSharding,Freire2016}. Đơn vị lưu trữ cơ bản là \textbf{tài liệu} (\textit{document}) - cấu trúc khóa-giá trị tương tự JSON, cho phép nhúng trực tiếp mảng hoặc tài liệu con bên trong một bản ghi. MongoDB mã hóa tài liệu dưới dạng nhị phân \textbf{BSON} (\textit{Binary JSON}) để hỗ trợ các kiểu dữ liệu chuyên biệt (như ngày giờ, số nguyên 64-bit) và tăng tốc phân tích khi đọc ghi.
 
-Các tài liệu cùng nghiệp vụ được gom vào từng \textbf{collection} (tương đương bảng trong RDBMS). Điểm khác biệt căn bản là các tài liệu trong cùng một collection không bị ép theo một lược đồ cột cứng; nhờ vậy toàn bộ chẩn đoán và kết quả xét nghiệm của một lượt khám bệnh có thể lưu gói gọn trong một tài liệu thuộc collection \texttt{encounters} mà không cần tách nhiều bảng và thực hiện phép nối phức tạp.
+Các tài liệu cùng nghiệp vụ được gom vào từng \textbf{collection}. Điểm khác biệt căn bản so với mô hình bảng quan hệ truyền thống là các tài liệu trong cùng một collection không bị ép theo một lược đồ cột cứng; nhờ vậy toàn bộ thông tin chẩn đoán và kết quả xét nghiệm của một lượt khám bệnh có thể lưu gói gọn trong một tài liệu thuộc collection \texttt{encounters} mà không cần tách nhiều bảng và thực hiện phép nối phức tạp.
 
 \subsection{Bộ máy lưu trữ WiredTiger}
 
-Kể từ phiên bản 3.2, \textbf{WiredTiger} là bộ máy lưu trữ mặc định của MongoDB \cite{MongoDBWiredTiger}, thay thế cho MMAPv1.
+Kể từ phiên bản 3.2, \textbf{WiredTiger} là bộ máy lưu trữ mặc định của MongoDB~\cite{MongoDBWiredTiger}, thay thế cho MMAPv1.
 
-\textbf{Kiểm soát tương tranh ở mức tài liệu:} Thay vì khóa ở phạm vi rộng (toàn bộ cơ sở dữ liệu hoặc collection) như MMAPv1, WiredTiger áp dụng cơ chế \textbf{kiểm soát tương tranh ở mức tài liệu} (\textit{document-level concurrency control}) kết hợp \textbf{kiểm soát tương tranh đa phiên bản} (\textit{Multi-Version Concurrency Control \textemdash  MVCC}). Nhờ lưu giữ các ảnh chụp dữ liệu (\textit{snapshot}) nhất quán theo phiên bản, các luồng đọc không bị chặn bởi luồng ghi và nhiều luồng ghi trên các tài liệu khác nhau có thể thực thi song song.
-
-\textbf{Cơ chế bộ nhớ đệm hai tầng và mối liên hệ với RQ1:} Hiệu năng đọc của MongoDB phụ thuộc trực tiếp vào hai tầng bộ nhớ đệm trên máy chủ:
-\begin{itemize}
-  \item \textbf{WiredTiger Internal Cache:} Vùng RAM nội bộ do tiến trình MongoDB quản lý (mặc định khoảng $50\%$ dung lượng $\text{RAM} - 1\text{ GB}$), lưu các trang dữ liệu và chỉ mục ở dạng \textit{đã giải nén}. Khi đầy tới $80\%$, hệ thống bắt đầu đẩy trang cũ ra ngoài (\textit{eviction}), và có thể chặn luồng ứng dụng nếu vượt $95\%$.
-  \item \textbf{Filesystem Cache (OS Page Cache):} Vùng bộ nhớ đệm tệp tin của hệ điều hành Linux (nằm trong phần RAM còn lại ngoài WiredTiger Cache), lưu các khối tệp \texttt{.wt} ở dạng \textit{còn nén} (Snappy, tỷ lệ nén $\sim 2.5\times$\textendash $3\times$), đóng vai trò lớp đệm trung gian giữa WiredTiger Cache và ổ đĩa SSD.
+\begin{itemize}[leftmargin=0.8cm, itemsep=4pt]
+  \item \textbf{Kiểm soát tương tranh ở mức tài liệu:} Thay vì khóa ở phạm vi rộng (toàn bộ cơ sở dữ liệu hoặc collection) như MMAPv1, WiredTiger áp dụng cơ chế \textbf{kiểm soát tương tranh ở mức tài liệu} (\textit{document-level concurrency control}) kết hợp \textbf{kiểm soát tương tranh đa phiên bản} (\textit{Multi-Version Concurrency Control - MVCC}). Nhờ lưu giữ các ảnh chụp dữ liệu (\textit{snapshot}) nhất quán theo phiên bản, các luồng đọc không bị chặn bởi luồng ghi và nhiều luồng ghi trên các tài liệu khác nhau có thể thực thi song song. Để bảo đảm an toàn dữ liệu bền vững, WiredTiger đồng thời ghi nhật ký thao tác trước khi xác nhận và định kỳ mỗi 60 giây thực hiện một đợt ghi đồng bộ toàn bộ các trang dữ liệu đã thay đổi xuống ổ đĩa (\textit{checkpoint}).
+  \item \textbf{Cơ chế bộ nhớ đệm hai tầng và mối liên hệ với RQ1:} Hiệu năng đọc của MongoDB phụ thuộc trực tiếp vào hai tầng bộ nhớ đệm trên nút lưu trữ:
+  \begin{itemize}[leftmargin=0.6cm, itemsep=3pt]
+    \item \textbf{WiredTiger Internal Cache:} Vùng RAM nội bộ do tiến trình MongoDB quản lý (mặc định khoảng $50\%$ dung lượng $\text{RAM} - 1\text{ GB}$), lưu các trang dữ liệu và chỉ mục ở dạng \textit{đã giải nén}. Khi vùng đệm này đầy tới $80\%$, hệ thống bắt đầu kích hoạt cơ chế đẩy các trang ít dùng ra khỏi bộ nhớ (\textit{eviction}) để nhường chỗ cho trang mới, và có thể tạm chặn luồng ứng dụng nếu mức chiếm dụng vượt $95\%$.
+    \item \textbf{Filesystem Cache (OS Page Cache):} Vùng bộ nhớ đệm tệp tin của nhân hệ điều hành (nằm ngoài tiến trình WiredTiger, tận dụng phần RAM còn dư), lưu các khối tệp dữ liệu ở dạng \textit{còn nén} (nén Snappy với tỷ lệ nén $\sim 2.5\times$\textendash $3\times$), đóng vai trò lớp đệm trung gian giữa WiredTiger Cache và ổ đĩa SSD.
+  \end{itemize}
 \end{itemize}
 
-Nếu chỉ giới hạn WiredTiger Cache nhưng bỏ ngỏ OS Page Cache (hoặc lớp Host Caching của ổ đĩa đám mây), toàn bộ tệp \texttt{.wt} nén vẫn nằm gọn trong RAM mà không phát sinh đọc ổ cứng. Do đó, thực nghiệm ấn định chặt đồng thời cả WiredTiger Cache lẫn tổng RAM cgroup (\texttt{MemoryMax}) và tắt Host Caching của đĩa Azure. Khi tập dữ liệu làm việc thực tế (\textit{working set}) vượt cả hai tầng RAM đệm này, máy đơn buộc phải đọc trực tiếp từ ổ SSD (\textit{pages read into cache} tăng vọt) \textemdash  tạo nền tảng trực tiếp cho \textbf{RQ1}.
+Nếu chỉ giới hạn WiredTiger Internal Cache mà không khống chế tổng dung lượng RAM khả dụng của nút dữ liệu, toàn bộ tệp dữ liệu đã nén vẫn có thể nằm gọn trong bộ nhớ đệm tệp của hệ điều hành mà không phát sinh thao tác đọc ổ cứng thực sự. Vì vậy, thực nghiệm khóa cứng đồng thời cả hai tầng RAM đệm này. Khi tập dữ liệu làm việc thực tế (\textit{working set}) vượt quá sức chứa của cả hai lớp đệm, nút đơn buộc phải đẩy trang cũ và đọc trực tiếp các trang dữ liệu từ ổ đĩa SSD, làm độ trễ tăng vọt và đặt nền móng trực tiếp cho câu hỏi nghiên cứu \textbf{RQ1}.
 
 \subsection{Chỉ mục B-Tree và Tập bản sao (Replica Set)}
 
-MongoDB xây dựng chỉ mục dựa trên cấu trúc cây cân bằng \textbf{B-Tree} (biến thể B+Tree trong WiredTiger), hỗ trợ chỉ mục đơn trường, chỉ mục phức hợp (như \texttt{\{PATIENT: 1, START: -1\}}) và chỉ mục đa khóa (\textit{multikey index}) trên trường mảng (như \texttt{\{"conditions.CODE": 1, START: 1\}}). Khi dữ liệu phình to lên hàng triệu bản ghi, chính các cây chỉ mục này cũng chiếm phần đáng kể trong bộ nhớ đệm.
+Khi dữ liệu tăng lên hàng triệu bản ghi, việc quét tuần tự toàn bộ collection sẽ tiêu tốn I/O rất lớn; do đó MongoDB tổ chức \textbf{chỉ mục B-Tree} (biến thể B+Tree trong WiredTiger) để định vị nhanh vị trí tài liệu theo khóa tìm kiếm. Hệ thống hỗ trợ từ chỉ mục đơn trường, chỉ mục phức hợp nhiều trường (như kết hợp mã bệnh nhân và thời điểm khám) cho đến chỉ mục đa khóa (\textit{multikey index}) đánh trực tiếp trên từng phần tử của mảng nhúng (như mảng mã chẩn đoán). Tuy nhiên, bản thân cây chỉ mục cũng tiêu tốn không gian bộ nhớ và cần nằm trong tập dữ liệu làm việc nóng để duy trì tốc độ tra cứu.
 
-Để đảm bảo tính sẵn sàng cao (\textit{High Availability}), MongoDB tổ chức các máy chủ thành \textbf{Tập bản sao} (\textit{Replica Set}), gồm một nút chính (\textit{Primary}) tiếp nhận thao tác ghi vào nhật ký \texttt{oplog} và các nút phụ (\textit{Secondary}) đồng bộ theo. Nhằm giữ đối chứng công bằng về chi phí ghi nhật ký \texttt{oplog} giữa cấu hình một máy và cụm phân mảnh, cấu hình đơn nút (\texttt{SA}) trong đề tài cũng được vận hành dưới dạng \textbf{Replica Set 1 thành viên (\texttt{rs0})}. Khi nhu cầu lưu trữ và xử lý vượt giới hạn một máy, MongoDB mở rộng ngang qua cơ chế phân mảnh phân tán trình bày ở Chương~\ref{chap:sharding-mechanism}.
+Ở tầng phân tán và quản trị độ tin cậy, \textbf{Tập bản sao} (\textit{Replica Set}) là đơn vị kiến trúc cốt lõi của MongoDB, không chỉ đơn thuần dùng để ghi nhật ký thay đổi mà đảm nhiệm bốn vai trò sống còn trong vận hành hệ thống:
 
-\section{Tổng quan mô hình triển khai trên Microsoft Azure}
-
-Cụm thực nghiệm được triển khai trên nền tảng \textbf{Microsoft Azure for Students} \cite{AzureStudents} với phiên bản cố định \textbf{MongoDB 7.0 Community LTS}, tuân thủ ba nguyên tắc cốt lõi:
-
-\begin{enumerate}
-  \item \textbf{Phân tách rõ vai trò nút trong cùng mạng ảo nội bộ:} Toàn bộ máy ảo đặt trong cùng mạng ảo (\textit{VNet}) với độ trễ nội bộ thấp, gồm nút sinh tải (\texttt{vm-client}), nút điều phối cụm (\texttt{vm-coord} chạy \texttt{mongos} và Config Server) và tối đa hai nút dữ liệu đối xứng (\texttt{vm-w1}, \texttt{vm-w2}, ưu tiên dòng \texttt{Standard\_D2s\_v5} không giới hạn CPU credit). Trong cấu hình máy đơn (\texttt{SA}), \texttt{vm-client} kết nối thẳng tới \texttt{vm-w1}.
-  \item \textbf{Kiểm soát chặt cả ba tầng bộ nhớ đệm:} Trên mỗi nút dữ liệu, ổ đĩa lưu trữ Managed Disk Standard SSD \texttt{E4} ($32\text{ GB}$) được thiết lập \textbf{\texttt{Host Caching = None}}, kết hợp giới hạn cứng \texttt{wiredTigerCacheSizeGB = 0.50} ($512\text{ MB}$) và systemd \texttt{MemoryMax = 1G}. Mức này bảo đảm ở mốc $100\text{K}$ dữ liệu nằm trọn trong RAM, còn từ $1\text{M}\rightarrow 3\text{M}$ máy đơn bị ép đọc SSD thực sự trong khi cụm $2$ máy chia đôi áp lực. Đồng thời CPU của \texttt{vm-client} luôn được giữ dưới $75\%$ để loại trừ nghẽn phía máy khách.
-  \item \textbf{Kiểm thử khô cục bộ trước khi chạy trên Azure:} Toàn bộ quy trình nạp dữ liệu, thiết lập chỉ mục và kịch bản đo được kiểm thử khô trên Docker cục bộ (\texttt{infra/docker/}) với mốc $100\text{K}$ trước khi chạy chính thức trong $3$ pha ($\sim 2$\textendash $2.5$ giờ) trên Azure.
+\begin{enumerate}[leftmargin=0.8cm, itemsep=4pt]
+  \item \textbf{Đảm bảo tính sẵn sàng cao và tự động chuyển đổi dự phòng:} Trong một Replica Set gồm nhiều thành viên (thường gồm 1 nút chính \textbf{Primary} và 2 nút phụ \textbf{Secondary}), mọi thao tác ghi đều đi vào Primary rồi nhân bản bất đồng bộ sang các Secondary thông qua nhật ký thao tác \texttt{oplog}. Nếu nút Primary gặp sự cố phần cứng hoặc mất kết nối, các thành viên còn lại tự động bầu chọn (theo cơ chế đồng thuận đa số) một nút Secondary lên làm Primary mới chỉ trong vài giây, loại bỏ hoàn toàn điểm lỗi đơn lẻ.
+  \item \textbf{Bảo vệ toàn vẹn dữ liệu đa bản sao:} Khi kết hợp với chính sách xác nhận ghi đa số, một giao dịch ghi chỉ được xác nhận thành công sau khi phần lớn các nút trong tập bản sao đã lưu nhận bản ghi vào nhật ký bền vững, tránh nguy cơ mất dữ liệu khi một máy chủ ngừng hoạt động đột ngột.
+  \item \textbf{Mở rộng năng lực đọc và cô lập tải phân tích:} Trong các hệ thống có lượng truy vấn lớn, ứng dụng có thể điều hướng các truy vấn thống kê hoặc đọc chấp nhận trễ nhẹ sang các nút Secondary để giải phóng tài nguyên CPU và bộ nhớ đệm cho nút Primary tập trung xử lý giao dịch trực tuyến.
+  \item \textbf{Khối cấu thành bắt buộc của cụm phân mảnh:} Trong kiến trúc cụm sharded của MongoDB, bản thân mỗi Shard lưu dữ liệu lẫn cụm máy chủ cấu hình (\textit{Config Server}) đều bắt buộc phải vận hành dưới dạng một Replica Set độc lập, kết hợp trực tiếp khả năng mở rộng ngang (Sharding) với khả năng chịu lỗi (Replication).
 \end{enumerate}
 
-Chi tiết cấu hình phần cứng, sơ đồ cổng dịch vụ và tham số MongoDB 7.0 cố định được trình bày tại \textbf{Phụ lục~\ref{app:infra-config}}, cùng mã nguồn công khai trên kho GitHub của nhóm \cite{ProjectRepo}.
+Trong phạm vi thực nghiệm của đề tài, để cân đối tài nguyên phần cứng giới hạn và giữ đối chứng công bằng về chi phí ghi nhật ký \texttt{oplog} giữa mô hình đơn nút với cụm phân mảnh, mỗi nút dữ liệu được triển khai dưới dạng Replica Set một thành viên. Hình~\ref{fig:mongodb-arch} tổng hợp lại toàn bộ luồng xử lý và kiến trúc lưu trữ nền tảng của một nút MongoDB.
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=\linewidth]{fig1_1_mongodb_architecture.pdf}
+\caption{Kiến trúc nền tảng bên trong một nút lưu trữ MongoDB, minh họa mối liên kết giữa mô hình tài liệu BSON, chỉ mục B-Tree, hai tầng bộ nhớ đệm (WiredTiger Internal Cache và OS Page Cache ngoài WiredTiger) và cơ chế đồng bộ qua nhật ký \texttt{oplog}.}
+\label{fig:mongodb-arch}
+\end{figure}
+\FloatBarrier
+
+\section{Tổng quan mô hình triển khai thực nghiệm}
+
+Thay vì phụ thuộc vào biến động hạ tầng đám mây dùng chung, toàn bộ thực nghiệm trên \textbf{MongoDB 7.0 Community} được triển khai trên các môi trường container \textbf{Docker} cô lập tài nguyên theo ba nguyên tắc kiến trúc nhằm bảo đảm tính tái lập và kiểm soát biến công bằng:
+
+\begin{enumerate}[leftmargin=0.8cm, itemsep=4pt]
+  \item \textbf{Tách biệt rạch ròi vai trò các thành phần trên mạng nội bộ riêng:} Mỗi nút dữ liệu, máy chủ cấu hình và bộ định tuyến truy vấn đều được đóng gói thành một tiến trình độc lập giao tiếp qua mạng nội bộ của cụm. Ở cấu hình đối chứng đơn nút, ứng dụng sinh tải kết nối thẳng vào một nút dữ liệu duy nhất; ở hai cấu hình phân mảnh, mọi truy vấn bắt buộc đi qua bộ định tuyến trung gian để phản ánh đúng chi phí điều phối phân tán.
+  \item \textbf{Khống chế đồng nhất tài nguyên RAM và CPU để kích hoạt bài toán tràn bộ nhớ đệm:} Mỗi nút dữ liệu bị giới hạn cứng ở mức $1\text{ GB}$ RAM tổng (trong đó $512\text{ MB}$ dành cho WiredTiger Internal Cache) và $2\text{ vCPU}$. Thiết lập này bảo đảm tại mốc nhỏ $100{,}000$ lượt khám dữ liệu nằm gọn trong bộ nhớ đệm, nhưng từ mốc $500{,}000$ đến $3{,}000{,}000$ lượt khám thì nút đơn bị ép tràn cả hai tầng RAM đệm và phải đọc đĩa, trong khi cụm hai shard chia đôi dung lượng làm việc nên vẫn duy trì được độ phủ bộ nhớ đệm cao hơn ở quy mô trung bình.
+  \item \textbf{Cách ly tiến trình sinh tải và giám sát nghẽn phía máy khách:} Tiến trình sinh tải chạy bên ngoài container trên máy chủ, được kiểm soát chặt chẽ để mức sử dụng CPU máy khách luôn duy trì dưới ngưỡng bão hòa $75\%$. Điều này bảo đảm độ trễ và thông lượng đo được phản ánh chính xác giới hạn của hệ quản trị cơ sở dữ liệu chứ không bị méo do thiếu tài nguyên sinh tải.
+\end{enumerate}
+
+Chi tiết kịch bản dựng cụm container, thông số phần cứng máy chủ thực thi, cổng dịch vụ và công cụ thu thập chỉ số hệ thống được trình bày đầy đủ tại \textbf{Phụ lục~\ref{app:infra}}.
+\FloatBarrier

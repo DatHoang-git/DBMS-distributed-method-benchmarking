@@ -1,0 +1,17 @@
+{
+  "timestamp_utc": "2026-11-28T05:23:30.177610+00:00",
+  "env": "SA",
+  "total_count": 1000000,
+  "total_size_mb": 1309.66,
+  "total_storage_mb": 450.88,
+  "total_index_mb": 212.37,
+  "shards": {
+    "single_node": {
+      "count": 1000000,
+      "size_mb": 1309.66,
+      "size_pct": 100.0,
+      "storage_mb": 450.88,
+      "index_mb": 212.37
+    }
+  }
+}

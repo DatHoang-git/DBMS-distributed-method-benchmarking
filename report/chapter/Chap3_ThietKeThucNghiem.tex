@@ -1,84 +1,112 @@
 \chapter{Phương pháp và Thiết kế Thực nghiệm}
 \label{chap:methodology}
 
-Chương này trình bày thiết kế thực nghiệm tinh gọn, tập trung trả lời trực diện ba câu hỏi nghiên cứu \texttt{RQ1}\textendash \texttt{RQ3} bằng ba môi trường cốt lõi (\texttt{SA}, \texttt{SH-hash}, \texttt{SH-range}), bốn mốc quy mô dữ liệu Synthea EHR ($100\text{K} \rightarrow 3\text{M}$ nạp tăng dần theo thời gian thực \texttt{START}), ba truy vấn đọc đại diện (\texttt{Q1}, \texttt{Q3}, \texttt{Q4}) cùng tải ghi mới, và ba bảng kết quả chỉ giữ các chỉ số lõi.
-
 \section{Dữ liệu Synthea EHR và Thứ tự Nạp Thời gian thực}
-\label{sec:datasets}
 
-Dữ liệu hồ sơ bệnh án điện tử được tạo bằng bộ công cụ chuẩn \textbf{Synthea} \cite{Walonoski2018}. Mỗi tài liệu trong collection chính \texttt{encounters} biểu diễn \textbf{một lượt khám bệnh}, gồm $9$ trường thực tế: \texttt{\_id}, \texttt{PATIENT}, \texttt{ORGANIZATION}, \texttt{ENCOUNTERCLASS}, \texttt{START} (\texttt{ISODate}), \texttt{STOP} (\texttt{ISODate}), \texttt{TOTAL\_CLAIM\_COST}, mảng chẩn đoán \texttt{conditions} (\texttt{CODE}, \texttt{DESCRIPTION}) và mảng xét nghiệm \texttt{observations} (\texttt{CATEGORY}, \texttt{CODE}, \texttt{VALUE}, \texttt{UNITS}). Cấu trúc JSON mẫu đầy đủ được đặt tại \textbf{Phụ lục~\ref{app:schema-queries}}.
+Dữ liệu hồ sơ bệnh án điện tử được tạo bằng bộ công cụ \textbf{Synthea}~\cite{Walonoski2018}. Mỗi tài liệu trong collection \texttt{encounters} biểu diễn một lượt khám gồm 9 trường thực tế: mã lượt khám, mã bệnh nhân (\texttt{PATIENT}), mã cơ sở y tế, loại hình khám, thời điểm bắt đầu (\texttt{START}), thời điểm kết thúc, tổng chi phí, mảng mã chẩn đoán và mảng kết quả xét nghiệm. Cấu trúc JSON mẫu đầy đủ được đặt tại \textbf{Phụ lục~\ref{app:schema}}.
 
-Đề tài khảo sát \textbf{bốn mốc quy mô lồng nhau theo bệnh nhân} ($\texttt{D100K} \subset \texttt{D500K} \subset \texttt{D1M} \subset \texttt{D3M}$) với hạt giống cố định $\texttt{SEED} = 42$ (Bảng~\ref{tab:datasets-summary}). Tại mốc lớn nhất \texttt{D3M}, tổng dung lượng BSON giải nén đạt $3{,}932.0\text{ MB}$ ($\approx 3.84\text{ GB}$), cộng khoảng $1.15\text{ GB}$ chỉ mục tạo thành tổng dung lượng $\approx 5.0\text{ GB}$ (tương ứng $\sim 1.95\text{ GB}$ tệp \texttt{.wt} nén Snappy trên đĩa SSD), vượt xa mức giới hạn bộ nhớ đệm $0.50\text{ GB}$ WiredTiger Cache / $1.0\text{ GB}$ cgroup của một máy đơn.
+Đề tài khảo sát \textbf{bốn mốc quy mô lồng nhau theo bệnh nhân} (\texttt{D100K} $\subset$ \texttt{D500K} $\subset$ \texttt{D1M} $\subset$ \texttt{D3M}) với hạt giống ngẫu nhiên cố định (\texttt{SEED = 42}), tổ chức thành bốn gói nạp tăng dần nối tiếp như tổng hợp tại Bảng~\ref{tab:dataset-stats}.
 
 \begin{table}[!htb]
 \centering
-\caption{Thống kê bốn mốc dữ liệu Synthea EHR lồng nhau theo \texttt{PATIENT} (\texttt{V2\_ANALYSIS.json}).}
-\label{tab:datasets-summary}
-\renewcommand{\arraystretch}{1.22}
-\begin{tabularx}{\linewidth}{l r r r r X}
+\caption{Thống kê bốn mốc dữ liệu Synthea EHR và quan hệ cộng dồn từ các gói nạp tăng dần.}
+\label{tab:dataset-stats}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{5pt}
+\small
+\begin{tabularx}{\linewidth}{l >{\raggedright\arraybackslash}X r r r r r}
 \toprule
-\textbf{Mốc} & \textbf{Lượt khám} & \textbf{Số \texttt{PATIENT}} & \textbf{BSON (MB)} & \textbf{Gzip (MB)} & \textbf{Vai trò sử dụng} \\
+\textbf{Mốc} & \textbf{Phần dữ liệu cộng dồn} & \textbf{Lượt khám} & \textbf{Bệnh nhân} & \textbf{BSON (MB)} & \textbf{Gzip (MB)} & \textbf{Chunk (32 MB)} \\
 \midrule
-\texttt{D100K} & $100{,}000$   & $1{,}822$  & $130.3$   & $11.44$  & \texttt{TN1}, độ dốc \texttt{TN3}, kiểm thử khô \\
-\texttt{D500K} & $500{,}000$   & $9{,}202$  & $656.5$   & $70.79$  & \texttt{TN1}, độ dốc \texttt{TN3} \\
-\texttt{D1M}   & $1{,}000{,}000$ & $18{,}443$ & $1{,}309.7$ & $144.65$ & \texttt{TN1}, \texttt{TN2} (chính), \texttt{TN3} (chính) \\
-\texttt{D3M}   & $3{,}000{,}000$ & $55{,}448$ & $3{,}932.0$ & $440.78$ & \texttt{TN1}, độ dốc \texttt{TN3} \\
+\texttt{D100K} & Gói 1 ($100{,}000$ khám / $1{,}822$ BN) & 100,000 & 1,822 & 130.3 & 11.44 & $\sim 4.1$ \\
+\texttt{D500K} & Gói 2 ($+400{,}000$ khám / $+7{,}380$ BN) & 500,000 & 9,202 & 656.5 & 70.79 & $\sim 20.5$ \\
+\texttt{D1M} & Gói 3 ($+500{,}000$ khám / $+9{,}241$ BN) & 1,000,000 & 18,443 & 1,309.7 & 144.65 & $\sim 40.9$ \\
+\texttt{D3M} & Gói 4 ($+2{,}000{,}000$ khám / $+37{,}005$ BN) & 3,000,000 & 55,448 & 3,932.0 & 440.78 & $\sim 122.9$ \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\textbf{Chuẩn hóa thứ tự nạp theo thời gian thực (\texttt{data/load\_v2/}):} Trong tệp xuất thô từ Synthea, các lượt khám của cùng một bệnh nhân nằm liền kề nhau ($2{,}000$ dòng đầu của \texttt{D1M} chỉ chứa $48$ bệnh nhân), tạo tính cục bộ trang đĩa nhân tạo không phản ánh hoạt động ghi xen kẽ của bệnh viện. Bằng kịch bản \texttt{prepare\_v2.py}, dữ liệu được tách thành các gói tăng dần và \textbf{sắp xếp tăng dần theo \texttt{START}} ($2{,}000$ dòng đầu chứa $414$ bệnh nhân với $1{,}697$ lần chuyển bệnh nhân). Cách tổ chức này vừa tái hiện đúng phân bố trang đĩa thực tế, vừa cho phép \textbf{nạp nối tiếp} $\texttt{100K} \rightarrow \texttt{500K} \rightarrow \texttt{1M} \rightarrow \texttt{3M}$ chỉ một lần cho mỗi cấu hình.
+Nhìn vào cột nguồn Gzip của Bảng~\ref{tab:dataset-stats} ($11.4$ đến $440.8\text{ MB}$), tập dữ liệu ban đầu có vẻ khá nhỏ so với bộ nhớ RAM; tuy nhiên khi nạp vào MongoDB, dung lượng thực tế quyết định thời điểm tràn bộ nhớ đệm của bộ máy WiredTiger lại phân tách thành ba lớp khác nhau. Bảng~\ref{tab:wt-layers} minh họa cụ thể tỷ lệ giữa ba lớp dung lượng này tại mốc chuẩn \texttt{D1M} ($1{,}000{,}000$ lượt khám, đo trên cấu hình \texttt{SH-hash}).
+
+\begin{table}[!htb]
+\centering
+\caption{Ba lớp dung lượng lưu trữ của bộ máy WiredTiger đo thực tế tại mốc \texttt{D1M} ($1{,}000{,}000$ lượt khám, cấu hình \texttt{SH-hash}).}
+\label{tab:wt-layers}
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{tabularx}{\linewidth}{L{4.0cm} R{2.1cm} C{2.3cm} >{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Lớp dung lượng} & \textbf{Giá trị tại \texttt{D1M}} & \textbf{Tỷ lệ so với BSON} & \textbf{Vai trò đối với hành vi bộ nhớ đệm} \\
+\midrule
+\textbf{Dữ liệu BSON giải nén} & 1,309.7 MB & 1.00$\times$ & Trực tiếp chiếm dụng WiredTiger Internal Cache ($512\text{ MB}$/nút) và quyết định ngưỡng đẩy trang. \\
+\midrule
+\textbf{Lưu trữ nén Snappy trên đĩa} & 444.1 MB & 0.34$\times$ (\textit{nén 2.95$\times$}) & Chiếm dung lượng tệp thực tế trên ổ SSD và trong OS Page Cache (trên \texttt{SA} là $450.9\text{ MB}$). \\
+\midrule
+\textbf{Chỉ mục B-Tree} (\textit{khóa chính + 3 chỉ mục phụ + khóa băm}) & 225.9 MB & 0.17$\times$ & Chiếm chỗ đồng thời trong bộ nhớ đệm lẫn trên đĩa để định vị nhanh bản ghi (trên \texttt{SA} là $212.4\text{ MB}$). \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Chính sự chênh lệch dung lượng giữa ba lớp ở Bảng~\ref{tab:wt-layers} lý giải trực tiếp cách chọn bốn mốc quy mô trong Bảng~\ref{tab:dataset-stats} để khảo sát câu hỏi nghiên cứu \texttt{RQ1} dưới giới hạn $512\text{ MB}$ Internal Cache và $1\text{ GB}$ RAM tổng mỗi nút. Tại mốc \texttt{D100K} ($130.3\text{ MB}$ BSON), cả dữ liệu lẫn chỉ mục nằm gọn trong $512\text{ MB}$ Internal Cache của một nút đơn. Ngay khi lên mốc \texttt{D500K} ($656.5\text{ MB}$ BSON, chưa tính chỉ mục), nút đơn bắt đầu vượt ngưỡng $512\text{ MB}$ cache nội bộ và buộc phải đẩy trang ra đọc đĩa, trong khi cụm hai shard chia đôi tập dữ liệu ($\sim 328\text{ MB}$/shard) vẫn giữ gọn trong RAM. Đến mốc \texttt{D1M} ($1{,}309.7\text{ MB}$ BSON) và đặc biệt là \texttt{D3M} ($3{,}932.0\text{ MB}$ BSON cùng hàng trăm MB chỉ mục), tổng dung lượng vượt xa cả hai tầng RAM đệm $1\text{ GB}$ của mỗi nút, đẩy hệ thống sang trạng thái đọc đĩa nặng.
+
+Để bảo đảm bốn mốc dữ liệu lồng nhau hoàn toàn theo danh sách bệnh nhân (\texttt{D100K} $\subset$ \texttt{D500K} $\subset$ \texttt{D1M} $\subset$ \texttt{D3M}) mà vẫn sát với tăng trưởng vận hành thực tế, tập lớn nhất $3{,}000{,}000$ lượt khám được tách thành bốn gói dữ liệu không trùng lặp (Bảng~\ref{tab:dataset-stats}) để nạp nối tiếp qua từng giai đoạn mà không cắt đôi hồ sơ của cùng một bệnh nhân, đồng thời xóa sạch toàn bộ bản ghi thử phát sinh sau bài đo ghi tại mốc \texttt{1M} và thu gọn tệp trước khi nạp tiếp lên \texttt{3M}. Thiết kế nạp tăng dần kết hợp sắp xếp lại theo thứ tự thời gian khám \texttt{START} bên trong từng gói đem lại ba tác dụng đồng thời: giữ nguyên tập bệnh nhân của mốc nhỏ khi mở rộng quy mô để so sánh độ dốc không bị lệch mẫu; phá vỡ tính cục bộ nhân tạo của tệp Synthea gốc (nơi các lượt khám của cùng một bệnh nhân đứng liền nhau khiến $2{,}000$ dòng đầu của \texttt{D1M} chỉ có 48 bệnh nhân, sau khi sắp theo \texttt{START} trải rộng ra 414 bệnh nhân với $1{,}697$ lần chuyển bệnh nhân, tái hiện đúng hoạt động ghi xen kẽ theo thời gian thực của bệnh viện); và cho phép cây chỉ mục B-Tree phình to tự nhiên mà chỉ cần nạp một lượt duy nhất $3{,}000{,}000$ bản ghi thay vì xóa đi dựng lại bốn lần.
+\FloatBarrier
 
 \section{Ba Môi trường Đối chứng, Truy vấn và Chỉ mục}
 
-\subsection{Ba môi trường cốt lõi}
+\subsection{Ba môi trường cốt lõi (MongoDB 7.0)}
 
-Thực nghiệm vận hành ba cấu hình trên \textbf{MongoDB 7.0 Community LTS} (thông số phần cứng và cổng dịch vụ chi tiết đặt tại Phụ lục~\ref{app:infra-config}):
-\begin{enumerate}
-  \item \textbf{\texttt{SA} (1 máy dữ liệu):} Replica Set $1$ thành viên (\texttt{rs0}) trên \texttt{vm-w1}; máy sinh tải \texttt{vm-client} kết nối trực tiếp tới \texttt{vm-w1:27017} (không qua \texttt{mongos}).
-  \item \textbf{\texttt{SH-hash} (2 máy dữ liệu \textemdash  băm theo bệnh nhân):} Gồm \texttt{vm-coord} (\texttt{mongos} + Config Server) và hai nút dữ liệu đối xứng \texttt{vm-w1}, \texttt{vm-w2}; collection \texttt{encounters} phân mảnh theo \texttt{\{PATIENT: "hashed"\}} với \texttt{numInitialChunks: 16}.
-  \item \textbf{\texttt{SH-range} (2 máy dữ liệu \textemdash  khoảng theo thời gian):} Cùng kiến trúc $2$ shard như trên, phân mảnh theo \texttt{\{START: 1, PATIENT: 1\}}.
+Để loại bỏ hoàn toàn sai lệch phần cứng, cả ba môi trường đều được chạy tuần tự trên \textbf{cùng một máy chủ vật lý} với thông số tài nguyên container khóa cứng đồng nhất:
+
+\begin{enumerate}[leftmargin=0.8cm, itemsep=4pt]
+  \item \textbf{\texttt{SA} (1 nút dữ liệu đơn lẻ):} Một nút dữ liệu chạy dạng Replica Set 1 thành viên; bộ sinh tải kết nối trực tiếp vào nút này (không qua bộ định tuyến trung gian).
+  \item \textbf{\texttt{SH-hash} (2 shard - chia băm theo mã bệnh nhân):} Gồm một nút định tuyến \texttt{mongos}, một nút Config Server và hai shard dữ liệu đối xứng; collection \texttt{encounters} được phân mảnh băm theo \texttt{PATIENT} và chia sẵn không gian băm đều ra hai shard ngay từ lúc khởi tạo.
+  \item \textbf{\texttt{SH-range} (2 shard - chia khoảng theo thời gian):} Cùng kiến trúc 2 shard như trên, phân mảnh theo khoảng tăng dần của cặp khóa thời điểm khám \texttt{START} và mã bệnh nhân \texttt{PATIENT}, giữ các bản ghi gần nhau về mặt thời gian trên cùng dải khóa.
 \end{enumerate}
 
-Trên mọi nút dữ liệu (\texttt{vm-w1}, \texttt{vm-w2}), bốn tham số sau được khóa cố định: \texttt{wiredTigerCacheSizeGB = 0.50}, systemd \texttt{MemoryMax = 1G}, ổ đĩa Standard SSD \texttt{E4} tắt \texttt{Host Caching = None}, kích thước chunk $32\text{ MB}$, và chính sách \texttt{writeConcern: \{w: "majority"\}}, \texttt{readConcern: \{level: "local"\}}.
+Trên mọi nút dữ liệu thuộc ba cấu hình, tài nguyên và chính sách nhất quán được khóa đồng nhất: $512\text{ MB}$ WiredTiger Internal Cache, $1\text{ GB}$ giới hạn RAM tổng, $2\text{ vCPU}$, kích thước chunk $32\text{ MB}$, xác nhận ghi đa số kèm nhật ký đĩa và đọc mức cục bộ (thông số container, máy chủ và câu lệnh cấu hình xem tại Phụ lục~\ref{app:infra}).
 
 \subsection{Ba truy vấn đọc đại diện và bộ chỉ mục đồng nhất}
 
-Thay vì lặp lại nhiều truy vấn cùng bản chất, thiết kế tinh gọn sử dụng đúng \textbf{ba truy vấn đọc} đại diện cho ba hình thái rõ rệt (mã MongoDB đầy đủ xem tại \textbf{Phụ lục~\ref{app:schema-queries}}):
-\begin{itemize}
-  \item \textbf{\texttt{Q1} (Theo 1 bệnh nhân \textemdash  dùng cho \texttt{RQ1} và tái sử dụng cho \texttt{RQ3}):} Truy xuất toàn bộ lịch sử khám của một bệnh nhân (\texttt{PATIENT}, sắp xếp \texttt{START: -1}, chiếu các trường chính). Việc lấy mẫu \texttt{pid} ngẫu nhiên đều trên \textbf{$100\%$ danh sách bệnh nhân} của từng mốc (cố định \texttt{SEED = 42}) bảo đảm tập dữ liệu làm việc mở rộng tỷ lệ thuận với quy mô $100\text{K} \rightarrow 3\text{M}$ và mọi môi trường chạy đúng cùng chuỗi yêu cầu.
-  \item \textbf{\texttt{Q3} (Xuyên bệnh nhân, kết quả nhỏ \textemdash  dùng cho \texttt{RQ3}):} Thống kê Top $10$ mã bệnh phổ biến nhất trong $1$ quý (\texttt{aggregate} lọc theo khoảng \texttt{START}, gom nhóm mã chẩn đoán). Tại \texttt{D1M}, mỗi quý quét trung bình $\sim 18{,}300$ lượt khám nhưng chỉ trả về $10$ dòng kết quả.
-  \item \textbf{\texttt{Q4} (Xuyên bệnh nhân, kết quả lớn \textemdash  dùng cho \texttt{RQ3}):} Liệt kê các lượt khám cần đánh giá thuốc (mã \texttt{314529007}) trong $1$ tháng (\texttt{find} lọc mã bệnh và khoảng \texttt{START}). Tại \texttt{D1M}, mỗi tháng trả về trung bình $\sim 834$ tài liệu (so với mã tiểu đường type 2 vốn chỉ trả về $\sim 4.4$ tài liệu/tháng), thể hiện rõ chi phí truyền tải kết quả lớn qua mạng.
+Đề tài xây dựng bộ ba truy vấn đọc đại diện trực tiếp cho các tình huống khai thác dữ liệu EHR thực tế (\texttt{Q1}, \texttt{Q2}, \texttt{Q3}, mã truy vấn chi tiết đặt tại Phụ lục~\ref{app:schema}):
+
+\begin{itemize}[leftmargin=0.8cm, itemsep=4pt]
+  \item \textbf{\texttt{Q1} (Tra cứu theo 1 bệnh nhân - dùng cho \texttt{RQ1} và tái sử dụng cho \texttt{RQ3}):} Truy xuất toàn bộ lịch sử khám của một bệnh nhân, sắp xếp giảm dần theo thời gian và chỉ chiếu các trường cần thiết. Việc lấy mẫu ngẫu nhiên đều trên $100\%$ danh sách bệnh nhân của từng mốc bảo đảm tập dữ liệu làm việc mở rộng tỷ lệ thuận với quy mô dữ liệu.
+  \item \textbf{\texttt{Q2} (Thống kê xuyên bệnh nhân, kết quả nhỏ - dùng cho \texttt{RQ3}):} Thống kê Top 10 mã bệnh phổ biến nhất trong 1 quý thông qua pipeline tổng hợp (lọc thời gian, bung mảng chẩn đoán, gom nhóm đếm và lấy Top 10). Tại mốc \texttt{1M}, mỗi quý quét trung bình $\sim 18{,}300$ lượt khám nhưng chỉ trả về đúng 10 dòng kết quả.
+  \item \textbf{\texttt{Q3} (Liệt kê xuyên bệnh nhân, kết quả lớn - dùng cho \texttt{RQ3}):} Liệt kê các lượt khám cần đánh giá thuốc trong 1 tháng. Tại mốc \texttt{1M}, mỗi tháng trả về trung bình $\sim 834$ tài liệu, thể hiện rõ chi phí truyền tải tập kết quả lớn qua mạng.
 \end{itemize}
 
-Ba chỉ mục phụ được tạo đồng nhất trên mọi môi trường trước khi đo để tránh chênh lệch giữa \texttt{COLLSCAN} và \texttt{IXSCAN}: (1) \texttt{\{PATIENT: 1, START: -1\}} cho \texttt{Q1}; (2) \texttt{\{START: 1\}} cho \texttt{Q3}; và (3) \texttt{\{"conditions.CODE": 1, START: 1\}} cho \texttt{Q4} (kèm chỉ mục bắt buộc của khóa phân mảnh tương ứng). Đối với \texttt{Q3} và \texttt{Q4}, cả \texttt{SH-hash} và \texttt{SH-range} duyệt xoay vòng \textbf{cùng một bộ cửa sổ thời gian cố định} ($12$ quý và $36$ tháng trong $3$ năm gần nhất), ghi nhận số shard bị chạm như một biến kết quả khách quan thay vì lọc chọn cửa sổ theo biên chunk.
+Ba chỉ mục phụ được tạo đồng nhất trên mọi môi trường trước khi nạp dữ liệu để loại bỏ sai lệch do quét toàn bảng: chỉ mục phức hợp theo bệnh nhân và thời gian cho \texttt{Q1}; chỉ mục theo thời gian cho \texttt{Q2}; và chỉ mục phức hợp theo mã chẩn đoán và thời gian cho \texttt{Q3} (kèm chỉ mục bắt buộc của khóa phân mảnh tương ứng). Đối với \texttt{Q2} và \texttt{Q3}, cả \texttt{SH-hash} và \texttt{SH-range} duyệt xoay vòng \textbf{cùng một bộ cửa sổ thời gian cố định} (12 quý và 36 tháng trong 3 năm gần nhất), ghi nhận số shard bị chạm như một biến kết quả khách quan.
 
 \section{Thiết kế Ba Thực nghiệm và Cơ sở Lựa chọn Chỉ số Chính}
-\label{sec:experiments-metrics}
 
-Trước mọi bài đo đọc và ghi trực tuyến, kịch bản \texttt{bench\_v2.py} tự động tiền kiểm trạng thái Balancer chuẩn MongoDB 7.0 qua \texttt{admin.command("balancerStatus")} bảo đảm \texttt{mode == "off"}, \texttt{inBalancerRound == false} và không còn migration đang chạy. Đồng thời CPU của \texttt{vm-client} được giám sát liên tục dưới $75\%$ (nếu ở $8$ luồng \texttt{vm-client} vượt $75\%$ CPU thì hạ đồng nhất dải luồng của \texttt{TN1} xuống $1 / 2 / 4$). Bảng~\ref{tab:three-experiments} tóm tắt trọn vẹn ba thực nghiệm và quy trình chạy.
+Trước mọi lượt đo đọc (\texttt{TN1} và \texttt{TN3}), hệ thống luôn chạy riêng một pha làm nóng $20\text{s}$ trước khi bắt đầu bấm giờ và chụp bộ đếm nội bộ của cơ sở dữ liệu, bảo đảm kết quả thông lượng, độ trễ, bộ nhớ đệm và lưu lượng mạng chỉ phản ánh pha đo ổn định ($30\text{s}$). Bảng~\ref{tab:exp-design} tóm tắt thiết lập của ba thực nghiệm tương ứng với ba câu hỏi nghiên cứu.
 
 \begin{table}[!htb]
 \centering
-\caption{Tổng hợp ba thực nghiệm cốt lõi tương ứng với \texttt{RQ1}, \texttt{RQ2} và \texttt{RQ3}.}
-\label{tab:three-experiments}
-\renewcommand{\arraystretch}{1.24}
-\begin{tabularx}{\linewidth}{c c L{3.0cm} X}
+\caption{Thiết kế ba thực nghiệm cốt lõi và chỉ số tổng hợp vào kết quả.}
+\label{tab:exp-design}
+\renewcommand{\arraystretch}{1.22}
+\small
+\begin{tabularx}{\linewidth}{c c L{3.6cm} >{\raggedright\arraybackslash}X}
 \toprule
-\textbf{Mã} & \textbf{RQ} & \textbf{Môi trường \& Mốc} & \textbf{Thiết lập chạy \& Chỉ số đưa vào bảng} \\
+\textbf{Mã} & \textbf{RQ} & \textbf{Môi trường \& Mốc} & \textbf{Thiết lập chạy \& Chỉ số đưa vào kết quả} \\
 \midrule
-\texttt{TN1} & \textbf{RQ1} & \texttt{SA} vs \texttt{SH-hash}; $100\text{K}, 500\text{K}, 1\text{M}, 3\text{M}$ & Chạy \texttt{Q1} ở $1 / 4 / 8$ luồng; làm nóng $20$\textendash $30\text{s}$, đo $\ge 30\text{s}$ và $\ge 2{,}000$ truy vấn, lặp $3$ lần. \textbf{Bảng 1:} \texttt{p95} (ms), \texttt{QPS}. \\
-\addlinespace
-\texttt{TN2} & \textbf{RQ2} & \texttt{SA}, \texttt{SH-hash}, \texttt{SH-range}; mốc \texttt{1M} & (1) Nạp \texttt{1M}, bật Balancer chờ ổn định, đọc \texttt{getShardDistribution()} lấy \% dung lượng MB Máy 1/Máy 2. (2) Tắt Balancer, chạy $4$ luồng ghi mới (\texttt{START = now()}, \texttt{PATIENT} đều) trong $60\text{s} \times 3$ lần. \textbf{Bảng 2:} \% dữ liệu, \% lượng ghi (\texttt{opcounters.insert}), \texttt{inserts/s}, \texttt{p95}. \\
-\addlinespace
-\texttt{TN3} & \textbf{RQ3} & \texttt{SH-hash} vs \texttt{SH-range} tại \texttt{1M} (+ đo độ dốc $100\text{K}\rightarrow 3\text{M}$ trên \texttt{SH-hash}) & Tái dùng \texttt{Q1} từ \texttt{TN1}; chạy \texttt{Q3}, \texttt{Q4} ở $1$ luồng ($\ge 30\text{s}$, $\ge 300$ truy vấn, lặp $3$ lần); chụp \texttt{explain("executionStats")} và đo $15\text{s}$ lưu lượng mạng rảnh trên \texttt{mongos} để trừ nền. \textbf{Bảng 3:} số máy hỏi ($1/2$ hay $2/2$), \texttt{p95} (ms), mạng (\texttt{KB/req}). \\
+\texttt{TN1} & \textbf{RQ1} & \texttt{SA} vs \texttt{SH-hash}; \texttt{100K, 500K, 1M, 3M} & Chạy \texttt{Q1} ở \texttt{1 / 4 / 8} luồng; làm nóng $20\text{s}$ tách biệt, sau đó đo $\ge 30\text{s}$ và $\ge 2{,}000$ truy vấn, lặp 3 lần. \textbf{Bảng~\ref{tab:rq1-results}:} \texttt{p95} (ms), \texttt{QPS}, tỷ lệ trúng bộ nhớ đệm (\%) và số trang đọc đĩa trên mỗi truy vấn. \\
+\midrule
+\texttt{TN2} & \textbf{RQ2} & \texttt{SA}, \texttt{SH-hash}, \texttt{SH-range}; mốc \texttt{1M} & (1) Nạp \texttt{1M}, cân bằng ổn định (và thu gọn tệp trên \texttt{SH-range}), đọc số bản ghi và tỷ lệ dung lượng MB trên Shard 1 và Shard 2. (2) Tắt Balancer, chạy 4 luồng ghi mới theo thời gian hiện tại trong $60\text{s}$ lặp 3 lần (dọn sạch bản ghi thử giữa mỗi lần lặp). \textbf{Bảng~\ref{tab:rq2-results}:} \% dữ liệu (kèm số bản ghi), \% lượng ghi mới, \texttt{inserts/s}, \texttt{p95}. \\
+\midrule
+\texttt{TN3} & \textbf{RQ3} & \texttt{SH-hash} vs \texttt{SH-range} tại \texttt{1M} (+ độ dốc \texttt{100K} $\rightarrow$ \texttt{3M} trên \texttt{SH-hash}) & Đo đầy đủ cả \texttt{Q1}, \texttt{Q2}, \texttt{Q3} trên cả \texttt{SH-hash} và \texttt{SH-range} ở 1 luồng (làm nóng $20\text{s}$ tách biệt, đo $\ge 30\text{s}$, lặp 3 lần tại mọi mốc); thu thập kế hoạch thực thi và đo $15\text{s}$ lưu lượng nền trên tất cả các nút để tính tách bạch băng thông phía máy khách và băng thông nội bộ giữa các shard với bộ định tuyến. \textbf{Bảng~\ref{tab:rq3-results} \& Bảng~\ref{tab:rq3-slope}:} số shard hỏi, \texttt{p95}, \texttt{QPS}, mạng máy khách, mạng nội bộ (\texttt{KB/req}), hệ số khuếch đại và chỉ số đọc đĩa theo quy mô. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\textbf{Cơ sở lựa chọn chỉ số chính (và lý do loại bỏ các chỉ số khác):}
-\begin{itemize}
-  \item \textbf{Cặp \texttt{p95} và \texttt{QPS} (hoặc \texttt{inserts/s}):} \texttt{QPS}/\texttt{inserts/s} đo sức gánh tổng thể khi nhiều luồng chạy song song, còn \texttt{p95} (phân vị $95\%$ \textemdash  $95\%$ truy vấn nhanh hơn mốc này) đo thời gian chờ thực tế đủ nhạy để phát hiện dấu hiệu tràn RAM/đĩa. Báo cáo \textit{không} dùng giá trị trung bình (\textit{Mean}) vì dễ bị méo bởi ngoại lai, không dùng \texttt{p50} làm chỉ số chính vì che lấp phần truy vấn bị trượt cache, và không dùng \texttt{p99}/\texttt{Max} vì quá nhạy với nhiễu ngẫu nhiên trên hạ tầng đám mây.
-  \item \textbf{Chỉ số trực tiếp, không chèn cột tính lại:} Các cột như chênh lệch (\texttt{SH $-$ SA}), hệ số tăng tốc (\texttt{SH / SA}) hay nhãn \textquotedblleft bên thắng\textquotedblright  không được đưa vào bảng để giữ bảng gọn và dễ đối chiếu trực tiếp bằng mắt.
-  \item \textbf{Chỉ số phụ ghi log ngầm:} Số trang đọc từ đĩa (\texttt{pages\_read\_into\_cache}) và nhật ký \texttt{sar} (CPU\%, Disk read/write) vẫn được ghi lại trong từng lượt chạy để trích dẫn ngắn gọn khi giải thích nguyên nhân phía dưới mỗi bảng.
+\textbf{Lý do chọn mốc chuẩn \texttt{D1M} và bước chuẩn bị cho \texttt{SH-range} trong \texttt{TN2} và \texttt{TN3}:} Hai thực nghiệm đối chứng chiến lược phân mảnh (\texttt{TN2} và \texttt{TN3}) sử dụng mốc chuẩn \textbf{\texttt{D1M}} ($1{,}000{,}000$ lượt khám, $1{,}309.7\text{ MB}$ BSON) vì ba lý do: (i) quy mô này tạo ra khoảng $41$ chunk ($32\text{ MB}$), vượt xa ngưỡng cân bằng $96\text{ MB}$ của MongoDB 7.0 để kích hoạt quá trình di chuyển dữ liệu thực thụ của Balancer giữa hai shard; (ii) quy mô đủ lớn để cả truy vấn điểm (\texttt{Q1} đã bắt đầu tràn một phần RAM đệm nội bộ) lẫn truy vấn phân tích theo khoảng thời gian (\texttt{Q2} quét $\sim 18{,}300$ bản ghi/quý, \texttt{Q3} trả về $\sim 834$ bản ghi/tháng) bộc lộ rõ sự khác biệt về tỉa mảnh, độ trễ và băng thông mạng; và (iii) giữ thời gian cân bằng chunk cùng bảo trì lưu trữ trong phạm vi hợp lý. Riêng trên \texttt{SH-range}, sau khi nạp \texttt{D1M} và để Balancer tự cân bằng sang Shard 2, hệ thống dừng Balancer, hoàn tất dọn bản ghi mồ côi (\textit{orphan cleanup}) và thực hiện thu gọn tệp lưu trữ (\textit{compaction}) trên cả hai shard nhằm loại bỏ phân mảnh đĩa thừa do quá trình di dời chunk trước khi bước vào đo đọc và ghi.
+
+\textbf{Cơ sở lựa chọn chỉ số chính:}
+\begin{itemize}[leftmargin=0.8cm, itemsep=4pt]
+  \item \textbf{Cặp \texttt{p95} và \texttt{QPS} (hoặc \texttt{inserts/s}) kèm độ lệch chuẩn ($\pm$ std):} Thông lượng đo sức gánh tổng thể khi nhiều luồng chạy song song, còn \texttt{p95} (phân vị $95\%$) đủ nhạy để phát hiện dấu hiệu tràn bộ nhớ đệm/đọc đĩa nhưng ít bị méo bởi ngoại lai đơn lẻ như giá trị trung bình hay \texttt{p99}/\texttt{Max}. Với các phép đo có độ biến thiên lớn giữa các lần lặp (như ghi trực tuyến \texttt{TN2}), báo cáo trình bày tường minh độ lệch chuẩn để phân biệt khác biệt thực chất với nhiễu thống kê.
+  \item \textbf{Tách bạch lưu lượng mạng nội bộ (\texttt{shard <-> mongos}) và hệ số khuếch đại mạng:} Bộ đếm mạng tại bộ định tuyến chỉ phản ánh lưu lượng trao đổi với máy khách, không cho thấy lượng dữ liệu trung gian mà các shard gửi về bộ định tuyến khi trộn kết quả phân tán. Do đó, thực nghiệm đo tổng lưu lượng mạng đã trừ nền trên cả hai shard (chuẩn hóa theo số truy vấn phía máy khách) và đối chiếu qua \textbf{hệ số khuếch đại mạng nội bộ} (tỷ số giữa lưu lượng nội bộ phía shard và lưu lượng phía máy khách) để bắt đúng chi phí xuyên mảnh ẩn.
+  \item \textbf{Số trang đọc đĩa trên mỗi truy vấn song song với tỷ lệ trúng bộ nhớ đệm:} Khi hai truy vấn có tổng số trang yêu cầu khác nhau hàng chục lần (như truy vấn điểm \texttt{Q1} so với quét theo tháng \texttt{Q3}), việc chỉ nhìn tỷ lệ phần trăm trúng bộ nhớ đệm dễ gây ngộ nhận do khác mẫu số. Báo cáo ghi nhận đồng thời \textbf{số trang phải đọc từ đĩa trên mỗi truy vấn} làm bằng chứng giải thích trực tiếp.
 \end{itemize}
+\FloatBarrier

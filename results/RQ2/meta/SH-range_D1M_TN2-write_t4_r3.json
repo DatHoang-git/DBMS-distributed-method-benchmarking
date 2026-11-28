@@ -16,16 +16,19 @@
     "active_migrations": 0
   },
   "idle_network_baseline": null,
+  "idle_network_baseline_by_node": null,
   "elapsed_s": 60.004,
-  "n_requests": 67224,
-  "n_success": 67224,
-  "qps_or_inserts_s": 1120.33,
-  "p50_ms": 3.052,
-  "p95_ms": 5.606,
+  "n_requests": 83361,
+  "n_success": 83361,
+  "qps_or_inserts_s": 1389.26,
+  "p50_ms": 2.795,
+  "p95_ms": 4.055,
   "net_kb_per_req": 0.833,
-  "client_cpu_max": 25.86,
-  "client_cpu_avg": 14.81,
+  "shard_net_kb_per_req": 1.489,
+  "net_amp_ratio": 1.788,
+  "client_cpu_max": 13.36,
+  "client_cpu_avg": 9.65,
   "client_bound": false,
-  "start_utc": "2026-11-27T15:26:18.055127+00:00",
-  "end_utc": "2026-11-27T15:27:18.091459+00:00"
+  "start_utc": "2026-11-28T05:02:37.074574+00:00",
+  "end_utc": "2026-11-28T05:03:37.109595+00:00"
 }

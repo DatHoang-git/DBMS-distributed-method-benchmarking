@@ -1,0 +1,122 @@
+[2026-11-28T04:19:29.838971+00:00] === START PHASE SH-range ===
+[2026-11-28T04:19:29.839044+00:00] CMD: docker rm -f mdb-sa mdb-mongos mdb-shard1 mdb-shard2 mdb-cfgsvr
+[2026-11-28T04:19:29.851164+00:00] CMD: docker network rm mdb-net
+[2026-11-28T04:19:29.863541+00:00]   ! Error response from daemon: network mdb-net not found
+[2026-11-28T04:19:29.863637+00:00]   ! exit status 1
+[2026-11-28T04:19:29.863688+00:00] CMD: docker network create mdb-net
+[2026-11-28T04:19:29.926824+00:00]   | ae7145acb66af77143c898299a43102615b5d55208d1277960d8785bfadbb54c
+[2026-11-28T04:19:29.926927+00:00] CMD: docker run -d --name mdb-cfgsvr --network mdb-net --memory=512m --cpus=1 -p 27019:27019 mongo:7.0 mongod --configsvr --replSet cfgRS --port 27019 --bind_ip_all --wiredTigerCacheSizeGB 0.25
+[2026-11-28T04:19:30.095770+00:00]   | b1da39ef449ddcdfa49898e0f264bf077b85b4706a619c3b5c5c279bbecb2f25
+[2026-11-28T04:19:30.095867+00:00] CMD: docker run -d --name mdb-shard1 --network mdb-net --memory=1g --cpus=2 -p 27118:27018 mongo:7.0 mongod --shardsvr --replSet shard1RS --port 27018 --bind_ip_all --wiredTigerCacheSizeGB 0.50
+[2026-11-28T04:19:30.276913+00:00]   | 5e4b8e9d29b4c5ff64fcc7d7583aa371c5a2100e952a611e94f1a368344fb51e
+[2026-11-28T04:19:30.276998+00:00] CMD: docker run -d --name mdb-shard2 --network mdb-net --memory=1g --cpus=2 -p 27218:27018 mongo:7.0 mongod --shardsvr --replSet shard2RS --port 27018 --bind_ip_all --wiredTigerCacheSizeGB 0.50
+[2026-11-28T04:19:30.474156+00:00]   | 6884170b26627f5caf34148a1fd2f789b11121bca20ea145027037e22ce1b279
+[2026-11-28T04:19:30.474255+00:00] CMD: docker run -d --name mdb-mongos --network mdb-net --memory=512m --cpus=2 -p 27017:27017 mongo:7.0 mongos --configdb cfgRS/mdb-cfgsvr:27019 --port 27017 --bind_ip_all
+[2026-11-28T04:19:30.658479+00:00]   | 8cb635e5a99fe9d726791988ac2f0262b8ac69d4386b68e813c3d8bf94867789
+[2026-11-28T04:19:33.658842+00:00] CMD: docker exec mdb-cfgsvr mongosh --port 27019 --eval rs.initiate({_id:"cfgRS", configsvr:true, members:[{_id:0, host:"mdb-cfgsvr:27019"}]})
+[2026-11-28T04:19:34.070638+00:00]   | { ok: 1 }
+[2026-11-28T04:19:34.070709+00:00] CMD: docker exec mdb-shard1 mongosh --port 27018 --eval rs.initiate({_id:"shard1RS", members:[{_id:0, host:"mdb-shard1:27018"}]})
+[2026-11-28T04:19:34.448556+00:00]   | { ok: 1 }
+[2026-11-28T04:19:34.448643+00:00] CMD: docker exec mdb-shard2 mongosh --port 27018 --eval rs.initiate({_id:"shard2RS", members:[{_id:0, host:"mdb-shard2:27018"}]})
+[2026-11-28T04:19:34.810429+00:00]   | { ok: 1 }
+[2026-11-28T04:19:34.876575+00:00] Primary ready on cfgRS
+[2026-11-28T04:19:34.880425+00:00] Primary ready on shard1RS
+[2026-11-28T04:19:34.883646+00:00] Primary ready on shard2RS
+[2026-11-28T04:19:36.390569+00:00] mongos ready
+[2026-11-28T04:19:37.154602+00:00] Created 3 secondary indexes: ['_id_', 'START_1_PATIENT_1', 'PATIENT_1_START_-1', 'START_1', 'conditions.CODE_1_START_1']
+[2026-11-28T04:19:37.171887+00:00] Cluster initialized (shard_key={'START': 1, 'PATIENT': 1}, balancer={'mode': 'full', 'inBalancerRound': False, 'numBalancerRounds': 1, 'term': 1, 'ok': 1.0, '$clusterTime': {'clusterTime': Timestamp(1795839577, 68), 'signature': {'hash': b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', 'keyId': 0}}, 'operationTime': Timestamp(1795839577, 68)})
+[2026-11-28T04:19:37.172511+00:00] CMD: /mnt/lamviec/keepskyclear.Obsidian/9_Projects/DBMS/DBMS-distributed-method-benchmarking/.venv/bin/python scripts/load_dataset.py --uri mongodb://localhost:27017 --dataset /mnt/lamviec/keepskyclear.Obsidian/9_Projects/DBMS/data/load_v2/D1M_sorted --env SH-range --meta-out results/load/SH-range_D1M.json
+[2026-11-28T04:21:30.379290+00:00]   | Loaded patients: 18,443 docs in 0.2s (83,372 docs/s)
+[2026-11-28T04:21:30.379373+00:00]   | Loaded encounters: 1,000,000 docs in 112.6s (8,884 docs/s)
+[2026-11-28T04:21:30.379389+00:00]   | Wrote results/load/SH-range_D1M.json
+[2026-11-28T04:21:41.445676+00:00] Verify state: encounters.count=1,000,000 (expected 1,000,000), indexes=5
+[2026-11-28T04:21:41.458738+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:21:51.478771+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:22:01.487442+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:22:11.497689+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:22:21.507276+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:22:31.517622+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:22:41.526539+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:22:51.536355+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:23:01.546290+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:23:11.556278+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:23:21.566235+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:23:31.576004+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:23:41.585584+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:23:51.595627+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:24:01.604698+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:24:11.614702+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:24:21.624340+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:24:31.633776+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:24:41.643255+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:24:51.652931+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:25:01.662967+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:25:11.672305+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:25:21.681061+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:25:31.691652+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:25:41.701353+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:25:51.711331+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:26:01.720486+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:26:11.729651+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:26:21.740171+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:26:31.749369+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:26:41.759401+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:26:51.768503+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:27:01.780052+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:27:11.789314+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:27:21.798698+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:27:31.809022+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:27:41.821163+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:27:51.830356+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:28:01.839567+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:28:11.849082+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:28:21.859041+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:28:31.869084+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:28:41.877393+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:28:51.888187+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:29:01.897718+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:29:11.908318+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:29:21.918238+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:29:31.929352+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:29:41.938844+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:29:51.946893+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:30:01.957326+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:30:11.966824+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:30:21.975821+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:30:31.984832+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:30:41.993821+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:30:52.004621+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:31:02.014838+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:31:12.024638+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:31:22.034376+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:31:32.046443+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:31:42.055904+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:31:52.066129+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:32:02.076380+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:32:12.087260+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:32:22.097561+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:32:32.107756+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:32:42.116522+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:32:52.125018+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:33:02.133363+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:33:12.142730+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:33:22.151539+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:33:32.161393+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:33:42.170252+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:33:52.178697+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:34:02.187947+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:34:12.196097+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:34:22.207057+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:34:32.217585+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:34:42.229297+00:00] Balance poll: s1=(1,000,000, 1309.7MB) s2=(487,412, 606.2MB) diff=703.4MB inRound=False migs=0
+[2026-11-28T04:34:52.239787+00:00] Balance poll: s1=(862,959, 1161.1MB) s2=(487,412, 606.2MB) diff=554.8MB inRound=False migs=0
+[2026-11-28T04:35:02.252728+00:00] Balance poll: s1=(862,959, 1161.1MB) s2=(487,412, 606.2MB) diff=554.8MB inRound=False migs=0
+[2026-11-28T04:35:12.261711+00:00] Balance poll: s1=(761,664, 1031.7MB) s2=(487,412, 606.2MB) diff=425.4MB inRound=False migs=0
+[2026-11-28T04:35:22.273749+00:00] Balance poll: s1=(710,961, 978.9MB) s2=(487,412, 606.2MB) diff=372.7MB inRound=False migs=0
+[2026-11-28T04:35:32.291744+00:00] Balance poll: s1=(660,657, 909.8MB) s2=(510,648, 638.9MB) diff=270.9MB inRound=False migs=0
+[2026-11-28T04:35:42.302568+00:00] Balance poll: s1=(635,748, 873.9MB) s2=(510,648, 638.9MB) diff=235.0MB inRound=False migs=0
+[2026-11-28T04:35:52.314152+00:00] Balance poll: s1=(610,894, 839.4MB) s2=(510,648, 638.9MB) diff=200.6MB inRound=False migs=0
+[2026-11-28T04:36:02.325411+00:00] Balance poll: s1=(598,613, 822.1MB) s2=(510,648, 638.9MB) diff=183.2MB inRound=False migs=0
+[2026-11-28T04:36:12.337718+00:00] Balance poll: s1=(537,043, 736.8MB) s2=(510,648, 638.9MB) diff=98.0MB inRound=False migs=0
+[2026-11-28T04:36:22.347058+00:00] Balance poll: s1=(537,043, 736.8MB) s2=(510,648, 638.9MB) diff=98.0MB inRound=False migs=0
+[2026-11-28T04:36:32.358638+00:00] Balance poll: s1=(537,043, 736.8MB) s2=(510,648, 638.9MB) diff=98.0MB inRound=False migs=0

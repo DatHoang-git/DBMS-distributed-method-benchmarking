@@ -1,18 +1,18 @@
 {
-  "host": "2170f03492ea",
+  "host": "3c42333ee6fc",
   "process": "mongos",
   "opcounters_delta": {
     "insert": 0,
-    "query": 82911,
+    "query": 78113,
     "update": 0,
     "delete": 0,
-    "getmore": 5962,
-    "command": 21
+    "getmore": 5620,
+    "command": 18
   },
   "network_delta": {
-    "bytesIn": 34486834,
-    "bytesOut": 1011494526,
-    "numRequests": 88894
+    "bytesIn": 32491394,
+    "bytesOut": 954449357,
+    "numRequests": 83751
   },
   "wt_cache_delta": {
     "max_bytes": 0,
