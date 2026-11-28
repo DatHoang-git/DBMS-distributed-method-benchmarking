@@ -5,7 +5,7 @@ Phụ lục này tập trung toàn bộ chi tiết kỹ thuật triển khai đ�
 
 \section{Thông số Container Docker và Máy chủ Thực thi}
 
-Toàn bộ cả ba cấu hình được thực thi tuần tự trên cùng một máy chủ vật lý để loại bỏ sai lệch phần cứng; kịch bản điều phối tự động được đặt tại \texttt{scripts/run\_all\_local.py} (kèm hướng dẫn tham khảo trong \texttt{docs/local/}). Bảng~\ref{tab:app-infra} tổng hợp đầy đủ cấu hình phần cứng và container áp dụng.
+Toàn bộ cả ba cấu hình được thực thi tuần tự trên cùng một máy chủ vật lý để loại bỏ sai lệch phần cứng; kịch bản điều phối tự động được đặt tại \texttt{scripts/run\_all\_local.py}. Bảng~\ref{tab:app-infra} tổng hợp đầy đủ cấu hình phần cứng và container áp dụng.
 
 \begin{table}[!htb]
 \centering
@@ -23,7 +23,7 @@ Toàn bộ cả ba cấu hình được thực thi tuần tự trên cùng một
 \midrule
 \textbf{Container điều phối} (\texttt{mdb-cfgsvr}, \texttt{mdb-mongos}) & \texttt{mdb-cfgsvr}: \texttt{--memory=512m --cpus=1}, \texttt{--wiredTigerCacheSizeGB 0.25} (cổng \texttt{27019}); \texttt{mdb-mongos}: \texttt{--memory=512m --cpus=2} (cổng \texttt{27017}); kết nối nội bộ qua mạng Docker bridge \texttt{mdb-net}. \\
 \midrule
-\textbf{Máy host thực thi duy nhất} & \texttt{dathoang-NgocTrinh} (EndeavourOS Linux, kernel \texttt{7.2.14-arch1-1}, 12th Gen Intel Core i7-12700H 20 CPU logic, 15 GiB RAM, Micron NVMe SSD \texttt{MTFDKBA512QFM-1BD1AABGB} 476.9 GB, chạy chế độ nguồn AC ổn định). \\
+\textbf{Máy chủ thực thi duy nhất} & EndeavourOS Linux, kernel \texttt{7.2.14-arch1-1}, 12th Gen Intel Core i7-12700H 20 CPU logic, 15 GiB RAM, Micron NVMe SSD \texttt{MTFDKBA512QFM-1BD1AABGB} 476.9 GB, chạy chế độ nguồn AC ổn định. \\
 \midrule
 \textbf{Kịch bản chuẩn bị, nạp, chạy \& vẽ} & Chuẩn bị dữ liệu sắp theo \texttt{START} (\texttt{S1..S5}, \texttt{D1M\_sorted}) trong \texttt{data/load\_v2/}; nạp nối tiếp bằng \texttt{scripts/load\_dataset.py}; điều phối tự động sạch 3 pha bằng \texttt{scripts/run\_all\_local.py}; đo bằng \texttt{scripts/bench\_v2.py} (tách riêng pha làm nóng 20s trước khi lấy mẫu \texttt{t0}/\texttt{st0}); tổng hợp bảng và hình bằng \texttt{analysis/generate\_report\_artifacts.py}. \\
 \midrule
@@ -63,7 +63,7 @@ Bảng~\ref{tab:app-ports} liệt kê ánh xạ cổng và vai trò của từng
   \item \textbf{Chính sách đọc/ghi:} Cố định \texttt{writeConcern: \{w: "majority"\}} (trên RS 1 thành viên tương đương \texttt{w: 1, j: true}) và \texttt{readConcern: \{level: "local"\}}.
   \item \textbf{Tiền kiểm Balancer chuẩn MongoDB 7.0:} Trước mọi bài đo đọc và ghi trực tuyến, gọi \texttt{sh.stopBalancer()} và xác minh qua \texttt{db.adminCommand("balancerStatus")} rằng \texttt{mode == "off"}, \texttt{inBalancerRound == false}, và \texttt{config.migrations} rỗng.
   \item \textbf{Dọn sạch bản ghi thử và thu gọn tệp:} Sau mỗi lần lặp \texttt{TN2-write}, xóa toàn bộ tài liệu tổng hợp có \texttt{\_id} khớp \texttt{\^{}bench-} để mỗi lần lặp ghi và mốc \texttt{D3M} kế tiếp bắt đầu trên chính xác $1{,}000{,}000$ và $3{,}000{,}000$ bản ghi sạch; chạy \texttt{\{compact: "encounters", force: true\}} trên các shard trước khi nạp \texttt{S4+S5} và sau khi \texttt{cleanupOrphaned} hoàn tất trên \texttt{SH-range} (giảm tổng dung lượng dữ liệu + chỉ mục theo \texttt{collStats} đi $584.4\text{ MB}$ trên \texttt{shard1RS} và $45.8\text{ MB}$ trên \texttt{shard2RS}, tổng $630.2\text{ MB}$ như nêu ở Chương~\ref{chap:results}; chỉ số \texttt{bytesFreed} do lệnh \texttt{compact} trả về gồm cả không gian quản trị nội bộ WiredTiger là $612.7\text{ MB}$ và $48.0\text{ MB}$).
-  \item \textbf{Lịch chạy 3 pha trên \texttt{dathoang-NgocTrinh}:} (1) \textbf{Pha 1 (\texttt{SA})}: nạp nối tiếp \texttt{S1} $\rightarrow$ \texttt{S3}, đo \texttt{TN1} và \texttt{TN2-write} (\texttt{1M}), dọn sạch và thu gọn tệp rồi nạp \texttt{S4} $\rightarrow$ \texttt{S5} ($3{,}000{,}000$ bản ghi) đo \texttt{TN1} (\texttt{D3M}); (2) \textbf{Pha 2 (\texttt{SH-hash})}: nạp nối tiếp \texttt{S1} $\rightarrow$ \texttt{S5}, chạy \texttt{TN1}, \texttt{TN2}, \texttt{TN3} (đủ 3 lần lặp + trừ nền 15s idle cho cả \texttt{Q1}, \texttt{Q2}, \texttt{Q3} qua mọi mốc); (3) \textbf{Pha 3 (\texttt{SH-range})}: nạp \texttt{D1M\_sorted}, chờ Balancer ổn định dưới ngưỡng $96\text{ MB}$, dừng Balancer, chạy \texttt{cleanupOrphaned} và \texttt{compact}, chụp \texttt{dist} trước/sau thu gọn tệp rồi đo đầy đủ \texttt{TN3} (\texttt{Q1}, \texttt{Q2}, \texttt{Q3}) và \texttt{TN2-write}. (\textit{Ghi chú ánh xạ tệp gốc: trong thư mục \texttt{results/RQ3/} và \texttt{scripts/bench\_v2.py}, hai truy vấn \texttt{Q2} và \texttt{Q3} của báo cáo tương ứng với khóa tệp gốc \texttt{Q3} và \texttt{Q4}.})
+  \item \textbf{Lịch chạy 3 pha trên máy chủ thực thi:} (1) \textbf{Pha 1 (\texttt{SA})}: nạp nối tiếp \texttt{S1} $\rightarrow$ \texttt{S3}, đo \texttt{TN1} và \texttt{TN2-write} (\texttt{1M}), dọn sạch và thu gọn tệp rồi nạp \texttt{S4} $\rightarrow$ \texttt{S5} ($3{,}000{,}000$ bản ghi) đo \texttt{TN1} (\texttt{D3M}); (2) \textbf{Pha 2 (\texttt{SH-hash})}: nạp nối tiếp \texttt{S1} $\rightarrow$ \texttt{S5}, chạy \texttt{TN1}, \texttt{TN2}, \texttt{TN3} (đủ 3 lần lặp + trừ nền 15s idle cho cả \texttt{Q1}, \texttt{Q2}, \texttt{Q3} qua mọi mốc); (3) \textbf{Pha 3 (\texttt{SH-range})}: nạp \texttt{D1M\_sorted}, chờ Balancer ổn định dưới ngưỡng $96\text{ MB}$, dừng Balancer, chạy \texttt{cleanupOrphaned} và \texttt{compact}, chụp \texttt{dist} trước/sau thu gọn tệp rồi đo đầy đủ \texttt{TN3} (\texttt{Q1}, \texttt{Q2}, \texttt{Q3}) và \texttt{TN2-write}. (\textit{Ghi chú ánh xạ tệp gốc: trong thư mục \texttt{results/RQ3/} và \texttt{scripts/bench\_v2.py}, hai truy vấn \texttt{Q2} và \texttt{Q3} của báo cáo tương ứng với khóa tệp gốc \texttt{Q3} và \texttt{Q4}.})
 \end{itemize}
 
 \section{Bảng Ánh xạ Chỉ số Báo cáo sang Lệnh \& Trường Telemetry}
@@ -77,7 +77,7 @@ Bảng~\ref{tab:app-telemetry} ánh xạ từng chỉ số phân tích trong th�
 \renewcommand{\arraystretch}{1.18}
 \setlength{\tabcolsep}{4pt}
 \footnotesize
-\begin{tabularx}{\linewidth}{L{3.2cm} L{3.8cm} >{\raggedright\arraybackslash}X}
+\begin{tabularx}{\linewidth}{L{3.0cm} L{4.15cm} >{\raggedright\arraybackslash}X}
 \toprule
 \textbf{Chỉ số trong báo cáo} & \textbf{Nguồn lệnh / Tệp} & \textbf{Trường dữ liệu / Công thức kỹ thuật} \\
 \midrule
