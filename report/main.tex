@@ -5,7 +5,7 @@
   \usepackage[utf8]{vietnam}
 \else
   \usepackage{fontspec}
-  \setmainfont[Ligatures=TeX]{Liberation Serif}
+  \setmainfont[Ligatures=TeX]{TeX Gyre Termes}
   \setmonofont[Scale=0.86]{DejaVu Sans Mono}
 \fi
 \usepackage{appendix}
@@ -18,6 +18,14 @@
 \usepackage{mathtools}
 \usepackage{setspace}
 \usepackage{amstext, amsmath, latexsym, amsbsy, amssymb, amsthm, amsfonts, multicol, nccmath}
+% Thống nhất font: chữ, số/ký hiệu trong $...$ và \texttt{} cùng họ TeX Gyre Termes (Times)
+\ifPDFTeX\else
+  \usepackage{unicode-math}
+  \setmathfont{TeX Gyre Termes Math}
+\fi
+\let\origtexttt\texttt
+\renewcommand{\texttt}[1]{\textrm{#1}}
+
 \usepackage[left=3cm,right=2cm,top=2.5cm,bottom=3cm,footskip=40pt]{geometry}
 \usepackage{pdflscape}
 \usepackage{array}
@@ -153,6 +161,9 @@
 \setlength{\parindent}{1cm}
 \setlength{\parskip}{0.5ex}
 \fontsize{13}{16}\selectfont
+
+\input{cover/loi-cam-on}
+\newpage
 
 \input{cover/tom-tat}
 \newpage
