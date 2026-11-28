@@ -56,7 +56,7 @@ Chính sự chênh lệch dung lượng giữa ba lớp ở Bảng~\ref{tab:wt-l
 
 \subsection{Ba môi trường cốt lõi (MongoDB 7.0)}
 
-Để loại bỏ hoàn toàn sai lệch phần cứng, cả ba môi trường đều được chạy tuần tự trên \textbf{cùng một máy chủ vật lý} với thông số tài nguyên container khóa cứng đồng nhất:
+Để bảo đảm đối chứng công bằng về tài nguyên giữa các cấu hình, cả ba môi trường đều được triển khai bằng container Docker với thông số tài nguyên khóa cứng đồng nhất:
 
 \begin{enumerate}[leftmargin=0.8cm, itemsep=4pt]
   \item \textbf{\texttt{SA} (1 nút dữ liệu đơn lẻ):} Một nút dữ liệu chạy dạng Replica Set 1 thành viên; bộ sinh tải kết nối trực tiếp vào nút này (không qua bộ định tuyến trung gian).
@@ -64,7 +64,7 @@ Chính sự chênh lệch dung lượng giữa ba lớp ở Bảng~\ref{tab:wt-l
   \item \textbf{\texttt{SH-range} (2 shard - chia khoảng theo thời gian):} Cùng kiến trúc 2 shard như trên, phân mảnh theo khoảng tăng dần của cặp khóa thời điểm khám \texttt{START} và mã bệnh nhân \texttt{PATIENT}, giữ các bản ghi gần nhau về mặt thời gian trên cùng dải khóa.
 \end{enumerate}
 
-Trên mọi nút dữ liệu thuộc ba cấu hình, tài nguyên và chính sách nhất quán được khóa đồng nhất: $512\text{ MB}$ WiredTiger Internal Cache, $1\text{ GB}$ giới hạn RAM tổng, $2\text{ vCPU}$, kích thước chunk $32\text{ MB}$, xác nhận ghi đa số kèm nhật ký đĩa và đọc mức cục bộ (thông số container, máy chủ và câu lệnh cấu hình xem tại Phụ lục~\ref{app:infra}).
+Trên mọi nút dữ liệu thuộc ba cấu hình, tài nguyên và chính sách nhất quán được khóa đồng nhất: $512\text{ MB}$ WiredTiger Internal Cache, $1\text{ GB}$ giới hạn RAM tổng, $2\text{ vCPU}$, kích thước chunk $32\text{ MB}$, xác nhận ghi đa số kèm nhật ký đĩa và đọc mức cục bộ (thông số container và câu lệnh cấu hình xem tại Phụ lục~\ref{app:infra}).
 
 \subsection{Ba truy vấn đọc đại diện và bộ chỉ mục đồng nhất}
 

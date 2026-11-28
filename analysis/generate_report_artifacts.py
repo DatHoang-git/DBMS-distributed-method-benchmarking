@@ -455,7 +455,7 @@ def plot_fig4_3(summary):
     ax2.set_xticks(xb)
     ax2.set_xticklabels(envs)
     ax2.set_ylabel("Tốc độ ghi mới (inserts/s)")
-    ax2.set_title("(b) Hiệu năng ghi 4 luồng (trên 1 NVMe SSD)", pad=10)
+    ax2.set_title("(b) Hiệu năng ghi 4 luồng (mốc D1M)", pad=10)
     ax2.grid(True, axis="y", alpha=0.6)
     ax2.spines["top"].set_visible(False)
     ax2.spines["right"].set_visible(False)

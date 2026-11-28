@@ -18,7 +18,7 @@ Trong thực hành thiết kế cơ sở dữ liệu, khi một bảng hoặc co
 \midrule
 \textbf{Mục tiêu chính} & Giảm không gian quét chỉ mục/bảng trên cùng một máy chủ; hỗ trợ quản trị vòng đời dữ liệu (xóa nhanh phân vùng cũ, lưu trữ phân tầng). & Vượt trần phần cứng (RAM, CPU, Disk I/O) của một máy chủ đơn lẻ bằng cách chia tải ra nhiều nút độc lập (\textit{scale-out}). \\
 \midrule
-\textbf{Phạm vi tài nguyên} & Toàn bộ phân vùng dùng chung CPU, RAM, bộ nhớ đệm và kênh I/O của một nút vật lý. & Mỗi mảnh (\textit{shard}) sở hữu tiến trình lưu trữ, bộ nhớ đệm WiredTiger, hạn mức CPU và (khi triển khai đa máy chủ) ổ đĩa riêng biệt. \\
+\textbf{Phạm vi tài nguyên} & Toàn bộ phân vùng dùng chung CPU, RAM, bộ nhớ đệm và kênh I/O của một nút vật lý. & Mỗi mảnh (\textit{shard}) sở hữu tiến trình lưu trữ, bộ nhớ đệm WiredTiger, hạn mức CPU và ổ đĩa riêng biệt. \\
 \midrule
 \textbf{Cơ chế định tuyến} & Bộ tối ưu hóa truy vấn cục bộ loại bỏ phân vùng không khớp ngay trong cùng tiến trình cơ sở dữ liệu. & Bộ định tuyến trung gian (\texttt{mongos}) đọc metadata cụm để chuyển tiếp yêu cầu qua mạng tới đúng shard đích. \\
 \midrule
